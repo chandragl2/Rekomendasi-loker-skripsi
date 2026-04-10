@@ -59,6 +59,7 @@ const categorizeJob = (title = '') => {
   if (/hr |human resource|recruiter|talent acquisition|people ops/.test(t)) return 'HR';
   if (/operation|logistic|supply chain|warehouse|procurement|purchasing/.test(t)) return 'Operations';
   if (/video|podcast|copywriter|3d|motion|illustrator|photography|videograph|creative/.test(t)) return 'Creative';
+  if (/waiter|barista|crew|kasir|f&b|restaurant|cafe|server|hospitality|store/.test(t)) return 'Hospitality';
   return 'Lainnya';
 };
 
@@ -107,7 +108,7 @@ const setupPage = async (browser) => {
 const scrapeListingPage = async (browser, maxJobs) => {
   const page = await setupPage(browser);
   // Lakukan rotasi pencarian berdasar list keyword untuk menembus deduplikasi database
-  const keywords = ['programmer', 'data', 'marketing', 'design', 'sales', 'manager', 'admin', 'teknik', 'digital', 'developer', 'finance', 'akuntansi', 'guru', 'HR', 'startup', 'startup', 'software', 'writer'];
+  const keywords = ['programmer', 'data', 'marketing', 'design', 'sales', 'manager', 'admin', 'teknik', 'digital', 'developer', 'finance', 'akuntansi', 'guru', 'HR', 'startup', 'startup', 'software', 'writer', 'waiter', 'barista', 'crew store'];
   const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
   const LISTING_URL = `https://glints.com/id/opportunities/jobs/explore?keyword=${randomKeyword}&country=ID`;
   

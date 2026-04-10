@@ -3,6 +3,8 @@ const Vocabulary = require('../models/Vocabulary');
 const preprocessText = require('../utils/preprocess');
 const { buildVocabulary, createVector } = require('../utils/tfidf');
 const calculateCosineSimilarity = require('../utils/cosineSimilarity');
+const calculateFinalScore = require('../utils/scoreNormalizer');
+const { detectCategory } = require('../utils/category');
 const pdfParse = require('pdf-parse');
 const scrapeGlints = require('../utils/scraper');
 const { cleanJobs } = require('../utils/cleaner');
@@ -47,11 +49,11 @@ const buildAndSave = async (jobData) => {
   await Vocabulary.deleteMany({});
   await Vocabulary.create({ terms, idf, totalDocuments: allDocsTokens.length });
 
-  // Vektorisasi & simpan semua jobs
+  // Vektorisasi & simpan semua jobs (applyBoost=true → IT skill mendapat multiplier x2.5)
   await Job.deleteMany({});
   const jobsToSave = processedJobs.map(job => ({
     ...job,
-    tfidfVector: createVector(job.processedText, idf)
+    tfidfVector: createVector(job.processedText, idf, true)
   }));
   await Job.insertMany(jobsToSave);
 
@@ -251,7 +253,13 @@ const recommendJobs = async (req, res) => {
 
     // 3. Normalisasi & tokenisasi CV
     const cvTokens = preprocessText(cvEnhancedText);
-    console.log(`[CV] Total tokens: ${cvTokens.length} | Skill lines: ${skillLines.length} | Exp lines: ${expLines.length}`);
+    
+    // 3b. [BARU] Deteksi Kategori Utama dari CV
+    const categoryInfo = detectCategory(cvTokens);
+    console.log(`[CATEGORY] Detected: ${categoryInfo.category} (Hits: ${categoryInfo.hits}/${categoryInfo.totalHits})`);
+    console.log(`[CATEGORY] Details:`, categoryInfo.details);
+
+    console.log(`[CV] Total tokens after preprocess: ${cvTokens.length} | Skill lines: ${skillLines.length} | Exp lines: ${expLines.length}`);
 
     // 4. Load Vocabulary & IDF dari DB
     const vocab = await Vocabulary.getVocabulary();
@@ -260,9 +268,9 @@ const recommendJobs = async (req, res) => {
     }
     console.log('Vocabulary loaded. Terms count:', vocab.terms.length);
 
-    // 5. Vektorisasi CV menggunakan IDF global dari DB
+    // 5. Vektorisasi CV menggunakan IDF global dari DB (applyBoost=true → skor CV & Job konsisten)
     const idf = vocab.idf instanceof Map ? Object.fromEntries(vocab.idf) : vocab.idf;
-    const cvVector = createVector(cvTokens, idf);
+    const cvVector = createVector(cvTokens, idf, true);
     console.log('CV Vector terms:', Object.keys(cvVector).length);
 
     // DEBUG: Tampilkan top 10 terms CV dengan skor TF-IDF tertinggi
@@ -274,10 +282,24 @@ const recommendJobs = async (req, res) => {
     console.log(`[CV TERMS] Top 10 TF-IDF: ${topCVTerms}`);
 
     // 6. Fetch semua jobs dari DB
-    const jobs = await Job.find({}).select('+tfidfVector');
-    console.log(`Comparing against ${jobs.length} jobs...`);
+    const allJobs = await Job.find({}).select('+tfidfVector');
+    
+    // 6b. [BARU] Domain Filtering: Hanya simpan job yang kategorinya cocok
+    let jobs = allJobs;
+    if (categoryInfo.category !== 'Lainnya' && categoryInfo.hits > 0) {
+      const matchJobs = allJobs.filter(j => j.category === categoryInfo.category);
+      // Jika ternyata ada pekerjaan di kategori tersebut, gunakan sebagai filter
+      if (matchJobs.length > 0) {
+        jobs = matchJobs;
+        console.log(`[FILTER] Successfully filtered jobs from ${allJobs.length} to ${jobs.length} in category: ${categoryInfo.category}`);
+      } else {
+         console.log(`[FILTER] No jobs found for category ${categoryInfo.category}. Using all ${allJobs.length} jobs as fallback.`);
+      }
+    } else {
+       console.log(`[FILTER] CV Category is unknown/Lainnya. Comparing against all ${allJobs.length} jobs.`);
+    }
 
-    // 7. Hitung Cosine Similarity
+    // 7. Hitung Cosine Similarity hanya untuk jobs yang sudah difilter
     const recommendations = jobs.map(job => ({
       jobId: job._id,
       title: job.title,
@@ -293,9 +315,12 @@ const recommendJobs = async (req, res) => {
     }));
 
     // 8. Sort & ambil Top 10 yang paling relevan
-    const topRecommendations = recommendations
+    const sortedRecommendations = recommendations
       .sort((a, b) => b.similarityScore - a.similarityScore)
       .slice(0, 10);
+
+    // 9. [BARU] Normalisasi Skor untuk Tampilan UI
+    const topRecommendations = calculateFinalScore(sortedRecommendations);
 
     console.log('\n--- DEBUG: TOP RECOMMENDATIONS SCORE & TERMS ---');
     topRecommendations.forEach((r, idx) => {
@@ -309,13 +334,13 @@ const recommendJobs = async (req, res) => {
         .map(([term, score]) => `${term}(${score.toFixed(3)})`)
         .join(', ');
         
-      console.log(`[RANK ${idx + 1}] ${(r.similarityScore * 100).toFixed(2)}% | ${r.title} di ${r.company}`);
+      console.log(`[RANK ${idx + 1}] ${r.score} (Raw: ${(r.similarityScore * 100).toFixed(2)}%) | ${r.title} di ${r.company}`);
       console.log(`   └─ Top 10 Job Terms: ${topJobTerms}`);
     });
     console.log('------------------------------------------------\n');
 
     const topScores = topRecommendations.slice(0, 3)
-      .map(r => `${r.title} (${(r.similarityScore * 100).toFixed(1)}%)`)
+      .map(r => `${r.title} (${r.score})`)
       .join(', ');
     console.log(`[RECOMMEND] Vocab hits: ${Object.keys(cvVector).length} | Top 3: ${topScores}`);
 

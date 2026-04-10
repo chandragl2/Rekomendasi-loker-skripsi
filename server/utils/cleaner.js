@@ -164,6 +164,7 @@ const cleanJob = (rawJob) => {
     else if (t.match(/teacher|tutor|education|curriculum|school/)) category = 'Education';
     else if (t.match(/legal|law|counsel|lawyer|compliance|paralegal/)) category = 'Legal';
     else if (t.match(/operation|supply chain|logistics|warehouse|procurement|facilities/)) category = 'Operations';
+    else if (t.match(/waiter|barista|crew|kasir|f&b|restaurant|cafe|server|hospitality|store/)) category = 'Hospitality';
     else category = 'Lainnya';
   }
   const source = rawJob.source || 'Seed';
