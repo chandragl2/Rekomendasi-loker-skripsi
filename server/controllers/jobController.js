@@ -372,10 +372,76 @@ const getJobById = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────────────────────
+// @desc    Get Admin Dashboard Stats
+// @route   GET /api/jobs/admin/stats
+// ─────────────────────────────────────────────────────────
+const getAdminStats = async (req, res) => {
+  try {
+    const totalJobs = await Job.countDocuments();
+    
+    // Get stats by category
+    const categories = await Job.aggregate([
+      { $group: { _id: '$category', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+
+    // Format category data for Recharts
+    const categoryData = categories.map((cat, index) => ({
+      name: cat._id,
+      value: cat.count,
+      color: [
+        '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', 
+        '#06b6d4', '#ec4899', '#f97316', '#6366f1', '#14b8a6'
+      ][index % 10]
+    }));
+
+    // Get recent jobs (last 10)
+    const recentJobs = await Job.find()
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    // Last scrape time (latest job created at)
+    const latestJob = await Job.findOne().sort({ createdAt: -1 });
+    const lastScrape = latestJob ? latestJob.createdAt : null;
+
+    res.json({
+      totalJobs,
+      categoryData,
+      recentJobs,
+      lastScrape,
+      totalCategories: categories.length
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error', error: err.message });
+  }
+};
+
+// ─────────────────────────────────────────────────────────
+// @desc    Delete job
+// @route   DELETE /api/jobs/:id
+// ─────────────────────────────────────────────────────────
+const deleteJob = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+    await job.deleteOne();
+    res.json({ message: 'Job removed' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 module.exports = {
   getAllJobs,
   scrapeJobs,
   scrapeRealtime,
   recommendJobs,
-  getJobById
+  getJobById,
+  getAdminStats,
+  deleteJob
 };

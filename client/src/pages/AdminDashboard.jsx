@@ -1,0 +1,139 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+
+// Import modular components
+import AdminLayout from "./admin/Layout";
+import Dashboard from "./admin/Dashboard";
+import Jobs from "./admin/Jobs";
+import Categories from "./admin/Categories";
+import Scraper from "./admin/Scraper";
+import Logs from "./admin/Logs";
+import Users from "./admin/Users";
+import Settings from "./admin/Settings";
+
+const AdminDashboard = () => {
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [scraping, setScraping] = useState(false);
+  const [notification, setNotification] = useState(null);
+  const [stats, setStats] = useState({
+    totalJobs: 0,
+    categoryData: [],
+    recentJobs: [],
+    lastScrape: null,
+    totalCategories: 0,
+  });
+
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("/api/jobs/admin/stats");
+      setStats(response.data);
+    } catch (err) {
+      console.error("Failed to fetch stats:", err);
+      showNotification("error", "Gagal mengambil data statistik.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000);
+  };
+
+  const handleRunScraper = async () => {
+    try {
+      setScraping(true);
+      showNotification("info", "Memulai proses scraping realtime...");
+      const response = await axios.post("/api/jobs/scrape-realtime", { maxJobs: 40 });
+      
+      if (response.data.success) {
+        showNotification("success", `Berhasil! Menambahkan ${response.data.stats.scrapedFromGlints} lowongan baru.`);
+        fetchStats();
+      }
+    } catch (err) {
+      console.error("Scraper failed:", err);
+      showNotification("error", "Proses scraping gagal dijalankan.");
+    } finally {
+      setScraping(false);
+    }
+  };
+
+  // Render sub-pages based on activeTab
+  const renderContent = () => {
+    switch (activeTab) {
+      case "dashboard":
+        return (
+          <Dashboard 
+            stats={stats} 
+            loading={loading} 
+            scraping={scraping} 
+            onRunScraper={handleRunScraper} 
+          />
+        );
+      case "jobs":
+        return <Jobs />;
+      case "categories":
+        return <Categories />;
+      case "scraper":
+        return <Scraper />;
+      case "logs":
+        return <Logs />;
+      case "users":
+        return <Users />;
+      case "settings":
+        return <Settings />;
+      default:
+        return <Dashboard stats={stats} loading={loading} scraping={scraping} onRunScraper={handleRunScraper} />;
+    }
+  };
+
+  return (
+    <AdminLayout
+      sidebarOpen={sidebarOpen}
+      setSidebarOpen={setSidebarOpen}
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+      onRefresh={fetchStats}
+      loading={loading}
+    >
+      {/* NOTIFICATION TOAST */}
+      <AnimatePresence>
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: "-50%" }}
+            animate={{ opacity: 1, y: 20 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-0 left-1/2 z-[100] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border ${
+              notification.type === "success" 
+                ? "bg-white border-emerald-100 text-emerald-800" 
+                : notification.type === "error"
+                ? "bg-white border-rose-100 text-rose-800"
+                : "bg-white border-blue-100 text-blue-800"
+            }`}
+          >
+            {notification.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
+            {notification.type === "error" && <AlertCircle className="w-5 h-5 text-rose-500" />}
+            {notification.type === "info" && <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />}
+            <span className="font-medium">{notification.message}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Render sub-page content */}
+      <div className="animate-in fade-in duration-500">
+        {renderContent()}
+      </div>
+    </AdminLayout>
+  );
+};
+
+export default AdminDashboard;
