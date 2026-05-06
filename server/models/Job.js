@@ -42,6 +42,12 @@ const JobSchema = new mongoose.Schema({
     type: String,
     default: 'Seed',
   },
+  // URL sumber loker (untuk deduplication)
+  url: {
+    type: String,
+    sparse: true,   // allows multiple null/undefined values while still uniquely indexing non-null URLs
+    unique: true,
+  },
   // Store preprocessed tokens to avoid re-processing
   processedText: {
     type: [String],

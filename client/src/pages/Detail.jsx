@@ -25,7 +25,7 @@ const Detail = () => {
     }
     const fetchJob = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/jobs/${id}`);
+        const { data } = await axios.get(`/api/jobs/${id}`);
         setJob({ ...data, matchScore: data.matchScore || 0 });
         setLoading(false);
       } catch (err) {
@@ -126,16 +126,18 @@ const Detail = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="px-7 py-4 border-t border-gray-100 flex gap-3 flex-wrap">
-              <button className="flex-1 min-w-[140px] py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-sm hover:shadow-md text-sm">
-                Lamar Sekarang
+            <div className="px-5 md:px-8 py-5 border-t border-gray-100 flex flex-col sm:flex-row gap-3">
+              <button className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-black hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 active:scale-[0.98] text-base">
+                Lamar Pekerjaan Ini
               </button>
-              <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 text-sm font-medium">
-                <Bookmark className="h-4 w-4" /> Simpan
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 text-sm font-medium">
-                <Share2 className="h-4 w-4" /> Bagikan
-              </button>
+              <div className="flex gap-3">
+                <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-4 border border-gray-200 rounded-2xl text-gray-600 hover:bg-gray-50 text-sm font-bold transition-all">
+                  <Bookmark className="h-5 w-5" /> <span className="sm:hidden">Simpan</span>
+                </button>
+                <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-4 border border-gray-200 rounded-2xl text-gray-600 hover:bg-gray-50 text-sm font-bold transition-all">
+                  <Share2 className="h-5 w-5" /> <span className="sm:hidden">Bagikan</span>
+                </button>
+              </div>
             </div>
           </div>
 

@@ -32,7 +32,7 @@ const Dashboard = () => {
     setScrapeStats(null);
     try {
       showToast('success', '🔄 Membuka halaman detail tiap job dari Glints... (1-3 menit)');
-      const res = await axios.post('http://localhost:5000/api/jobs/scrape-realtime', {
+      const res = await axios.post('/api/jobs/scrape-realtime', {
         maxJobs: 40  // Ditingkatkan agar meraup puluhan lowongan tambahan
       }, { timeout: 300000 }); // 5 menit timeout
 
@@ -86,45 +86,49 @@ const Dashboard = () => {
         )}
       </AnimatePresence>
 
-      <main className="flex-grow py-12 px-4 sm:px-6 lg:px-8">
+      <main className="flex-grow py-8 md:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard Pencari Kerja</h1>
-            <p className="mt-2 text-gray-600">
-              Upload CV Anda untuk melihat lowongan yang cocok menggunakan TF-IDF &amp; Cosine Similarity
+          <div className="text-center mb-12">
+            <motion.h1 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-3xl md:text-4xl font-black text-gray-900 mb-4"
+            >
+              Dashboard Pencari Kerja
+            </motion.h1>
+            <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
+              Upload CV Anda untuk melihat lowongan yang cocok menggunakan algoritma <span className="text-indigo-600 font-bold">TF-IDF &amp; Cosine Similarity</span> yang akurat.
             </p>
 
             {/* Tombol Admin */}
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-
-              {/* Tombol Scrape Realtime (utama) */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <button
                 onClick={handleScrapeRealtime}
                 disabled={scraping || analyzing}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg shadow hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white text-sm md:text-base font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
               >
                 {scraping
-                  ? <><Loader2 className="h-4 w-4 animate-spin" /> Scraping dari Glints...</>
-                  : <><Globe className="h-4 w-4" /> Scrape Realtime dari Glints</>
+                  ? <><Loader2 className="h-5 w-5 animate-spin" /> Scraping Data...</>
+                  : <><Globe className="h-5 w-5" /> Scrape Realtime dari Glints</>
                 }
               </button>
-
-
             </div>
 
             {/* Progress indicator saat scraping */}
             {scraping && (
               <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 mx-auto max-w-sm bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-3 text-sm text-indigo-700"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mt-6 mx-auto max-w-md bg-indigo-50 border border-indigo-100 rounded-2xl p-5 text-sm text-indigo-700 shadow-sm"
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  <span className="font-semibold">Membuka browser headless...</span>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="bg-indigo-600 p-1.5 rounded-lg">
+                    <RefreshCw className="h-4 w-4 text-white animate-spin" />
+                  </div>
+                  <span className="font-bold">Proses Scraping Sedang Berjalan</span>
                 </div>
-                <p className="text-xs text-indigo-500">
-                  Puppeteer membuka listing + halaman <strong>detail setiap job</strong> untuk mengambil deskripsi asli. Estimasi: 1-3 menit tergantung jumlah job.
+                <p className="text-xs text-indigo-500 leading-relaxed text-left">
+                  Kami sedang membuka listing di Glints untuk mengambil detail pekerjaan. Proses ini memerlukan waktu 1-3 menit.
                 </p>
               </motion.div>
             )}
@@ -133,36 +137,44 @@ const Dashboard = () => {
             <AnimatePresence>
               {scrapeStats && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="mt-4 mx-auto max-w-lg bg-white border border-green-200 rounded-xl p-4 shadow-sm text-left"
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="mt-8 mx-auto max-w-2xl bg-white border border-gray-100 rounded-3xl p-6 md:p-8 shadow-xl text-left relative overflow-hidden"
                 >
-                  <div className="flex items-center gap-2 mb-3">
-                    <BarChart2 className="h-5 w-5 text-green-600" />
-                    <h3 className="font-semibold text-gray-800 text-sm">Hasil Scraping Realtime</h3>
-                    <span className="ml-auto text-xs text-gray-400">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full -mr-16 -mt-16"></div>
+                  
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-green-100 p-2 rounded-xl">
+                        <BarChart2 className="h-5 w-5 text-green-600" />
+                      </div>
+                      <h3 className="font-black text-gray-800 text-lg">Hasil Scraping Terbaru</h3>
+                    </div>
+                    <span className="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full">
                       {new Date(scrapeStats.scrapedAt).toLocaleTimeString('id-ID')}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 mb-3">
-                    <div className="bg-indigo-50 rounded-lg p-2 text-center">
-                      <div className="text-xl font-bold text-indigo-700">{scrapeStats.scrapedFromGlints}</div>
-                      <div className="text-xs text-indigo-500">Dari Glints</div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div className="bg-indigo-50/50 rounded-2xl p-4 text-center border border-indigo-50">
+                      <div className="text-2xl md:text-3xl font-black text-indigo-700">{scrapeStats.scrapedFromGlints}</div>
+                      <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider mt-1">Glints Jobs</div>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-2 text-center">
-                      <div className="text-xl font-bold text-gray-700">{scrapeStats.seedJobs}</div>
-                      <div className="text-xs text-gray-500">Seed Data</div>
+                    <div className="bg-blue-50/50 rounded-2xl p-4 text-center border border-blue-50">
+                      <div className="text-2xl md:text-3xl font-black text-blue-700">{scrapeStats.seedJobs}</div>
+                      <div className="text-xs font-bold text-blue-400 uppercase tracking-wider mt-1">Seed Data</div>
                     </div>
-                    <div className="bg-green-50 rounded-lg p-2 text-center">
-                      <div className="text-xl font-bold text-green-700">{scrapeStats.totalJobs}</div>
-                      <div className="text-xs text-green-500">Total Job</div>
+                    <div className="bg-green-50/50 rounded-2xl p-4 text-center border border-green-50">
+                      <div className="text-2xl md:text-3xl font-black text-green-700">{scrapeStats.totalJobs}</div>
+                      <div className="text-xs font-bold text-green-400 uppercase tracking-wider mt-1">Total Database</div>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-1">
+
+                  <div className="flex flex-wrap gap-2">
                     {Object.entries(scrapeStats.categories).map(([cat, count]) => (
-                      <span key={cat} className="text-xs px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">
-                        {cat}: {count}
+                      <span key={cat} className="text-[10px] md:text-xs px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl text-gray-600 font-bold">
+                        {cat}: <span className="text-indigo-600">{count}</span>
                       </span>
                     ))}
                   </div>

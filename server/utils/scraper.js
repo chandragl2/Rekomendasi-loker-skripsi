@@ -43,24 +43,53 @@ const pLimit = (concurrency) => {
   });
 };
 
-// ─── Kategorisasi otomatis dari judul ────────────────────────
-const categorizeJob = (title = '') => {
-  const t = title.toLowerCase();
-  if (/engineer|developer|programmer|software|backend|frontend|fullstack|devops|mobile|cloud|cyber|network|system admin|it support/.test(t)) return 'Engineering';
-  if (/data scientist|data engineer|data analyst|machine learning|ai |nlp|deep learning|big data/.test(t)) return 'Data';
-  if (/product manager|product owner|scrum master|agile/.test(t)) return 'Product';
-  if (/ui designer|ux designer|graphic design|visual design|illustrat|motion design/.test(t)) return 'Design';
-  if (/marketing|brand|seo|sem|content|social media|digital marketing|growth|ads/.test(t)) return 'Marketing';
-  if (/finance|accounting|tax|audit|treasury|credit|risk|banking|akuntan/.test(t)) return 'Finance';
-  if (/health|medical|clinical|nurse|doctor|pharma|apoteker/.test(t)) return 'Healthcare';
-  if (/teacher|trainer|tutor|instructor|curriculum|edukasi|education/.test(t)) return 'Education';
-  if (/lawyer|legal|counsel|compliance|hukum/.test(t)) return 'Legal';
-  if (/sales|account executive|business development|bd manager/.test(t)) return 'Sales';
-  if (/hr |human resource|recruiter|talent acquisition|people ops/.test(t)) return 'HR';
-  if (/operation|logistic|supply chain|warehouse|procurement|purchasing/.test(t)) return 'Operations';
-  if (/video|podcast|copywriter|3d|motion|illustrator|photography|videograph|creative/.test(t)) return 'Creative';
-  if (/waiter|barista|crew|kasir|f&b|restaurant|cafe|server|hospitality|store/.test(t)) return 'Hospitality';
-  return 'Lainnya';
+// ─── Kategorisasi otomatis dari judul & deskripsi ────────────
+const categorizeJob = ({ title = '', description = '', skills = [] }) => {
+  const t = (title || '').toLowerCase();
+  
+  // Priority 1: Match by Title (Highly accurate)
+  if (/\bhr\b|human resource|recruiter|talent|people/.test(t)) return 'Human Resources';
+  if (/marketing|brand|seo|sem|content|social media|digital marketing|growth|ads/.test(t)) return 'Marketing & Growth';
+  if (/sales|account executive|business development|bd manager/.test(t)) return 'Sales & Business Development';
+  if (/finance|accounting|tax|audit|treasury|credit|risk|banking|akuntan/.test(t)) return 'Finance & Accounting';
+  if (/engineer|developer|programmer|software|backend|frontend|fullstack|devops|mobile|cloud|cyber|network|system admin|it support/.test(t)) return 'Engineering & IT';
+  if (/data scientist|data engineer|data analyst|machine learning|\bai\b|nlp|deep learning|big data/.test(t)) return 'Data & AI';
+  if (/product manager|product owner|scrum master|agile|project manager/.test(t)) return 'Product & Project';
+  if (/ui|ux|graphic|visual|illustrat|motion|video|creative|design/.test(t)) return 'Design & Creative';
+  if (/operation|logistic|supply chain|warehouse|procurement|purchasing/.test(t)) return 'Operations & Supply Chain';
+  if (/teacher|tutor|education|school|lecturer|training/.test(t)) return 'Education & Others';
+
+  // Priority 2: Fallback to full text if title doesn't yield a match
+  const text = (title + ' ' + description + ' ' + (skills || []).join(' ')).toLowerCase();
+
+  if (/\bhr\b|human resource|recruiter|talent acquisition|people ops/.test(text)) 
+    return 'Human Resources';
+
+  if (/marketing|brand|seo|sem|content|social media|digital marketing|growth|ads/.test(text)) 
+    return 'Marketing & Growth';
+
+  if (/sales|account executive|business development|bd manager/.test(text)) 
+    return 'Sales & Business Development';
+
+  if (/finance|accounting|tax|audit|treasury|credit|risk|banking|akuntan/.test(text)) 
+    return 'Finance & Accounting';
+
+  if (/operation|logistic|supply chain|warehouse|procurement|purchasing/.test(text)) 
+    return 'Operations & Supply Chain';
+
+  if (/engineer|developer|programmer|software|backend|frontend|fullstack|devops|mobile|cloud|cyber|network|system admin|it support/.test(text)) 
+    return 'Engineering & IT';
+
+  if (/data scientist|data engineer|data analyst|machine learning|\bai\b|nlp|deep learning|big data/.test(text)) 
+    return 'Data & AI';
+
+  if (/product manager|product owner|scrum master|agile|project manager/.test(text)) 
+    return 'Product & Project';
+
+  if (/ui|ux|graphic|visual|illustrat|motion|video|creative|design/.test(text)) 
+    return 'Design & Creative';
+
+  return 'Education & Others';
 };
 
 // ─── Buka browser sekali, reuse untuk semua page ─────────────
@@ -440,7 +469,7 @@ const scrapeGlints = async (maxJobs = 40) => {
         description:    realDescription.length > 30 ? realDescription : [basic.title, ...(uniqueSkills || [])].join(' '),
         qualifications: detail.qualifications || [],
         skills:         uniqueSkills,
-        category:       categorizeJob(basic.title),
+        category:       categorizeJob({ title: basic.title, description: realDescription, skills: uniqueSkills }),
         source:         'Glints',
         jobUrl:         basic.jobUrl,
       };
@@ -474,7 +503,7 @@ const scrapeGlints = async (maxJobs = 40) => {
           ].join(' '),
           qualifications: [],
           skills:         basic.skills || [],
-          category:       categorizeJob(basic.title),
+          category:       categorizeJob({ title: basic.title, skills: basic.skills }),
           source:         'Glints',
           jobUrl:         basic.jobUrl,
         };

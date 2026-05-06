@@ -23,6 +23,29 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/jobs', jobRoutes);
 
+// ─── Scraper Automation Agent ──────────────────────────────────────────────────
+// Runs in the background every 10 minutes. First execution is delayed 30s after
+// server boot to avoid competing with startup I/O.
+const { runScraper } = require('./scraper/scraperRunner');
+
+const SCRAPER_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+
+const startScraperScheduler = () => {
+  console.log('🕷️  Scraper scheduler initialised — first run in 30s, then every 10 min.');
+
+  // First run — delayed to let the server finish booting
+  const firstRun = setTimeout(async () => {
+    await runScraper({ maxJobs: 30, dbConnected: true });
+  }, 30 * 1000);
+  firstRun.unref(); // Don't prevent process exit
+
+  // Recurring runs
+  const interval = setInterval(async () => {
+    await runScraper({ maxJobs: 30, dbConnected: true });
+  }, SCRAPER_INTERVAL_MS);
+  interval.unref(); // Don't prevent process exit
+};
+
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/dist')));
@@ -37,4 +60,12 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+// On Vercel, we export the app instead of starting a persistent server
+if (process.env.VERCEL) {
+  module.exports = app;
+} else {
+  app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+    startScraperScheduler();
+  });
+}

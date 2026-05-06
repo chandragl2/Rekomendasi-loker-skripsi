@@ -10,9 +10,17 @@ import Footer from '../components/Footer';
 import axios from 'axios';
 
 const CATEGORIES = [
-  'Semua', 'Engineering', 'Data', 'Product', 'Design', 'Marketing',
-  'Finance', 'Healthcare', 'Education', 'Legal', 'Sales', 'HR',
-  'Operations', 'Creative', 'Technology', 'Lainnya'
+  'Semua', 
+  'Engineering & IT', 
+  'Data & AI', 
+  'Product & Project', 
+  'Design & Creative', 
+  'Marketing & Growth',
+  'Sales & Business Development', 
+  'Finance & Accounting', 
+  'Human Resources', 
+  'Operations & Supply Chain', 
+  'Education & Others'
 ];
 
 const JOBS_PER_PAGE = 12;
@@ -36,7 +44,7 @@ const Jobs = () => {
       if (category !== 'Semua') params.category = category;
       if (search) params.search = search;
 
-      const res = await axios.get('http://localhost:5000/api/jobs/all', { params });
+      const res = await axios.get('/api/jobs/all', { params });
       setJobs(res.data.jobs);
       setTotal(res.data.total);
       setTotalPages(res.data.totalPages);
@@ -72,64 +80,77 @@ const Jobs = () => {
       <Navbar />
 
       {/* Hero Header */}
-      <div className="bg-gradient-to-br from-indigo-700 via-indigo-600 to-blue-500 pt-14 pb-10 px-4">
-        <div className="max-w-5xl mx-auto text-center">
+      <div className="bg-gradient-to-br from-indigo-700 via-indigo-600 to-blue-500 pt-10 pb-10 md:pt-16 md:pb-14 px-4 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-3xl rounded-full -mr-32 -mt-32"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 blur-2xl rounded-full -ml-24 -mb-24"></div>
+        
+        <div className="max-w-5xl mx-auto text-center relative z-10">
           <motion.h1
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl font-extrabold text-white mb-2"
+            className="text-3xl md:text-5xl font-black text-white mb-3"
           >
             Daftar Lowongan Pekerjaan
           </motion.h1>
-          <p className="text-indigo-200 mb-8 text-sm">
-            {total > 0 ? `${total} lowongan tersedia` : 'Memuat data...'}
+          <p className="text-indigo-100 mb-8 text-sm md:text-base opacity-80">
+            {total > 0 ? `${total} lowongan tersedia untuk dikelompokkan sesuai keahlianmu` : 'Memuat data lowongan kerja...'}
           </p>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="flex gap-2 max-w-2xl mx-auto">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 max-w-2xl mx-auto">
+            <div className="flex-1 relative group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
               <input
                 type="text"
                 placeholder="Cari posisi, perusahaan, atau skill..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl text-gray-800 text-sm shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                className="w-full pl-12 pr-4 py-4 rounded-2xl text-gray-800 text-sm md:text-base shadow-xl border-0 focus:ring-4 focus:ring-indigo-500/20 transition-all outline-none"
               />
             </div>
             <button
               type="submit"
-              className="px-5 py-3 bg-white text-indigo-700 font-bold rounded-xl shadow-lg hover:bg-indigo-50 transition-colors text-sm"
+              className="px-8 py-4 bg-white text-indigo-700 font-black rounded-2xl shadow-xl hover:bg-indigo-50 transition-all active:scale-95 text-sm md:text-base whitespace-nowrap"
             >
-              Cari
+              Cari Sekarang
             </button>
           </form>
         </div>
       </div>
 
-      <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filter Kategori */}
-        <div className="flex items-center gap-2 flex-wrap mb-6">
-          <Filter className="h-4 w-4 text-gray-500 flex-shrink-0" />
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              onClick={() => handleCategoryChange(cat)}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                category === cat
-                  ? 'bg-indigo-600 text-white shadow'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-indigo-400 hover:text-indigo-600'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+      <main className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {/* Filter Kategori - Scrollable on Mobile */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Filter className="h-4 w-4 text-gray-500" />
+            <span className="text-sm font-bold text-gray-700">Filter Kategori</span>
+          </div>
+          
+          <div className="relative">
+            {/* Scroll indicators for mobile */}
+            <div className="flex overflow-x-auto pb-4 no-scrollbar gap-2 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth">
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => handleCategoryChange(cat)}
+                  className={`whitespace-nowrap px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all duration-200 border ${
+                    category === cat
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-200 translate-y-[-1px]'
+                      : 'bg-white text-gray-600 border-gray-100 hover:border-indigo-200 hover:text-indigo-600 hover:bg-indigo-50/30 shadow-sm'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {(search || category !== 'Semua') && (
             <button
               onClick={() => { setSearch(''); setSearchInput(''); setCategory('Semua'); setPage(1); }}
-              className="px-3 py-1.5 rounded-full text-xs font-semibold text-red-500 border border-red-200 hover:bg-red-50 flex items-center gap-1"
+              className="mt-4 px-4 py-2 rounded-xl text-xs font-bold text-red-500 bg-red-50 hover:bg-red-100 transition-colors flex items-center gap-2 w-fit"
             >
-              <RefreshCw className="h-3 w-3" /> Reset Filter
+              <RefreshCw className="h-3.5 w-3.5" /> Hapus Semua Filter
             </button>
           )}
         </div>

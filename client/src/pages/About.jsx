@@ -103,19 +103,19 @@ const About = () => {
       </section>
 
       {/* Cara Kerja */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto">
+      <section className="py-20 px-4">
+        <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Cara Kerja Algoritma</h2>
-            <p className="text-gray-500">Empat tahap dari upload CV hingga hasil rekomendasi</p>
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">Cara Kerja Algoritma</h2>
+            <p className="text-gray-500 max-w-xl mx-auto">Empat tahapan cerdas dari pengolahan data CV hingga menghasilkan rekomendasi yang personal.</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {steps.map((step, i) => (
               <motion.div
                 key={i}
@@ -123,13 +123,13 @@ const About = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow flex gap-5"
+                className="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm hover:shadow-xl hover:shadow-indigo-50/50 transition-all duration-300 flex flex-col sm:flex-row gap-6"
               >
-                <div className={`flex-shrink-0 w-12 h-12 rounded-xl ${step.color} flex items-center justify-center shadow`}>
+                <div className={`flex-shrink-0 w-14 h-14 rounded-2xl ${step.color} flex items-center justify-center shadow-lg shadow-indigo-100`}>
                   {step.icon}
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 mb-1">{step.title}</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{step.title}</h3>
                   <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
                 </div>
               </motion.div>
@@ -139,74 +139,79 @@ const About = () => {
       </section>
 
       {/* Rumus */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="max-w-4xl mx-auto">
+      <section className="py-20 px-4 bg-gray-900 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 blur-[100px] rounded-full -mr-48 -mt-48"></div>
+        <div className="max-w-5xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            className="text-center mb-16"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Formula Matematika</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                {
-                  title: 'TF (Term Frequency)',
-                  formula: 'TF(t,d) = f(t,d) / |d|',
-                  desc: 'Frekuensi kemunculan term t dalam dokumen d dibagi total jumlah term dalam d.',
-                  color: 'border-blue-300 bg-blue-50',
-                  textColor: 'text-blue-700',
-                },
-                {
-                  title: 'IDF (Inverse Doc Freq)',
-                  formula: 'IDF(t) = log(N / df(t))',
-                  desc: 'N = total dokumen, df(t) = jumlah dokumen yang mengandung term t.',
-                  color: 'border-indigo-300 bg-indigo-50',
-                  textColor: 'text-indigo-700',
-                },
-                {
-                  title: 'Cosine Similarity',
-                  formula: 'cos(θ) = (A·B) / (|A|×|B|)',
-                  desc: 'Derajat kemiripan antara vektor CV (A) dan vektor lowongan (B). Nilai 0–1.',
-                  color: 'border-violet-300 bg-violet-50',
-                  textColor: 'text-violet-700',
-                },
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className={`rounded-xl border-2 p-5 ${item.color}`}
-                >
-                  <h3 className="font-bold text-gray-800 mb-3 text-sm">{item.title}</h3>
-                  <div className={`font-mono text-sm font-bold ${item.textColor} bg-white rounded-lg px-3 py-2 mb-3 border`}>
-                    {item.formula}
-                  </div>
-                  <p className="text-gray-600 text-xs leading-relaxed">{item.desc}</p>
-                </motion.div>
-              ))}
-            </div>
+            <h2 className="text-3xl md:text-4xl font-black mb-4 text-white">Formula Matematika</h2>
+            <p className="text-indigo-200 opacity-70">Dasar perhitungan yang digunakan dalam sistem rekomendasi ini.</p>
           </motion.div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {[
+              {
+                title: 'TF (Term Frequency)',
+                formula: 'TF(t,d) = f(t,d) / |d|',
+                desc: 'Menghitung seberapa sering sebuah kata muncul dalam dokumen relatif terhadap panjang dokumen.',
+                color: 'bg-white/5 border-white/10',
+                textColor: 'text-blue-400',
+              },
+              {
+                title: 'IDF (Inverse Doc Freq)',
+                formula: 'IDF(t) = log(N / df(t))',
+                desc: 'Memberikan bobot lebih besar pada kata-kata unik yang jarang muncul di dokumen lain.',
+                color: 'bg-white/5 border-white/10',
+                textColor: 'text-indigo-400',
+              },
+              {
+                title: 'Cosine Similarity',
+                formula: 'cos(θ) = (A·B) / (|A|×|B|)',
+                desc: 'Mengukur sudut antara vektor CV dan Lowongan untuk menentukan tingkat kemiripan.',
+                color: 'bg-white/5 border-white/10',
+                textColor: 'text-emerald-400',
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className={`rounded-[2rem] border p-8 ${item.color} backdrop-blur-sm hover:bg-white/10 transition-colors group`}
+              >
+                <h3 className="font-bold text-white mb-4 text-lg">{item.title}</h3>
+                <div className={`font-mono text-base md:text-lg font-black ${item.textColor} bg-black/40 rounded-2xl px-4 py-4 mb-4 border border-white/5 text-center group-hover:scale-105 transition-transform`}>
+                  {item.formula}
+                </div>
+                <p className="text-indigo-100/60 text-sm leading-relaxed">{item.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Tech Stack */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto">
+      <section className="py-24 px-4 bg-white">
+        <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-10"
+            className="text-center mb-16"
           >
-            <div className="inline-flex items-center gap-2 text-indigo-600 font-semibold mb-3">
-              <Code2 className="h-5 w-5" />
-              <span>Tech Stack</span>
+            <div className="inline-flex items-center gap-2 text-indigo-600 font-black text-xs uppercase tracking-widest mb-4 px-4 py-2 bg-indigo-50 rounded-full">
+              <Code2 className="h-4 w-4" />
+              <span>Technology Stack</span>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900">Teknologi yang Digunakan</h2>
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900">Teknologi Terkini</h2>
           </motion.div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {techStack.map((tech, i) => (
               <motion.div
                 key={i}
@@ -214,10 +219,10 @@ const About = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className={`border rounded-xl p-4 ${tech.color}`}
+                className={`border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg ${tech.color.replace('bg-', 'bg-opacity-40 bg-')}`}
               >
-                <div className="font-bold text-sm mb-1">{tech.name}</div>
-                <div className="text-xs opacity-75">{tech.desc}</div>
+                <div className="font-black text-base mb-1">{tech.name}</div>
+                <div className="text-xs font-medium opacity-70 leading-relaxed">{tech.desc}</div>
               </motion.div>
             ))}
           </div>

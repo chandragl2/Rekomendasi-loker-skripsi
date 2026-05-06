@@ -10,42 +10,51 @@
 // Kunci utama harus diselaraskan dengan kategori di cleaner.js
 // (Engineering, Finance, Marketing, Operations, Hospitality, dll)
 const CATEGORY_KEYWORDS = {
-  'Engineering': [
+  'Engineering & IT': [
     'programmer','developer','engineer','software','it','web','frontend','backend',
     'fullstack','html','css','javascript','react','node','nodejs','express',
     'mongodb','mysql','postgresql','java','python','php','laravel','api',
     'mobile','android','ios','flutter','reactnative','devops','docker',
     'git','github','konfigurasi','jaringan','network','aws','cloud'
   ],
-  'Finance': [
+  'Data & AI': [
+    'data','analyst','scientist','machine','learning','ai','model','statistik',
+    'statistics','python','pandas','numpy','sql','tableau','powerbi',
+    'dashboard','etl','big','query','predictive'
+  ],
+  'Product & Project': [
+    'product','scrum','agile','owner','pm','project','manager','leadership','planning'
+  ],
+  'Design & Creative': [
+    'design','desain','ui','ux','graphic','grafis','illustrator','photoshop',
+    'figma','sketch','coreldraw','visual','art','animator','video','editor',
+    'creative','motion'
+  ],
+  'Marketing & Growth': [
+    'marketing','pemasaran','seo','sem','branding','brand','campaign',
+    'content','konten','social','media','digital','ads','iklan','promosi',
+    'growth','market','research'
+  ],
+  'Sales & Business Development': [
+    'sales','penjualan','b2b','b2c','telemarketing','market','research','account',
+    'executive','business','development','bd'
+  ],
+  'Finance & Accounting': [
     'finance','akuntansi','akuntan','keuangan','pajak','laporan','audit',
     'tax','treasury','budgeting','reconcile','rekonsiliasi','pembukuan',
     'ledger','payroll','invoice','tagihan','ekonomi','perbankan','bank',
     'teller','accounting','accountant'
   ],
-  'Marketing': [
-    'marketing','pemasaran','seo','sem','branding','brand','campaign',
-    'content','konten','social','media','digital','ads','iklan','promosi',
-    'sales','penjualan','b2b','b2c','telemarketing','market','research'
+  'Human Resources': [
+    'hr','human','resource','recruiter','talent','payroll','recruitment','people'
   ],
-  'Operations': [ // Menggabungkan Operasional & Admin Umum
+  'Operations & Supply Chain': [
     'admin','administrasi','arsip','data','entry','sekretaris','operasional',
     'operation','supply','chain','logistik','warehouse','gudang','purchasing',
     'pengadaan','inventaris','inventory','excel','word','office','dokumen'
   ],
-  'Data': [
-    'data','analyst','scientist','machine','learning','ai','model','statistik',
-    'statistics','python','pandas','numpy','sql','tableau','powerbi',
-    'dashboard','etl','big','query','predictive'
-  ],
-  'Design': [
-    'design','desain','ui','ux','graphic','grafis','illustrator','photoshop',
-    'figma','sketch','coreldraw','visual','art','animator','video','editor'
-  ],
-  'Hospitality': [
-    'waiter','waitress','barista','crew','store','fnb','food','beverage',
-    'cafe','restaurant','hospitality','kitchen','cook','chef','restoran',
-    'kasir','cashier','pelayan','pramusaji'
+  'Education & Others': [
+    'teacher','tutor','education','curriculum','school','lecturer','training'
   ]
 };
 

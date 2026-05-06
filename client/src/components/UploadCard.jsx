@@ -54,9 +54,9 @@ const UploadCard = ({ onAnalyze }) => {
     formData.append('cv', file);
 
     try {
-      // Direct call to running backend port 5000
-      // In production/setup, we should use a proxy or env var
-      const response = await axios.post('http://localhost:5000/api/jobs/recommend', formData, {
+      // Direct call to running backend
+      // On Vercel, we use relative path
+      const response = await axios.post('/api/jobs/recommend', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
