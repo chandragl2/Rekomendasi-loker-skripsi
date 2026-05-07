@@ -5,6 +5,7 @@ const path = require('path');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const jobRoutes = require('./routes/jobRoutes');
+const candidateRoutes = require('./routes/candidateRoutes');
 const errorHandler = require('./middleware/errorHandler');
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/jobs', jobRoutes);
+app.use('/api/candidates', candidateRoutes);
 
 // ─── Scraper Automation Agent ──────────────────────────────────────────────────
 // Runs in the background every 10 minutes. First execution is delayed 30s after

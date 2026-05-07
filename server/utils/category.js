@@ -55,6 +55,12 @@ const CATEGORY_KEYWORDS = {
   ],
   'Education & Others': [
     'teacher','tutor','education','curriculum','school','lecturer','training'
+  ],
+  'Healthcare & Medical': [
+    'kesehatan','medis','dokter','perawat','bidan','apoteker','farmasi','klinik',
+    'rumah','sakit','gizi','nutrisi','laboratorium','pasien','healthcare',
+    'medical','doctor','nurse','pharmacist','pharmacy','clinic','hospital',
+    'nutritionist','physiotherapy','radiologi','apotek','psikolog','terapis'
   ]
 };
 

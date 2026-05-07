@@ -95,7 +95,7 @@ const extractQualifications = (description) => {
     'kandidat', 'harus memiliki', 'wajib', 'mampu', 'kemampuan'
   ];
 
-  const sentences = description.split(/[.!?\n]+/).map(s => s.trim()).filter(Boolean);
+  const sentences = description.split(/(?<=[.!?])\s+|\n+/).map(s => s.trim()).filter(Boolean);
   const qualifications = sentences.filter(sentence => {
     const lower = sentence.toLowerCase();
     return qualKeywords.some(kw => lower.includes(kw));
@@ -166,6 +166,7 @@ const cleanJob = (rawJob) => {
   else if (/ui|ux|graphic|visual|illustrat|motion|video|creative|design/.test(t)) category = 'Design & Creative';
   else if (/operation|logistic|supply chain|warehouse|procurement|purchasing/.test(t)) category = 'Operations & Supply Chain';
   else if (/teacher|tutor|education|school|lecturer|training/.test(t)) category = 'Education & Others';
+  else if (/\b(dokter|perawat|bidan|apoteker|farmasi|klinik|rs|rumah sakit|gizi|nutrisi|doctor|nurse|pharmacist|pharmacy|clinic|hospital|psikolog|psycholog|dentist|medis|medical)\b/i.test(t)) category = 'Healthcare & Medical';
   else {
     // Priority 2: Fallback to full text if title doesn't yield a match
     const textToCategorize = (title + ' ' + description + ' ' + (skills || []).join(' ')).toLowerCase();
@@ -187,6 +188,8 @@ const cleanJob = (rawJob) => {
       category = 'Human Resources';
     else if (/operation|logistic|supply chain|warehouse|procurement|purchasing/.test(textToCategorize)) 
       category = 'Operations & Supply Chain';
+      else if (/\b(dokter|perawat|bidan|apoteker|farmasi|klinik|rs|rumah sakit|gizi|nutrisi|doctor|nurse|pharmacist|pharmacy|clinic|hospital|psikolog|psycholog|dentist|medis|medical)\b/i.test(textToCategorize))
+        category = 'Healthcare & Medical';
     else 
       category = 'Education & Others';
   }

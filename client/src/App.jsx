@@ -6,6 +6,7 @@ import Jobs from "./pages/Jobs";
 import Detail from "./pages/Detail";
 import About from "./pages/About";
 import AdminDashboard from "./pages/AdminDashboard";
+import FindCandidates from "./pages/FindCandidates";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/jobs" element={<Jobs />} />
+        <Route path="/find-candidates" element={<FindCandidates />} />
         <Route path="/detail/:id" element={<Detail />} />
         <Route path="/about" element={<About />} />
         <Route path="*" element={<Home />} />

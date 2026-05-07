@@ -20,7 +20,8 @@ const CATEGORIES = [
   'Finance & Accounting', 
   'Human Resources', 
   'Operations & Supply Chain', 
-  'Education & Others'
+  'Education & Others',
+  'Healthcare & Medical'
 ];
 
 const JOBS_PER_PAGE = 12;

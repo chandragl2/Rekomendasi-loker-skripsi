@@ -90,3 +90,87 @@
 {"timestamp":"2026-05-06T14:48:42.085Z","level":"INFO","message":"=== Scraper Run Started [run_1778078922084] ===","maxJobs":30}
 {"timestamp":"2026-05-06T14:48:42.087Z","level":"WARN","message":"Rate limit: last run was 63s ago. Min interval: 300s.","waitSec":237}
 {"timestamp":"2026-05-06T14:48:42.087Z","level":"INFO","message":"Run skipped due to rate limit [run_1778078922084]"}
+{"timestamp":"2026-05-07T00:57:00.676Z","level":"INFO","message":"=== Scraper Run Started [run_1778115420674] ===","maxJobs":30}
+{"timestamp":"2026-05-07T00:57:00.682Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-07T00:57:00.682Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-07T00:58:14.421Z","level":"INFO","message":"=== Scraper Run Started [run_1778115494418] ===","maxJobs":30}
+{"timestamp":"2026-05-07T00:58:14.424Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778115494418]"}
+{"timestamp":"2026-05-07T00:59:15.396Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-07T00:59:15.577Z","level":"SUCCESS","message":"Saved to DB — inserted: 10, skipped (dups): 20"}
+{"timestamp":"2026-05-07T00:59:15.580Z","level":"INFO","message":"=== Scraper Run Ended [run_1778115420674] ===","status":"success","durationMs":134906,"jobsInserted":10}
+{"timestamp":"2026-05-07T01:06:30.676Z","level":"INFO","message":"=== Scraper Run Started [run_1778115990676] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:06:30.682Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-07T01:06:30.683Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-07T01:07:44.416Z","level":"INFO","message":"=== Scraper Run Started [run_1778116064416] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:07:44.420Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778116064416]"}
+{"timestamp":"2026-05-07T01:08:40.551Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-07T01:08:40.616Z","level":"SUCCESS","message":"Saved to DB — inserted: 0, skipped (dups): 30"}
+{"timestamp":"2026-05-07T01:08:40.619Z","level":"INFO","message":"=== Scraper Run Ended [run_1778115990676] ===","status":"success","durationMs":129943,"jobsInserted":0}
+{"timestamp":"2026-05-07T01:16:30.684Z","level":"INFO","message":"=== Scraper Run Started [run_1778116590683] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:16:30.688Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-07T01:16:30.688Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-07T01:17:44.417Z","level":"INFO","message":"=== Scraper Run Started [run_1778116664417] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:17:44.421Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778116664417]"}
+{"timestamp":"2026-05-07T01:18:38.599Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-07T01:18:38.664Z","level":"SUCCESS","message":"Saved to DB — inserted: 0, skipped (dups): 30"}
+{"timestamp":"2026-05-07T01:18:38.668Z","level":"INFO","message":"=== Scraper Run Ended [run_1778116590683] ===","status":"success","durationMs":127985,"jobsInserted":0}
+{"timestamp":"2026-05-07T01:26:30.685Z","level":"INFO","message":"=== Scraper Run Started [run_1778117190684] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:26:30.688Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-07T01:26:30.689Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-07T01:27:44.424Z","level":"INFO","message":"=== Scraper Run Started [run_1778117264424] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:27:44.427Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778117264424]"}
+{"timestamp":"2026-05-07T01:28:49.505Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-07T01:28:49.577Z","level":"SUCCESS","message":"Saved to DB — inserted: 1, skipped (dups): 29"}
+{"timestamp":"2026-05-07T01:28:49.580Z","level":"INFO","message":"=== Scraper Run Ended [run_1778117190684] ===","status":"success","durationMs":138896,"jobsInserted":1}
+{"timestamp":"2026-05-07T01:36:30.691Z","level":"INFO","message":"=== Scraper Run Started [run_1778117790691] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:36:30.695Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-07T01:36:30.695Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-07T01:37:44.425Z","level":"INFO","message":"=== Scraper Run Started [run_1778117864425] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:37:44.428Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778117864425]"}
+{"timestamp":"2026-05-07T01:38:46.664Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-07T01:38:46.729Z","level":"SUCCESS","message":"Saved to DB — inserted: 1, skipped (dups): 29"}
+{"timestamp":"2026-05-07T01:38:46.731Z","level":"INFO","message":"=== Scraper Run Ended [run_1778117790691] ===","status":"success","durationMs":136040,"jobsInserted":1}
+{"timestamp":"2026-05-07T01:45:19.770Z","level":"INFO","message":"=== Scraper Run Started [run_1778118319768] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:45:19.777Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-07T01:45:19.786Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-07T01:45:19.796Z","level":"INFO","message":"=== Scraper Run Started [run_1778118319789] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:45:19.806Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778118319789]"}
+{"timestamp":"2026-05-07T01:45:55.581Z","level":"INFO","message":"=== Scraper Run Started [run_1778118355579] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:45:55.584Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778118355579]"}
+{"timestamp":"2026-05-07T01:45:55.613Z","level":"INFO","message":"=== Scraper Run Started [run_1778118355610] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:45:55.617Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778118355610]"}
+{"timestamp":"2026-05-07T01:55:25.577Z","level":"INFO","message":"=== Scraper Run Started [run_1778118925577] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:55:25.579Z","level":"WARN","message":"Stale lock file detected — removing and proceeding","staleAgeMs":605804}
+{"timestamp":"2026-05-07T01:55:25.583Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-07T01:55:25.583Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-07T01:55:25.608Z","level":"INFO","message":"=== Scraper Run Started [run_1778118925608] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:55:25.612Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778118925608]"}
+{"timestamp":"2026-05-07T01:56:30.860Z","level":"INFO","message":"=== Scraper Run Started [run_1778118990858] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:56:30.863Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778118990858]"}
+{"timestamp":"2026-05-07T01:56:30.891Z","level":"INFO","message":"=== Scraper Run Started [run_1778118990889] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:56:30.895Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778118990889]"}
+{"timestamp":"2026-05-07T01:57:33.890Z","level":"INFO","message":"=== Scraper Run Started [run_1778119053887] ===","maxJobs":40}
+{"timestamp":"2026-05-07T01:57:33.892Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778119053887]"}
+{"timestamp":"2026-05-07T01:57:49.210Z","level":"INFO","message":"=== Scraper Run Started [run_1778119069209] ===","maxJobs":40}
+{"timestamp":"2026-05-07T01:57:49.213Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-07T01:57:49.214Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-07T01:57:59.002Z","level":"INFO","message":"=== Scraper Run Started [run_1778119079000] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:57:59.002Z","level":"INFO","message":"=== Scraper Run Started [run_1778119079000] ===","maxJobs":30}
+{"timestamp":"2026-05-07T01:57:59.005Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778119079000]"}
+{"timestamp":"2026-05-07T01:57:59.005Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778119079000]"}
+{"timestamp":"2026-05-07T02:00:01.552Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-07T02:00:01.774Z","level":"SUCCESS","message":"Saved to DB — inserted: 6, skipped (dups): 24"}
+{"timestamp":"2026-05-07T02:00:01.777Z","level":"INFO","message":"=== Scraper Run Ended [run_1778119069209] ===","status":"success","durationMs":132568,"jobsInserted":6}
+{"timestamp":"2026-05-07T02:06:03.284Z","level":"INFO","message":"=== Scraper Run Started [run_1778119563281] ===","maxJobs":30}
+{"timestamp":"2026-05-07T02:06:03.288Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-07T02:06:03.289Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-07T02:06:03.379Z","level":"INFO","message":"=== Scraper Run Started [run_1778119563376] ===","maxJobs":30}
+{"timestamp":"2026-05-07T02:06:03.383Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778119563376]"}
+{"timestamp":"2026-05-07T02:07:24.281Z","level":"INFO","message":"=== Scraper Run Started [run_1778119644281] ===","maxJobs":30}
+{"timestamp":"2026-05-07T02:07:24.284Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778119644281]"}
+{"timestamp":"2026-05-07T02:07:24.283Z","level":"INFO","message":"=== Scraper Run Started [run_1778119644280] ===","maxJobs":30}
+{"timestamp":"2026-05-07T02:07:24.287Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778119644280]"}
+{"timestamp":"2026-05-07T02:09:41.577Z","level":"INFO","message":"=== Scraper Run Started [run_1778119781574] ===","maxJobs":30}
+{"timestamp":"2026-05-07T02:09:41.577Z","level":"INFO","message":"=== Scraper Run Started [run_1778119781575] ===","maxJobs":30}
+{"timestamp":"2026-05-07T02:09:41.580Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778119781574]"}
+{"timestamp":"2026-05-07T02:09:41.580Z","level":"WARN","message":"Run skipped — another scraper instance is running [run_1778119781575]"}
