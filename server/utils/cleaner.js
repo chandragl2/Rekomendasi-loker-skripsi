@@ -16,6 +16,8 @@ const NOISE_WORDS = new Set([
   'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had'
 ]);
 
+const { detectCategoryWithWeight } = require('./category');
+
 // ─── Kalimat berulang yang sering muncul di data scraping ───
 const REDUNDANT_PATTERNS = [
   /skill yang dibutuhkan\s*[:：]?\s*/gi,
@@ -149,50 +151,11 @@ const cleanJob = (rawJob) => {
     : extractQualifications(description);
 
   // 8. Tetapkan kategori berdasarkan Title, Deskripsi, dan Skills
-  let category = rawJob.category;
-  
-  // Re-categorize everything to ensure consistency with the new simplified categories
-  const textToCategorize = (title + ' ' + description + ' ' + (skills || []).join(' ')).toLowerCase();
-
-  // Priority 1: Match by Title (Highly accurate)
-  const t = title.toLowerCase();
-  if (/\bhr\b|human resource|recruiter|talent|people/.test(t)) category = 'Human Resources';
-  else if (/marketing|brand|seo|sem|content|social media|digital marketing|growth|ads/.test(t)) category = 'Marketing & Growth';
-  else if (/sales|account executive|business development|bd manager/.test(t)) category = 'Sales & Business Development';
-  else if (/finance|accounting|tax|audit|treasury|credit|risk|banking|akuntan/.test(t)) category = 'Finance & Accounting';
-  else if (/engineer|developer|programmer|software|backend|frontend|fullstack|devops|mobile|cloud|cyber|network|system admin|it support/.test(t)) category = 'Engineering & IT';
-  else if (/data scientist|data engineer|data analyst|machine learning|\bai\b|nlp|deep learning|big data/.test(t)) category = 'Data & AI';
-  else if (/product manager|product owner|scrum master|agile|project manager/.test(t)) category = 'Product & Project';
-  else if (/ui|ux|graphic|visual|illustrat|motion|video|creative|design/.test(t)) category = 'Design & Creative';
-  else if (/operation|logistic|supply chain|warehouse|procurement|purchasing/.test(t)) category = 'Operations & Supply Chain';
-  else if (/teacher|tutor|education|school|lecturer|training/.test(t)) category = 'Education & Others';
-  else if (/\b(dokter|perawat|bidan|apoteker|farmasi|klinik|rs|rumah sakit|gizi|nutrisi|doctor|nurse|pharmacist|pharmacy|clinic|hospital|psikolog|psycholog|dentist|medis|medical)\b/i.test(t)) category = 'Healthcare & Medical';
-  else {
-    // Priority 2: Fallback to full text if title doesn't yield a match
-    const textToCategorize = (title + ' ' + description + ' ' + (skills || []).join(' ')).toLowerCase();
-    if (/engineer|developer|programmer|software|backend|frontend|fullstack|devops|mobile|cloud|cyber|network|system admin|it support/.test(textToCategorize)) 
-      category = 'Engineering & IT';
-    else if (/data scientist|data engineer|data analyst|machine learning|\bai\b|nlp|deep learning|big data/.test(textToCategorize)) 
-      category = 'Data & AI';
-    else if (/product manager|product owner|scrum master|agile|project manager/.test(textToCategorize)) 
-      category = 'Product & Project';
-    else if (/ui|ux|graphic|visual|illustrat|motion|video|creative|design/.test(textToCategorize)) 
-      category = 'Design & Creative';
-    else if (/marketing|brand|seo|sem|content|social media|digital marketing|growth|ads/.test(textToCategorize)) 
-      category = 'Marketing & Growth';
-    else if (/sales|account executive|business development|bd manager/.test(textToCategorize)) 
-      category = 'Sales & Business Development';
-    else if (/finance|accounting|tax|audit|treasury|credit|risk|banking|akuntan/.test(textToCategorize)) 
-      category = 'Finance & Accounting';
-    else if (/\bhr\b|human resource|recruiter|talent acquisition|people ops/.test(textToCategorize)) 
-      category = 'Human Resources';
-    else if (/operation|logistic|supply chain|warehouse|procurement|purchasing/.test(textToCategorize)) 
-      category = 'Operations & Supply Chain';
-      else if (/\b(dokter|perawat|bidan|apoteker|farmasi|klinik|rs|rumah sakit|gizi|nutrisi|doctor|nurse|pharmacist|pharmacy|clinic|hospital|psikolog|psycholog|dentist|medis|medical)\b/i.test(textToCategorize))
-        category = 'Healthcare & Medical';
-    else 
-      category = 'Education & Others';
-  }
+  // Gunakan fungsi cerdas dengan pembobotan x5 untuk judul
+  let category = detectCategoryWithWeight(
+    title,
+    `${description} ${(skills || []).join(' ')}`
+  );
   const source = rawJob.source || 'Seed';
 
   // Preserve URL for deduplication (scraper uses jobUrl, model uses url)

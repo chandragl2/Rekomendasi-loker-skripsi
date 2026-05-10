@@ -14,7 +14,7 @@
 'use strict';
 
 const puppeteer = require('puppeteer');
-const { CATEGORY_KEYWORDS } = require('../utils/category');
+const { CATEGORY_KEYWORDS, detectCategoryWithWeight } = require('../utils/category');
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -36,30 +36,7 @@ const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + mi
 
 const randomAgent = () => USER_AGENTS[randomInt(0, USER_AGENTS.length - 1)];
 
-/**
- * Detect category from a combined text blob using CATEGORY_KEYWORDS
- */
-const detectCategoryFromText = (text = '') => {
-  const lower = text.toLowerCase();
-  const scores = {};
-  Object.keys(CATEGORY_KEYWORDS).forEach((cat) => (scores[cat] = 0));
-
-  Object.entries(CATEGORY_KEYWORDS).forEach(([cat, keywords]) => {
-    keywords.forEach((kw) => {
-      if (lower.includes(kw)) scores[cat] += 1;
-    });
-  });
-
-  let maxScore = -1;
-  let topCategory = 'Lainnya';
-  Object.entries(scores).forEach(([cat, score]) => {
-    if (score > maxScore && score > 0) {
-      maxScore = score;
-      topCategory = cat;
-    }
-  });
-  return topCategory;
-};
+// detectCategoryFromText telah dihapus dan digantikan oleh detectCategoryWithWeight dari utils/category.js
 
 /**
  * Launch Puppeteer with stealth-like settings
@@ -236,8 +213,9 @@ const scrapeJobDetail = async (page, url) => {
 
     if (!data.title || !data.company) return null;
 
-    const category = detectCategoryFromText(
-      `${data.title} ${data.description} ${data.skills.join(' ')}`
+    const category = detectCategoryWithWeight(
+      data.title,
+      `${data.description} ${data.skills.join(' ')}`
     );
 
     return {
