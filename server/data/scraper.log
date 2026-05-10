@@ -214,3 +214,6 @@
 {"timestamp":"2026-05-08T12:17:27.248Z","level":"INFO","message":"=== Scraper Run Started [run_1778242647247] ===","maxJobs":30}
 {"timestamp":"2026-05-08T12:17:27.252Z","level":"INFO","message":"Lock acquired — starting scrape..."}
 {"timestamp":"2026-05-08T12:17:27.253Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-08T12:19:42.303Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-08T12:19:42.366Z","level":"SUCCESS","message":"Saved to DB — inserted: 0, skipped (dups): 30"}
+{"timestamp":"2026-05-08T12:19:42.369Z","level":"INFO","message":"=== Scraper Run Ended [run_1778242647247] ===","status":"success","durationMs":135121,"jobsInserted":0}
