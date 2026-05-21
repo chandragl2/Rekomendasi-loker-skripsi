@@ -26,24 +26,37 @@ const Dashboard = () => {
 
 
 
-  // Scrape REALTIME dari Glints.com
-  const handleScrapeRealtime = async () => {
+  // Sync Data dari MongoDB (Karena scraping sudah ditangani oleh Python)
+  const handleSyncData = async () => {
     setScraping(true);
     setScrapeStats(null);
     try {
-      showToast('success', '🔄 Membuka halaman detail tiap job dari Glints... (1-3 menit)');
-      const res = await axios.post('/api/jobs/scrape-realtime', {
-        maxJobs: 40  // Ditingkatkan agar meraup puluhan lowongan tambahan
-      }, { timeout: 300000 }); // 5 menit timeout
+      showToast('success', '🔄 Menarik data terbaru dari MongoDB Atlas...');
+      
+      const res = await axios.get('/api/jobs/admin/stats');
+      const stats = res.data;
+      
+      const categoryCounts = {};
+      if (stats.categoryData) {
+        stats.categoryData.forEach(c => {
+          categoryCounts[c.name] = c.value;
+        });
+      }
 
-      const { stats } = res.data;
-      setScrapeStats(stats);
+      setScrapeStats({
+        scrapedFromGlints: stats.totalJobs, 
+        seedJobs: 0,
+        totalJobs: stats.totalJobs,
+        categories: categoryCounts,
+        scrapedAt: stats.lastScrape || new Date().toISOString()
+      });
+
       showToast('success',
-        `✅ Berhasil! ${stats.scrapedFromGlints} lowongan baru dari Glints + ${stats.seedJobs} seed = ${stats.totalJobs} total.`
+        `✅ Sync Berhasil! Menemukan ${stats.totalJobs} lowongan di database.`
       );
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
-      showToast('error', '❌ Scraping gagal: ' + msg);
+      showToast('error', '❌ Sync gagal: ' + msg);
     } finally {
       setScraping(false);
     }
@@ -103,18 +116,18 @@ const Dashboard = () => {
             {/* Tombol Admin */}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <button
-                onClick={handleScrapeRealtime}
+                onClick={handleSyncData}
                 disabled={scraping || analyzing}
                 className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white text-sm md:text-base font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
               >
                 {scraping
-                  ? <><Loader2 className="h-5 w-5 animate-spin" /> Scraping Data...</>
-                  : <><Globe className="h-5 w-5" /> Scrape Realtime dari Glints</>
+                  ? <><Loader2 className="h-5 w-5 animate-spin" /> Syncing Data...</>
+                  : <><Database className="h-5 w-5" /> Sync Data</>
                 }
               </button>
             </div>
 
-            {/* Progress indicator saat scraping */}
+            {/* Progress indicator saat syncing */}
             {scraping && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -125,10 +138,10 @@ const Dashboard = () => {
                   <div className="bg-indigo-600 p-1.5 rounded-lg">
                     <RefreshCw className="h-4 w-4 text-white animate-spin" />
                   </div>
-                  <span className="font-bold">Proses Scraping Sedang Berjalan</span>
+                  <span className="font-bold">Sync Data Sedang Berjalan</span>
                 </div>
                 <p className="text-xs text-indigo-500 leading-relaxed text-left">
-                  Kami sedang membuka listing di Glints untuk mengambil detail pekerjaan. Proses ini memerlukan waktu 1-3 menit.
+                  Kami sedang mengambil data lowongan pekerjaan terbaru yang telah disinkronisasikan oleh Python service dari MongoDB Atlas.
                 </p>
               </motion.div>
             )}
@@ -156,18 +169,14 @@ const Dashboard = () => {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                     <div className="bg-indigo-50/50 rounded-2xl p-4 text-center border border-indigo-50">
-                      <div className="text-2xl md:text-3xl font-black text-indigo-700">{scrapeStats.scrapedFromGlints}</div>
-                      <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider mt-1">Glints Jobs</div>
-                    </div>
-                    <div className="bg-blue-50/50 rounded-2xl p-4 text-center border border-blue-50">
-                      <div className="text-2xl md:text-3xl font-black text-blue-700">{scrapeStats.seedJobs}</div>
-                      <div className="text-xs font-bold text-blue-400 uppercase tracking-wider mt-1">Seed Data</div>
+                      <div className="text-2xl md:text-3xl font-black text-indigo-700">{scrapeStats.totalJobs}</div>
+                      <div className="text-xs font-bold text-indigo-400 uppercase tracking-wider mt-1">Total Database</div>
                     </div>
                     <div className="bg-green-50/50 rounded-2xl p-4 text-center border border-green-50">
-                      <div className="text-2xl md:text-3xl font-black text-green-700">{scrapeStats.totalJobs}</div>
-                      <div className="text-xs font-bold text-green-400 uppercase tracking-wider mt-1">Total Database</div>
+                      <div className="text-2xl md:text-3xl font-black text-green-700">{Object.keys(scrapeStats.categories || {}).length}</div>
+                      <div className="text-xs font-bold text-green-400 uppercase tracking-wider mt-1">Kategori Tersedia</div>
                     </div>
                   </div>
 

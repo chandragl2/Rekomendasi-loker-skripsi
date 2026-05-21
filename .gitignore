@@ -1,1 +1,53 @@
-node_modules
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+client/dist/
+server/dist/
+build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+server/data/*.log
+server/scripts/*.log
+server/scripts/*-output.txt
+
+# Runtime data / generated exports
+server/uploads/
+server/tmp/
+server/temp/
+server/data/.scraper_lastrun
+server/data/*.csv
+
+# Test and coverage output
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.parcel-cache/
+.vite/
+.eslintcache
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+
+# Vercel
+.vercel/

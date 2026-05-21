@@ -6,7 +6,7 @@ import {
   Tag, 
   CheckCircle2, 
   TrendingUp, 
-  Play, 
+  RefreshCw, 
   Loader2 
 } from "lucide-react";
 import { 
@@ -18,7 +18,7 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 
-const Dashboard = ({ onRunScraper, stats, loading, scraping }) => {
+const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
   const dashboardStats = [
     {
       label: "Total Lowongan",
@@ -59,17 +59,17 @@ const Dashboard = ({ onRunScraper, stats, loading, scraping }) => {
           <p className="text-slate-500 mt-1 font-medium">Monitoring data lowongan pekerjaan secara realtime.</p>
         </div>
         <button
-          onClick={onRunScraper}
-          disabled={scraping}
+          onClick={onSyncData}
+          disabled={syncing}
           className={`relative overflow-hidden group flex items-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-2xl transition-all transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed`}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-violet-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          {scraping ? (
+          {syncing ? (
             <Loader2 className="w-5 h-5 animate-spin relative z-10" />
           ) : (
-            <Play className="w-5 h-5 relative z-10" />
+            <RefreshCw className="w-5 h-5 relative z-10" />
           )}
-          <span className="relative z-10">{scraping ? "Scraping Data..." : "Jalankan Scraper"}</span>
+          <span className="relative z-10">{syncing ? "Sinkronisasi Data..." : "Sync Data"}</span>
         </button>
       </div>
 
@@ -219,7 +219,7 @@ const Dashboard = ({ onRunScraper, stats, loading, scraping }) => {
             </div>
             <div>
               <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Interval</p>
-              <p className="text-lg font-black text-slate-900">Setiap 10 Menit</p>
+              <p className="text-lg font-black text-slate-900">Setiap 30 Menit</p>
             </div>
           </div>
           <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex items-center gap-4">

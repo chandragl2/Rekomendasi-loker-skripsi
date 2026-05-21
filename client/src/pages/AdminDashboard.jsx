@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion"; // eslint-disable-line no-unused-vars
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 
 // Import modular components
@@ -17,7 +17,7 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [scraping, setScraping] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [notification, setNotification] = useState(null);
   const [stats, setStats] = useState({
     totalJobs: 0,
@@ -49,21 +49,20 @@ const AdminDashboard = () => {
     setTimeout(() => setNotification(null), 5000);
   };
 
-  const handleRunScraper = async () => {
+  const handleSyncData = async () => {
     try {
-      setScraping(true);
-      showNotification("info", "Memulai proses scraping realtime...");
-      const response = await axios.post("/api/jobs/scrape-realtime", { maxJobs: 40 });
+      setSyncing(true);
+      showNotification("info", "Mensinkronkan data dengan database MongoDB Atlas...");
       
-      if (response.data.success) {
-        showNotification("success", `Berhasil! Menambahkan ${response.data.stats.scrapedFromGlints} lowongan baru.`);
-        fetchStats();
-      }
+      // Instead of triggering backend scraping, we simply refresh the data
+      await fetchStats();
+      
+      showNotification("success", "Sinkronisasi berhasil! Data terbaru telah dimuat.");
     } catch (err) {
-      console.error("Scraper failed:", err);
-      showNotification("error", "Proses scraping gagal dijalankan.");
+      console.error("Sync failed:", err);
+      showNotification("error", "Proses sinkronisasi gagal dijalankan.");
     } finally {
-      setScraping(false);
+      setSyncing(false);
     }
   };
 
@@ -75,8 +74,8 @@ const AdminDashboard = () => {
           <Dashboard 
             stats={stats} 
             loading={loading} 
-            scraping={scraping} 
-            onRunScraper={handleRunScraper} 
+            syncing={syncing} 
+            onSyncData={handleSyncData} 
           />
         );
       case "jobs":
@@ -92,7 +91,7 @@ const AdminDashboard = () => {
       case "settings":
         return <Settings />;
       default:
-        return <Dashboard stats={stats} loading={loading} scraping={scraping} onRunScraper={handleRunScraper} />;
+        return <Dashboard stats={stats} loading={loading} syncing={syncing} onSyncData={handleSyncData} />;
     }
   };
 

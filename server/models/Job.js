@@ -55,8 +55,8 @@ const JobSchema = new mongoose.Schema({
   },
   // Store the TF-IDF vector for this job
   tfidfVector: {
-    type: Map,
-    of: Number,
+    type: mongoose.Schema.Types.Mixed,
+    default: [],
     select: false, // Don't return by default
   },
   createdAt: {
