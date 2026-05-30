@@ -62,6 +62,12 @@ const JobSchema = new mongoose.Schema({
     sparse: true,   // allows multiple null/undefined values while still uniquely indexing non-null URLs
     unique: true,
   },
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company',
+    default: null,
+    index: true,
+  },
   postedAt: {
     type: Date,
     default: Date.now,
@@ -166,6 +172,7 @@ JobSchema.statics.expireOldJobs = function (referenceDate = new Date()) {
 JobSchema.index({ title: 'text', description: 'text', skills: 'text' });
 JobSchema.index({ status: 1, expiredAt: 1 });
 JobSchema.index({ createdByType: 1 });
+JobSchema.index({ companyId: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Job', JobSchema);
 
