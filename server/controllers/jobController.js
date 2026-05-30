@@ -6,7 +6,7 @@ const calculateCosineSimilarity = require('../utils/cosineSimilarity');
 const calculateFinalScore = require('../utils/scoreNormalizer');
 const { detectCategory } = require('../utils/category');
 const pdfParse = require('pdf-parse');
-const { cleanJobs } = require('../utils/cleaner');
+const { cleanJob, cleanJobs } = require('../utils/cleaner');
 const fs = require('fs');
 const path = require('path');
 
@@ -66,7 +66,9 @@ const buildAndSave = async (jobData) => {
 const getAllJobs = async (req, res) => {
   try {
     const { category, search, page = 1, limit = 20 } = req.query;
-    const query = {};
+    await Job.expireOldJobs();
+
+    const query = Job.activeFilter();
 
     if (category && category !== 'Semua') query.category = category;
     if (search) query.$or = [
@@ -90,6 +92,130 @@ const getAllJobs = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server Error', error: err.message });
+  }
+};
+
+// @desc    Create a company-submitted job
+// @route   POST /api/jobs
+const createJob = async (req, res) => {
+  try {
+    const allowedDurations = [7, 14, 30, 60];
+    const requestedDuration = Number(req.body.durationDays);
+    const durationDays = allowedDurations.includes(requestedDuration) ? requestedDuration : 30;
+
+    const job = await Job.create({
+      title: req.body.title,
+      company: req.body.company,
+      location: req.body.location,
+      type: req.body.type,
+      category: req.body.category,
+      skills: req.body.skills,
+      qualifications: req.body.qualifications,
+      description: req.body.description,
+      source: req.body.source || 'Company',
+      postedAt: new Date(),
+      durationDays,
+      status: 'active',
+      createdByType: 'company',
+    });
+
+    res.status(201).json(job);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: 'Failed to create job', error: err.message });
+  }
+};
+
+// @desc    Ingest scraped jobs from an external scraper service
+// @route   POST /api/jobs/scraper-ingest
+const ingestScrapedJobs = async (req, res) => {
+  try {
+    const payload = Array.isArray(req.body.jobs) ? req.body.jobs : [req.body];
+    const scrapedAt = new Date();
+    const durationDays = 30;
+    const expiredAt = new Date(scrapedAt);
+    expiredAt.setDate(expiredAt.getDate() + durationDays);
+
+    let inserted = 0;
+    let updated = 0;
+    let skipped = 0;
+    const errors = [];
+
+    for (const rawJob of payload) {
+      const cleaned = cleanJob({
+        ...rawJob,
+        postedAt: scrapedAt,
+        durationDays,
+        expiredAt,
+        status: 'active',
+        createdByType: 'scraper',
+        source: rawJob.source || 'External Scraper',
+      });
+
+      if (!cleaned || !cleaned.title || !cleaned.company) {
+        skipped++;
+        errors.push({ title: rawJob.title, error: 'Invalid job payload' });
+        continue;
+      }
+
+      const lookup = {
+        $or: [
+          ...(cleaned.url ? [{ url: cleaned.url }] : []),
+          { title: cleaned.title, company: cleaned.company },
+        ],
+      };
+
+      const existing = await Job.findOne(lookup).lean();
+
+      if (existing) {
+        const isSameUrl = cleaned.url && existing.url === cleaned.url;
+        const isScraperJob = existing.createdByType === 'scraper' || isSameUrl;
+
+        if (!isScraperJob) {
+          skipped++;
+          continue;
+        }
+
+        await Job.updateOne(
+          { _id: existing._id },
+          {
+            $set: {
+              ...cleaned,
+              postedAt: scrapedAt,
+              durationDays,
+              expiredAt,
+              status: 'active',
+              createdByType: 'scraper',
+              updatedAt: scrapedAt,
+            },
+          }
+        );
+        updated++;
+        continue;
+      }
+
+      await Job.create({
+        ...cleaned,
+        postedAt: scrapedAt,
+        durationDays,
+        expiredAt,
+        status: 'active',
+        createdByType: 'scraper',
+      });
+      inserted++;
+    }
+
+    res.status(201).json({
+      message: 'Scraped jobs ingested',
+      total: payload.length,
+      inserted,
+      updated,
+      skipped,
+      errors,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to ingest scraped jobs', error: err.message });
   }
 };
 
@@ -175,8 +301,9 @@ const recommendJobs = async (req, res) => {
       .join(', ');
     console.log(`[CV TERMS] Top 10 TF-IDF: ${topCVTerms}`);
 
-    // 6. Fetch semua jobs dari DB
-    const allJobs = await Job.find({}).select('+tfidfVector +processedText');
+    // 6. Tandai data expired, lalu fetch hanya jobs aktif yang belum expired
+    await Job.expireOldJobs();
+    const allJobs = await Job.find(Job.activeFilter()).select('+tfidfVector +processedText');
     
     console.log(`[INFO] Calculating similarity for CV: ${req.file.originalname} against ${allJobs.length} jobs...`);
 
@@ -249,6 +376,11 @@ const recommendJobs = async (req, res) => {
       qualifications: job.qualifications,
       skills: job.skills,
       source: job.source,
+      postedAt: job.postedAt,
+      expiredAt: job.expiredAt,
+      durationDays: job.durationDays,
+      status: job.status,
+      createdByType: job.createdByType,
       similarityScore: calculateCosineSimilarity(cvVector, job.tfidfVector)
     }));
 
@@ -376,6 +508,8 @@ const deleteJob = async (req, res) => {
 
 module.exports = {
   getAllJobs,
+  createJob,
+  ingestScrapedJobs,
   recommendJobs,
   getJobById,
   getAdminStats,

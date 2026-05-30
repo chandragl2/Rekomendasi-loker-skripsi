@@ -38,6 +38,14 @@ const CONFIG = {
   logFile: path.join(__dirname, '../data/scraper.log'),
 };
 
+const DEFAULT_DURATION_DAYS = 30;
+
+const addDays = (date, days) => {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};
+
 // ─── Logger ───────────────────────────────────────────────────────────────────
 
 const log = (level, message, extra = {}) => {
@@ -133,6 +141,20 @@ const saveJobs = async (jobs) => {
 
   for (const job of jobs) {
     try {
+      const scrapedAt = new Date();
+      const durationDays = Number(job.durationDays) > 0
+        ? Number(job.durationDays)
+        : DEFAULT_DURATION_DAYS;
+      const postedAt = job.postedAt ? new Date(job.postedAt) : scrapedAt;
+      const scraperLifetime = {
+        postedAt,
+        durationDays,
+        expiredAt: job.expiredAt ? new Date(job.expiredAt) : addDays(postedAt, durationDays),
+        status: 'active',
+        createdByType: 'scraper',
+        updatedAt: scrapedAt,
+      };
+
       // Dedup check: same URL (most reliable) OR same title+company combo
       const existing = await Job.findOne({
         $or: [
@@ -142,12 +164,38 @@ const saveJobs = async (jobs) => {
       }).lean();
 
       if (existing) {
+        const isSameUrl = job.url && existing.url === job.url;
+        const isScraperJob = existing.createdByType === 'scraper' || isSameUrl;
+
+        if (isScraperJob) {
+          await Job.updateOne(
+            { _id: existing._id },
+            {
+              $set: {
+                title: job.title || existing.title,
+                company: job.company || existing.company,
+                location: job.location || existing.location,
+                type: job.type || existing.type,
+                category: job.category || existing.category,
+                description: job.description || existing.description,
+                qualifications: Array.isArray(job.qualifications) ? job.qualifications : existing.qualifications,
+                skills: Array.isArray(job.skills) ? job.skills : existing.skills,
+                source: job.source || existing.source || 'Glints',
+                ...(job.url ? { url: job.url } : {}),
+                ...scraperLifetime,
+              },
+            }
+          );
+        }
         skipped++;
         continue;
       }
 
       // Job model now has a url field — save it directly
-      await Job.create(job);
+      await Job.create({
+        ...job,
+        ...scraperLifetime,
+      });
       inserted++;
     } catch (err) {
       log('ERROR', `Failed to save job "${job.title}"`, { error: err.message });

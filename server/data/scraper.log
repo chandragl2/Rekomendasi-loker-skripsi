@@ -299,3 +299,85 @@
 {"timestamp":"2026-05-21T03:59:51.498Z","level":"INFO","message":"=== Scraper Run Started [run_1779335991498] ===","maxJobs":30}
 {"timestamp":"2026-05-21T03:59:51.500Z","level":"INFO","message":"Lock acquired — starting scrape..."}
 {"timestamp":"2026-05-21T03:59:51.501Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-21T08:46:19.067Z","level":"INFO","message":"=== Scraper Run Started [run_1779353179066] ===","maxJobs":30}
+{"timestamp":"2026-05-21T08:46:19.072Z","level":"WARN","message":"Stale lock file detected — removing and proceeding","staleAgeMs":17187573}
+{"timestamp":"2026-05-21T08:46:19.075Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-21T08:46:19.075Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-21T08:46:20.246Z","level":"ERROR","message":"Scrape attempt 1 failed","error":"net::ERR_INTERNET_DISCONNECTED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T08:46:20.247Z","level":"WARN","message":"Retry attempt 1/2...","delayMs":15000}
+{"timestamp":"2026-05-21T08:46:35.260Z","level":"INFO","message":"Scraping Glints (attempt 2)..."}
+{"timestamp":"2026-05-21T08:46:36.484Z","level":"ERROR","message":"Scrape attempt 2 failed","error":"net::ERR_INTERNET_DISCONNECTED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T08:46:36.486Z","level":"WARN","message":"Retry attempt 2/2...","delayMs":15000}
+{"timestamp":"2026-05-21T08:46:51.496Z","level":"INFO","message":"Scraping Glints (attempt 3)..."}
+{"timestamp":"2026-05-21T08:46:52.803Z","level":"ERROR","message":"Scrape attempt 3 failed","error":"net::ERR_INTERNET_DISCONNECTED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T08:46:52.805Z","level":"ERROR","message":"All retry attempts exhausted. Giving up.","error":"net::ERR_INTERNET_DISCONNECTED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T08:46:52.808Z","level":"INFO","message":"=== Scraper Run Ended [run_1779353179066] ===","status":"failed","durationMs":33742,"jobsInserted":0}
+{"timestamp":"2026-05-21T08:51:02.147Z","level":"INFO","message":"=== Scraper Run Started [run_1779353462147] ===","maxJobs":30}
+{"timestamp":"2026-05-21T08:51:02.155Z","level":"WARN","message":"Rate limit: last run was 249s ago. Min interval: 300s.","waitSec":51}
+{"timestamp":"2026-05-21T08:51:02.157Z","level":"INFO","message":"Run skipped due to rate limit [run_1779353462147]"}
+{"timestamp":"2026-05-21T09:00:32.142Z","level":"INFO","message":"=== Scraper Run Started [run_1779354032142] ===","maxJobs":30}
+{"timestamp":"2026-05-21T09:00:32.146Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-21T09:00:32.146Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-21T09:02:50.830Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-21T09:02:50.985Z","level":"SUCCESS","message":"Saved to DB — inserted: 10, skipped (dups): 20"}
+{"timestamp":"2026-05-21T09:02:50.988Z","level":"INFO","message":"=== Scraper Run Ended [run_1779354032142] ===","status":"success","durationMs":138846,"jobsInserted":10}
+{"timestamp":"2026-05-21T09:41:46.879Z","level":"INFO","message":"=== Scraper Run Started [run_1779356506877] ===","maxJobs":30}
+{"timestamp":"2026-05-21T09:41:46.884Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-21T09:41:46.885Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-21T09:44:04.205Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-21T09:44:04.324Z","level":"SUCCESS","message":"Saved to DB — inserted: 2, skipped (dups): 28"}
+{"timestamp":"2026-05-21T09:44:04.327Z","level":"INFO","message":"=== Scraper Run Ended [run_1779356506877] ===","status":"success","durationMs":137450,"jobsInserted":2}
+{"timestamp":"2026-05-21T09:51:16.886Z","level":"INFO","message":"=== Scraper Run Started [run_1779357076885] ===","maxJobs":30}
+{"timestamp":"2026-05-21T09:51:16.890Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-21T09:51:16.890Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-21T09:53:42.138Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-21T09:53:42.212Z","level":"SUCCESS","message":"Saved to DB — inserted: 0, skipped (dups): 30"}
+{"timestamp":"2026-05-21T09:53:42.215Z","level":"INFO","message":"=== Scraper Run Ended [run_1779357076885] ===","status":"success","durationMs":145330,"jobsInserted":0}
+{"timestamp":"2026-05-21T10:01:16.901Z","level":"INFO","message":"=== Scraper Run Started [run_1779357676901] ===","maxJobs":30}
+{"timestamp":"2026-05-21T10:01:16.905Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-21T10:01:16.906Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-21T10:03:37.815Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-21T10:03:37.903Z","level":"SUCCESS","message":"Saved to DB — inserted: 2, skipped (dups): 28"}
+{"timestamp":"2026-05-21T10:03:37.907Z","level":"INFO","message":"=== Scraper Run Ended [run_1779357676901] ===","status":"success","durationMs":141006,"jobsInserted":2}
+{"timestamp":"2026-05-21T10:11:40.875Z","level":"INFO","message":"=== Scraper Run Started [run_1779358300875] ===","maxJobs":30}
+{"timestamp":"2026-05-21T10:11:40.932Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-21T10:11:40.956Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-21T10:14:05.934Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-21T10:14:06.002Z","level":"SUCCESS","message":"Saved to DB — inserted: 0, skipped (dups): 30"}
+{"timestamp":"2026-05-21T10:14:06.006Z","level":"INFO","message":"=== Scraper Run Ended [run_1779358300875] ===","status":"success","durationMs":145131,"jobsInserted":0}
+{"timestamp":"2026-05-21T10:23:58.347Z","level":"INFO","message":"=== Scraper Run Started [run_1779359038347] ===","maxJobs":30}
+{"timestamp":"2026-05-21T10:23:58.474Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-21T10:23:58.500Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-21T10:23:59.924Z","level":"ERROR","message":"Scrape attempt 1 failed","error":"net::ERR_NAME_NOT_RESOLVED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T10:23:59.925Z","level":"WARN","message":"Retry attempt 1/2...","delayMs":15000}
+{"timestamp":"2026-05-21T10:27:01.108Z","level":"INFO","message":"Scraping Glints (attempt 2)..."}
+{"timestamp":"2026-05-21T10:27:02.530Z","level":"ERROR","message":"Scrape attempt 2 failed","error":"net::ERR_INTERNET_DISCONNECTED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T10:27:02.531Z","level":"WARN","message":"Retry attempt 2/2...","delayMs":15000}
+{"timestamp":"2026-05-21T10:27:17.541Z","level":"INFO","message":"Scraping Glints (attempt 3)..."}
+{"timestamp":"2026-05-21T10:27:18.680Z","level":"ERROR","message":"Scrape attempt 3 failed","error":"net::ERR_INTERNET_DISCONNECTED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T10:27:18.681Z","level":"ERROR","message":"All retry attempts exhausted. Giving up.","error":"net::ERR_INTERNET_DISCONNECTED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T10:27:18.684Z","level":"INFO","message":"=== Scraper Run Ended [run_1779359038347] ===","status":"failed","durationMs":200337,"jobsInserted":0}
+{"timestamp":"2026-05-21T10:33:58.346Z","level":"INFO","message":"=== Scraper Run Started [run_1779359638346] ===","maxJobs":30}
+{"timestamp":"2026-05-21T10:33:58.349Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-21T10:33:58.350Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-21T10:33:59.585Z","level":"ERROR","message":"Scrape attempt 1 failed","error":"net::ERR_INTERNET_DISCONNECTED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T10:33:59.586Z","level":"WARN","message":"Retry attempt 1/2...","delayMs":15000}
+{"timestamp":"2026-05-21T10:34:14.599Z","level":"INFO","message":"Scraping Glints (attempt 2)..."}
+{"timestamp":"2026-05-21T10:34:15.860Z","level":"ERROR","message":"Scrape attempt 2 failed","error":"net::ERR_INTERNET_DISCONNECTED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T10:34:15.861Z","level":"WARN","message":"Retry attempt 2/2...","delayMs":15000}
+{"timestamp":"2026-05-21T10:34:30.874Z","level":"INFO","message":"Scraping Glints (attempt 3)..."}
+{"timestamp":"2026-05-21T10:34:32.080Z","level":"ERROR","message":"Scrape attempt 3 failed","error":"net::ERR_INTERNET_DISCONNECTED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T10:34:32.081Z","level":"ERROR","message":"All retry attempts exhausted. Giving up.","error":"net::ERR_INTERNET_DISCONNECTED at https://glints.com/id/lowongan-kerja"}
+{"timestamp":"2026-05-21T10:34:32.084Z","level":"INFO","message":"=== Scraper Run Ended [run_1779359638346] ===","status":"failed","durationMs":33738,"jobsInserted":0}
+{"timestamp":"2026-05-24T12:47:08.628Z","level":"INFO","message":"=== Scraper Run Started [run_1779626828626] ===","maxJobs":30}
+{"timestamp":"2026-05-24T12:47:08.632Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-24T12:47:08.633Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-24T12:49:39.594Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-24T12:49:39.904Z","level":"SUCCESS","message":"Saved to DB — inserted: 9, skipped (dups): 21"}
+{"timestamp":"2026-05-24T12:49:39.907Z","level":"INFO","message":"=== Scraper Run Ended [run_1779626828626] ===","status":"success","durationMs":151281,"jobsInserted":9}
+{"timestamp":"2026-05-24T12:57:12.836Z","level":"INFO","message":"=== Scraper Run Started [run_1779627432836] ===","maxJobs":30}
+{"timestamp":"2026-05-24T12:57:12.867Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-24T12:57:12.878Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-24T12:59:31.102Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-24T12:59:31.153Z","level":"SUCCESS","message":"Saved to DB — inserted: 0, skipped (dups): 30"}
+{"timestamp":"2026-05-24T12:59:31.155Z","level":"INFO","message":"=== Scraper Run Ended [run_1779627432836] ===","status":"success","durationMs":138319,"jobsInserted":0}

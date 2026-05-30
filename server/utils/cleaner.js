@@ -160,6 +160,12 @@ const cleanJob = (rawJob) => {
 
   // Preserve URL for deduplication (scraper uses jobUrl, model uses url)
   const url = rawJob.url || rawJob.jobUrl || undefined;
+  const isScrapedJob = Boolean(url) || source !== 'Seed';
+  const postedAt = rawJob.postedAt ? new Date(rawJob.postedAt) : new Date();
+  const durationDays = Number(rawJob.durationDays) > 0 ? Number(rawJob.durationDays) : 30;
+  const expiredAt = rawJob.expiredAt
+    ? new Date(rawJob.expiredAt)
+    : new Date(postedAt.getTime() + durationDays * 24 * 60 * 60 * 1000);
 
   const result = {
     title,
@@ -170,7 +176,12 @@ const cleanJob = (rawJob) => {
     description,
     qualifications,
     skills,
-    source
+    source,
+    postedAt,
+    durationDays,
+    expiredAt,
+    status: rawJob.status || 'active',
+    createdByType: rawJob.createdByType || (isScrapedJob ? 'scraper' : 'company'),
   };
 
   // Only set url if it exists (so sparse unique index works — undefined fields are ignored)

@@ -3,6 +3,8 @@ const router = express.Router();
 const upload = require('../middleware/upload');
 const { 
   getAllJobs, 
+  createJob,
+  ingestScrapedJobs,
   recommendJobs, 
   getJobById,
   getAdminStats,
@@ -11,6 +13,12 @@ const {
 
 // Browse semua lowongan (dengan filter & pagination)
 router.get('/all', getAllJobs);
+
+// Input lowongan dari perusahaan
+router.post('/', createJob);
+
+// Ingest lowongan dari scraper Python eksternal
+router.post('/scraper-ingest', ingestScrapedJobs);
 
 // Stats untuk Admin Dashboard
 router.get('/admin/stats', getAdminStats);
