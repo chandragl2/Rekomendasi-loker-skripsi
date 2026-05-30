@@ -381,3 +381,12 @@
 {"timestamp":"2026-05-24T12:59:31.102Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
 {"timestamp":"2026-05-24T12:59:31.153Z","level":"SUCCESS","message":"Saved to DB — inserted: 0, skipped (dups): 30"}
 {"timestamp":"2026-05-24T12:59:31.155Z","level":"INFO","message":"=== Scraper Run Ended [run_1779627432836] ===","status":"success","durationMs":138319,"jobsInserted":0}
+{"timestamp":"2026-05-29T13:31:05.045Z","level":"INFO","message":"=== Scraper Run Started [run_1780061465043] ===","maxJobs":30}
+{"timestamp":"2026-05-29T13:31:05.051Z","level":"INFO","message":"Lock acquired — starting scrape..."}
+{"timestamp":"2026-05-29T13:31:05.054Z","level":"INFO","message":"Scraping Glints (attempt 1)..."}
+{"timestamp":"2026-05-29T13:33:21.156Z","level":"INFO","message":"Scraped 30 jobs from Glints"}
+{"timestamp":"2026-05-29T13:33:21.214Z","level":"ERROR","message":"Failed to save job \"SALES GENERALIS BANK MANDIRI PENEMPATAN MEDAN\"","error":"next is not a function"}
+{"timestamp":"2026-05-29T13:33:21.293Z","level":"ERROR","message":"Failed to save job \"Head Baker & Pastry\"","error":"next is not a function"}
+{"timestamp":"2026-05-29T13:33:21.335Z","level":"ERROR","message":"Failed to save job \"Sales Staff\"","error":"next is not a function"}
+{"timestamp":"2026-05-29T13:33:21.341Z","level":"SUCCESS","message":"Saved to DB — inserted: 0, skipped (dups): 27"}
+{"timestamp":"2026-05-29T13:33:21.343Z","level":"INFO","message":"=== Scraper Run Ended [run_1780061465043] ===","status":"success","durationMs":136300,"jobsInserted":0}

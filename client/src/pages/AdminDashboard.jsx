@@ -21,6 +21,10 @@ const AdminDashboard = () => {
   const [notification, setNotification] = useState(null);
   const [stats, setStats] = useState({
     totalJobs: 0,
+    totalActive: 0,
+    totalExpired: 0,
+    totalScraperJobs: 0,
+    totalCompanyJobs: 0,
     categoryData: [],
     recentJobs: [],
     lastScrape: null,

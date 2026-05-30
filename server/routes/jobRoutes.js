@@ -3,7 +3,10 @@ const router = express.Router();
 const upload = require('../middleware/upload');
 const { 
   getAllJobs, 
+  getAdminJobs,
+  getAdminJobStats,
   createJob,
+  updateAdminJobStatus,
   ingestScrapedJobs,
   recommendJobs, 
   getJobById,
@@ -22,6 +25,11 @@ router.post('/scraper-ingest', ingestScrapedJobs);
 
 // Stats untuk Admin Dashboard
 router.get('/admin/stats', getAdminStats);
+
+// Data dan statistik lowongan khusus admin
+router.get('/admin/jobs', getAdminJobs);
+router.get('/admin/jobs/stats', getAdminJobStats);
+router.patch('/admin/jobs/:id/status', updateAdminJobStatus);
 
 // Route scraping lokal telah dihapus (DEPRECATED) karena diambil alih oleh Python Microservice
 

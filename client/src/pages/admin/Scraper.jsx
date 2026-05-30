@@ -1,36 +1,72 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { 
-  Zap, 
-  Play, 
-  Square, 
-  Clock, 
-  Database, 
-  ArrowUpRight,
+import {
+  Activity,
+  Briefcase,
+  Clock,
+  Database,
+  ExternalLink,
   Loader2,
+  RefreshCw,
+  Server,
+  UserRound,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
+const emptyStats = {
+  totalActive: 0,
+  totalExpired: 0,
+  totalScraperJobs: 0,
+  totalCompanyJobs: 0,
+  lastScraperUpdate: null,
+};
+
+const formatDateTime = (value) => {
+  if (!value) return "-";
+  return new Date(value).toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const MonitorCard = ({ label, value, icon: Icon, tone }) => (
+  <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/70">
+    <div className="flex items-start justify-between gap-4">
+      <div>
+        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{label}</p>
+        <p className="text-3xl font-black text-slate-900 mt-2">{value.toLocaleString()}</p>
+      </div>
+      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${tone}`}>
+        <Icon className="w-5 h-5" />
+      </div>
+    </div>
+  </div>
+);
+
 const Scraper = () => {
   const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState({
-    totalJobs: 0,
-    lastScrape: null,
-    scrapedFromGlints: 0
-  });
+  const [stats, setStats] = useState(emptyStats);
 
   const fetchStats = async () => {
     try {
+      setLoading(true);
       const response = await axios.get("/api/jobs/admin/stats");
       setStats({
-        totalJobs: response.data.totalJobs,
-        lastScrape: response.data.lastScrape,
-        scrapedFromGlints: response.data.totalJobs // Placeholder
+        totalActive: response.data.totalActive || 0,
+        totalExpired: response.data.totalExpired || 0,
+        totalScraperJobs: response.data.totalScraperJobs || 0,
+        totalCompanyJobs: response.data.totalCompanyJobs || 0,
+        lastScraperUpdate: response.data.lastScraperUpdate || null,
       });
     } catch (err) {
-      console.error(err);
+      console.error("Failed to fetch scraper monitoring stats:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,126 +74,170 @@ const Scraper = () => {
     fetchStats();
   }, []);
 
-  const handleRun = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.post("/api/jobs/scrape-realtime", { maxJobs: 40 });
-      if (res.data.success) {
-        alert(`Berhasil menarik ${res.data.stats.scrapedFromGlints} lowongan!`);
-        fetchStats();
-      }
-    } catch (err) {
-      alert("Scraping gagal.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const cards = [
+    {
+      label: "Total Scraper Jobs",
+      value: stats.totalScraperJobs,
+      icon: Database,
+      tone: "bg-blue-50 text-blue-600",
+    },
+    {
+      label: "Total Company Jobs",
+      value: stats.totalCompanyJobs,
+      icon: UserRound,
+      tone: "bg-violet-50 text-violet-600",
+    },
+    {
+      label: "Active Jobs",
+      value: stats.totalActive,
+      icon: CheckCircle2,
+      tone: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "Expired Jobs",
+      value: stats.totalExpired,
+      icon: AlertTriangle,
+      tone: "bg-rose-50 text-rose-600",
+    },
+  ];
 
   return (
     <div className="space-y-8">
-      {/* Header & Main Control */}
-      <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200/60 overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-        
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+      <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200/70 overflow-hidden relative">
+        <div className="absolute top-0 right-0 w-72 h-72 bg-blue-500/5 rounded-full -mr-36 -mt-36 blur-3xl"></div>
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                <Zap className="w-5 h-5 fill-current" />
+                <Activity className="w-5 h-5" />
               </div>
-              <h2 className="text-3xl font-black text-slate-900 tracking-tight">Scraper Control Center</h2>
+              <h2 className="text-3xl font-black text-slate-900 tracking-tight">Scraper Monitoring</h2>
             </div>
-            <p className="text-slate-500 font-medium">Monitoring dan jalankan penarikan data pekerjaan secara otomatis.</p>
+            <p className="text-slate-500 font-medium max-w-2xl">
+              Memantau aktivitas scraper eksternal dan sinkronisasi data lowongan pekerjaan.
+            </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleRun}
-              disabled={loading}
-              className="flex items-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-500/20 hover:bg-blue-700 hover:-translate-y-1 transition-all disabled:opacity-50"
-            >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Play className="w-5 h-5 fill-current" />}
-              Run Scraper Now
-            </button>
-            <button className="p-4 bg-slate-100 text-slate-400 rounded-2xl hover:bg-rose-50 hover:text-rose-500 transition-all cursor-not-allowed" title="Stop feature coming soon">
-              <Square className="w-5 h-5 fill-current" />
-            </button>
-          </div>
+          <button
+            onClick={fetchStats}
+            disabled={loading}
+            className="flex items-center justify-center gap-3 px-7 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all disabled:opacity-50"
+          >
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5" />}
+            Refresh Data
+          </button>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Status Scraper</p>
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5 relative z-10">
+          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Status</p>
             <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
-              <p className="text-xl font-black text-slate-900">Aktif (Idle)</p>
+              <Server className="w-5 h-5 text-blue-500" />
+              <p className="text-xl font-black text-slate-900">External Scraper</p>
             </div>
           </div>
-          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Interval Penarikan</p>
+          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Interval Scraping</p>
             <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-blue-500" />
-              <p className="text-xl font-black text-slate-900">Setiap 10 Menit</p>
+              <Clock className="w-5 h-5 text-emerald-500" />
+              <p className="text-xl font-black text-slate-900">Setiap 15 Menit</p>
             </div>
           </div>
-          <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
+          <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
             <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Sumber Data</p>
-            <div className="flex items-center gap-2">
-              <Database className="w-5 h-5 text-purple-500" />
-              <p className="text-xl font-black text-slate-900">Glints.com</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100 text-xs font-black">
+                <ExternalLink className="w-3 h-3" />
+                Glints.com
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-100 text-xs font-black">
+                <Server className="w-3 h-3" />
+                Scraper Python External
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Info Cards */}
-        <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200/60">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        {cards.map((card, index) => (
+          <motion.div
+            key={card.label}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+          >
+            <MonitorCard {...card} />
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200/70">
           <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
-            <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+            <Database className="w-6 h-6 text-blue-500" />
             Scraper Performance
           </h3>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100">
-              <span className="text-sm font-bold text-slate-600">Terakhir Dijalankan</span>
-              <span className="text-sm font-black text-emerald-700">{stats.lastScrape ? new Date(stats.lastScrape).toLocaleTimeString() : "-"}</span>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-4 p-4 bg-blue-50/60 rounded-2xl border border-blue-100">
+              <span className="text-sm font-bold text-slate-600">Total Lowongan Aktif</span>
+              <span className="text-sm font-black text-blue-700">{stats.totalActive.toLocaleString()} Lowongan</span>
             </div>
-            <div className="flex items-center justify-between p-4 bg-blue-50/50 rounded-2xl border border-blue-100">
-              <span className="text-sm font-bold text-slate-600">Total Data Berhasil</span>
-              <span className="text-sm font-black text-blue-700">{stats.totalJobs} Lowongan</span>
+            <div className="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+              <span className="text-sm font-bold text-slate-600">Total Lowongan Scraper</span>
+              <span className="text-sm font-black text-slate-800">{stats.totalScraperJobs.toLocaleString()} Lowongan</span>
             </div>
-            <div className="flex items-center justify-between p-4 bg-purple-50/50 rounded-2xl border border-purple-100">
-              <span className="text-sm font-bold text-slate-600">Akurasi Ekstraksi</span>
-              <span className="text-sm font-black text-purple-700">98.5%</span>
+            <div className="flex items-center justify-between gap-4 p-4 bg-violet-50/60 rounded-2xl border border-violet-100">
+              <span className="text-sm font-bold text-slate-600">Total Lowongan Company</span>
+              <span className="text-sm font-black text-violet-700">{stats.totalCompanyJobs.toLocaleString()} Lowongan</span>
+            </div>
+            <div className="flex items-center justify-between gap-4 p-4 bg-emerald-50/60 rounded-2xl border border-emerald-100">
+              <span className="text-sm font-bold text-slate-600">Last Scraper Update</span>
+              <span className="text-sm font-black text-emerald-700">{formatDateTime(stats.lastScraperUpdate)}</span>
             </div>
           </div>
         </div>
 
-        {/* System Logs Preview */}
-        <div className="bg-slate-900 p-8 rounded-[2.5rem] shadow-2xl text-slate-300 font-mono text-sm relative overflow-hidden">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-white font-bold flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-              Live Scraper Logs
-            </h3>
-            <ArrowUpRight className="w-4 h-4 text-slate-500" />
+        <div className="bg-slate-900 p-8 rounded-2xl shadow-2xl text-slate-300">
+          <h3 className="text-white text-xl font-black mb-6 flex items-center gap-3">
+            <Server className="w-6 h-6 text-blue-300" />
+            Scraper Information
+          </h3>
+          <div className="space-y-4">
+            {[
+              "Scraper berjalan pada service Python eksternal",
+              "Website hanya membaca data dari MongoDB",
+              "Interval scraping: 15 menit",
+              "Status lowongan otomatis mengikuti expiredAt",
+              "Data hasil scraping akan diperbarui ketika scraper menemukan data baru",
+            ].map((item) => (
+              <div key={item} className="flex items-start gap-3 p-4 rounded-2xl bg-white/5 border border-white/10">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
+                <p className="text-sm font-semibold leading-6">{item}</p>
+              </div>
+            ))}
           </div>
-          <div className="space-y-3 h-48 overflow-y-auto custom-scrollbar">
-            <p className="text-emerald-400">[SYSTEM] Scheduler initialized...</p>
-            <p>[INFO] Target source: Glints.com</p>
-            <p>[INFO] Bot detection status: Healthy</p>
-            {loading && (
-              <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-blue-400 animate-pulse"
-              >[SCRAPER] Scraping in progress... Fetching pages...</motion.p>
-            )}
-            {!loading && stats.lastScrape && (
-              <p className="text-emerald-500">[SUCCESS] Task completed at {new Date(stats.lastScrape).toLocaleTimeString()}</p>
-            )}
+        </div>
+      </div>
+
+      <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200/70">
+        <h3 className="text-xl font-black text-slate-900 mb-6">Decoupled Architecture</h3>
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_1fr] gap-4 md:items-center">
+          <div className="p-5 bg-violet-50 border border-violet-100 rounded-2xl">
+            <p className="text-[10px] font-black uppercase tracking-widest text-violet-400">Step 1</p>
+            <p className="text-lg font-black text-violet-900 mt-1">Scraper Python</p>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-slate-900 to-transparent pointer-events-none"></div>
+          <div className="hidden md:block text-slate-300 font-black">↓</div>
+          <div className="p-5 bg-blue-50 border border-blue-100 rounded-2xl">
+            <p className="text-[10px] font-black uppercase tracking-widest text-blue-400">Step 2</p>
+            <p className="text-lg font-black text-blue-900 mt-1">MongoDB</p>
+          </div>
+          <div className="hidden md:block text-slate-300 font-black">↓</div>
+          <div className="p-5 bg-emerald-50 border border-emerald-100 rounded-2xl">
+            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Step 3</p>
+            <p className="text-lg font-black text-emerald-900 mt-1">Website MERN</p>
+          </div>
         </div>
       </div>
     </div>

@@ -16,7 +16,7 @@ const NOISE_WORDS = new Set([
   'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had'
 ]);
 
-const { detectCategoryWithWeight } = require('./category');
+const { detectCategoryWithWeight, normalizeCategory } = require('./category');
 
 // ─── Kalimat berulang yang sering muncul di data scraping ───
 const REDUNDANT_PATTERNS = [
@@ -156,6 +156,7 @@ const cleanJob = (rawJob) => {
     title,
     `${description} ${(skills || []).join(' ')}`
   );
+  category = normalizeCategory(rawJob.category || category);
   const source = rawJob.source || 'Seed';
 
   // Preserve URL for deduplication (scraper uses jobUrl, model uses url)

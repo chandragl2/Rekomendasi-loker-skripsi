@@ -13,15 +13,16 @@ const CATEGORIES = [
   'Semua', 
   'Engineering & IT', 
   'Data & AI', 
-  'Product & Project', 
   'Design & Creative', 
   'Marketing & Growth',
-  'Sales & Business Development', 
   'Finance & Accounting', 
-  'Human Resources', 
   'Operations & Supply Chain', 
-  'Education & Others',
-  'Healthcare & Medical'
+  'Sales & Business Development',
+  'Healthcare & Medical',
+  'Product & Project',
+  'Human Resources',
+  'Education',
+  'Miscellaneous'
 ];
 
 const JOBS_PER_PAGE = 12;

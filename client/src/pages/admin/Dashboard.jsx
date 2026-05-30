@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { 
   Briefcase, 
-  Zap, 
-  Tag, 
   CheckCircle2, 
+  AlertTriangle,
+  Database,
+  UserRound,
   TrendingUp, 
   RefreshCw, 
   Loader2 
@@ -24,29 +25,36 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
       label: "Total Lowongan",
       value: stats.totalJobs.toLocaleString(),
       icon: Briefcase,
-      change: "Aktif di database",
-      color: "from-blue-600 to-cyan-500",
+      change: "Semua status",
+      color: "from-slate-700 to-slate-500",
     },
     {
-      label: "Scraping Terakhir",
-      value: stats.lastScrape ? new Date(stats.lastScrape).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' }) : "-",
-      icon: Zap,
-      change: stats.lastScrape ? new Date(stats.lastScrape).toLocaleDateString() : "Belum pernah",
+      label: "Active Jobs",
+      value: (stats.totalActive || 0).toLocaleString(),
+      icon: CheckCircle2,
+      change: "Tampil di rekomendasi",
       color: "from-emerald-600 to-teal-500",
     },
     {
-      label: "Total Kategori",
-      value: stats.totalCategories,
-      icon: Tag,
-      change: "Kategori terdeteksi",
-      color: "from-purple-600 to-pink-500",
+      label: "Expired Jobs",
+      value: (stats.totalExpired || 0).toLocaleString(),
+      icon: AlertTriangle,
+      change: "Tidak tampil rekomendasi",
+      color: "from-rose-600 to-red-500",
     },
     {
-      label: "Sistem Status",
-      value: "Online",
-      icon: CheckCircle2,
-      change: "API & DB Terkoneksi",
-      color: "from-orange-600 to-amber-500",
+      label: "Scraper Jobs",
+      value: (stats.totalScraperJobs || 0).toLocaleString(),
+      icon: Database,
+      change: "Dari service scraper",
+      color: "from-blue-600 to-cyan-500",
+    },
+    {
+      label: "Company Jobs",
+      value: (stats.totalCompanyJobs || 0).toLocaleString(),
+      icon: UserRound,
+      change: "Input perusahaan",
+      color: "from-violet-600 to-purple-500",
     },
   ];
 
@@ -74,7 +82,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
       </div>
 
       {/* STATS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
         {dashboardStats.map((stat, idx) => (
           <motion.div
             key={idx}
@@ -192,7 +200,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
                 </div>
                 <div className="text-right">
                   <p className="text-indigo-200 text-[10px] font-bold uppercase tracking-widest">Scraper Status</p>
-                  <p className="text-xl font-black text-white">Aktif</p>
+              <p className="text-xl font-black text-white">Eksternal</p>
                 </div>
               </div>
             </div>
@@ -205,30 +213,30 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
         <h3 className="text-xl font-black text-slate-900 mb-6">Scraper Configuration</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex items-center gap-4">
-            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-emerald-500">
-              <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-slate-500">
+              <div className="w-3 h-3 bg-slate-400 rounded-full"></div>
             </div>
             <div>
               <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Status</p>
-              <p className="text-lg font-black text-slate-900">Aktif / Idle</p>
+              <p className="text-lg font-black text-slate-900">Service Eksternal</p>
             </div>
           </div>
           <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex items-center gap-4">
             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-blue-500">
-              <Zap className="w-5 h-5 fill-current" />
+              <Database className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Interval</p>
-              <p className="text-lg font-black text-slate-900">Setiap 30 Menit</p>
+              <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Ingest</p>
+              <p className="text-lg font-black text-slate-900">MongoDB/API</p>
             </div>
           </div>
           <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex items-center gap-4">
             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-purple-500">
-              <Tag className="w-5 h-5 fill-current" />
+              <Briefcase className="w-5 h-5" />
             </div>
             <div>
               <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Sources</p>
-              <p className="text-lg font-black text-slate-900">Glints.com</p>
+              <p className="text-lg font-black text-slate-900">Scraper & Company</p>
             </div>
           </div>
         </div>

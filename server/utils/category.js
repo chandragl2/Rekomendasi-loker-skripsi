@@ -8,6 +8,122 @@
 
 // Mapping Kategori ke daftar keywords pembobot
 // Kunci utama diselaraskan dengan kategori di cleaner.js
+const STANDARD_CATEGORIES = [
+  'Engineering & IT',
+  'Data & AI',
+  'Design & Creative',
+  'Marketing & Growth',
+  'Finance & Accounting',
+  'Operations & Supply Chain',
+  'Sales & Business Development',
+  'Healthcare & Medical',
+  'Product & Project',
+  'Human Resources',
+  'Education & Others',
+  'Other',
+];
+
+const CATEGORY_ALIAS_MAP = {
+  'engineering & it': 'Engineering & IT',
+  engineering: 'Engineering & IT',
+  'it & software': 'Engineering & IT',
+  it: 'Engineering & IT',
+
+  'data & ai': 'Data & AI',
+  data: 'Data & AI',
+  'data science': 'Data & AI',
+
+  'design & creative': 'Design & Creative',
+  design: 'Design & Creative',
+  creative: 'Design & Creative',
+
+  'marketing & growth': 'Marketing & Growth',
+  marketing: 'Marketing & Growth',
+
+  'finance & accounting': 'Finance & Accounting',
+  finance: 'Finance & Accounting',
+  accounting: 'Finance & Accounting',
+
+  'operations & supply chain': 'Operations & Supply Chain',
+  'operations & supply': 'Operations & Supply Chain',
+  operations: 'Operations & Supply Chain',
+  'supply chain': 'Operations & Supply Chain',
+
+  'sales & business development': 'Sales & Business Development',
+  sales: 'Sales & Business Development',
+  'business dev': 'Sales & Business Development',
+  'business development': 'Sales & Business Development',
+
+  'healthcare & medical': 'Healthcare & Medical',
+  healthcare: 'Healthcare & Medical',
+  medical: 'Healthcare & Medical',
+
+  'product & project': 'Product & Project',
+  product: 'Product & Project',
+  project: 'Product & Project',
+
+  'human resources': 'Human Resources',
+  hr: 'Human Resources',
+
+  'education & others': 'Education & Others',
+  education: 'Education & Others',
+
+  lainnya: 'Other',
+  other: 'Other',
+  miscellaneous: 'Other',
+  misc: 'Other',
+  legal: 'Other',
+  hospitality: 'Other',
+  'retail & crew outlet': 'Other',
+};
+
+const CATEGORY_DISPLAY_MAP = {
+  'Education & Others': 'Education',
+  Other: 'Miscellaneous',
+};
+
+const CATEGORY_EXACT_ALIASES = {
+  'Engineering & IT': ['Engineering', 'IT & Software', 'IT'],
+  'Data & AI': ['Data', 'Data Science'],
+  'Design & Creative': ['Design', 'Creative'],
+  'Marketing & Growth': ['Marketing'],
+  'Finance & Accounting': ['Finance', 'Accounting'],
+  'Operations & Supply Chain': ['Operations & Supply', 'Operations', 'Supply Chain'],
+  'Sales & Business Development': ['Sales', 'Business Dev', 'Business Development'],
+  'Healthcare & Medical': ['Healthcare', 'Medical'],
+  'Product & Project': ['Product', 'Project'],
+  'Human Resources': ['HR', 'Human Resources'],
+  'Education & Others': ['Education'],
+  Other: ['Lainnya', 'Other', 'Miscellaneous', 'Misc', 'Legal', 'Hospitality', 'Retail & Crew Outlet'],
+};
+
+const normalizeCategory = (category) => {
+  if (!category || typeof category !== 'string') return 'Other';
+  const key = category.trim().toLowerCase();
+  return CATEGORY_ALIAS_MAP[key] || category.trim();
+};
+
+const displayCategory = (category) => {
+  const normalized = normalizeCategory(category);
+  return CATEGORY_DISPLAY_MAP[normalized] || normalized;
+};
+
+const getCategoryAliases = (standardCategory) => {
+  const normalized = normalizeCategory(standardCategory);
+  const aliases = Object.entries(CATEGORY_ALIAS_MAP)
+    .filter(([, value]) => value === normalized)
+    .map(([alias]) => alias);
+
+  return [
+    ...new Set([
+      normalized,
+      ...(CATEGORY_EXACT_ALIASES[normalized] || []),
+      ...aliases,
+      ...aliases.map(alias => alias.replace(/\b\w/g, c => c.toUpperCase())),
+    ])
+  ];
+};
+
 const CATEGORY_KEYWORDS = {
   'Engineering & IT': [
     'programmer', 'developer', 'software engineer', 'web developer', 'frontend', 'backend',
@@ -73,7 +189,7 @@ const CATEGORY_KEYWORDS = {
  */
 const detectCategory = (tokens) => {
   if (!tokens || tokens.length === 0) {
-    return { category: 'Lainnya', scores: {} };
+    return { category: 'Other', scores: {} };
   }
 
   // Gabungkan token menjadi teks untuk mencocokkan frasa (lebih dari 1 kata)
@@ -97,7 +213,7 @@ const detectCategory = (tokens) => {
 
   // Cari kategori dengan skor tertinggi
   let maxScore = -1;
-  let topCategory = 'Lainnya'; // Fallback
+  let topCategory = 'Other'; // Fallback
 
   Object.entries(scores).forEach(([cat, score]) => {
     if (score > maxScore && score > 0) { // Minimal harus ada 1 temuan
@@ -121,7 +237,7 @@ const detectCategory = (tokens) => {
   }
 
   return {
-    category: topCategory,
+    category: normalizeCategory(topCategory),
     hits: maxScore,
     totalHits,
     details: debugScores
@@ -163,7 +279,7 @@ const detectCategoryWithWeight = (title = '', description = '') => {
   });
 
   let maxScore = 0;
-  let topCategory = 'Lainnya';
+  let topCategory = 'Other';
   
   Object.entries(scores).forEach(([cat, score]) => {
     if (score > maxScore) {
@@ -172,11 +288,15 @@ const detectCategoryWithWeight = (title = '', description = '') => {
     }
   });
 
-  return topCategory;
+  return normalizeCategory(topCategory);
 };
 
 module.exports = {
   detectCategory,
   detectCategoryWithWeight,
+  normalizeCategory,
+  displayCategory,
+  getCategoryAliases,
+  STANDARD_CATEGORIES,
   CATEGORY_KEYWORDS
 };

@@ -31,9 +31,10 @@ app.use('/api/candidates', candidateRoutes);
 const { runScraper } = require('./scraper/scraperRunner');
 
 const SCRAPER_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+const isBackendScraperEnabled = process.env.ENABLE_BACKEND_SCRAPER === 'true';
 
 const startScraperScheduler = () => {
-  console.log('🕷️  Scraper scheduler initialised — first run in 30s, then every 10 min.');
+  console.log('Scraper scheduler backend aktif.');
 
   // First run — delayed to let the server finish booting
   const firstRun = setTimeout(async () => {
@@ -46,6 +47,15 @@ const startScraperScheduler = () => {
     await runScraper({ maxJobs: 30, dbConnected: true });
   }, SCRAPER_INTERVAL_MS);
   interval.unref(); // Don't prevent process exit
+};
+
+const maybeStartScraperScheduler = () => {
+  if (isBackendScraperEnabled) {
+    startScraperScheduler();
+    return;
+  }
+
+  console.log('Scraper scheduler backend dimatikan. Scraper berjalan sebagai service eksternal.');
 };
 
 // Serve static assets in production
@@ -68,6 +78,6 @@ if (process.env.VERCEL) {
 } else {
   app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
-    startScraperScheduler();
+    maybeStartScraperScheduler();
   });
 }

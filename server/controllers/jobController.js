@@ -4,7 +4,7 @@ const preprocessText = require('../utils/preprocess');
 const { buildVocabulary, createVector } = require('../utils/tfidf');
 const calculateCosineSimilarity = require('../utils/cosineSimilarity');
 const calculateFinalScore = require('../utils/scoreNormalizer');
-const { detectCategory } = require('../utils/category');
+const { detectCategory, displayCategory, getCategoryAliases, normalizeCategory } = require('../utils/category');
 const pdfParse = require('pdf-parse');
 const { cleanJob, cleanJobs } = require('../utils/cleaner');
 const fs = require('fs');
@@ -12,6 +12,33 @@ const path = require('path');
 
 // Fallback Seed Data
 const seedJobs = require('../data/seedJobs');
+
+const CATEGORY_COLORS = [
+  '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444',
+  '#06b6d4', '#ec4899', '#f97316', '#6366f1', '#14b8a6',
+  '#64748b', '#0f172a'
+];
+
+const normalizeJobForResponse = (job) => ({
+  ...(typeof job.toObject === 'function' ? job.toObject() : job),
+  category: displayCategory(job.category),
+});
+
+const buildNormalizedCategoryData = (rawCategories) => {
+  const counts = rawCategories.reduce((acc, cat) => {
+    const name = normalizeCategory(cat._id);
+    acc[name] = (acc[name] || 0) + cat.count;
+    return acc;
+  }, {});
+
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, value], index) => ({
+      name: displayCategory(name),
+      value,
+      color: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+    }));
+};
 
 // ─────────────────────────────────────────────────────────
 // Helper: preprocess + vektorisasi seluruh corpus dan simpan ke DB
@@ -70,7 +97,7 @@ const getAllJobs = async (req, res) => {
 
     const query = Job.activeFilter();
 
-    if (category && category !== 'Semua') query.category = category;
+    if (category && category !== 'Semua') query.category = { $in: getCategoryAliases(category) };
     if (search) query.$or = [
       { title: { $regex: search, $options: 'i' } },
       { company: { $regex: search, $options: 'i' } },
@@ -84,10 +111,99 @@ const getAllJobs = async (req, res) => {
       .limit(parseInt(limit));
 
     res.json({
-      jobs,
+      jobs: jobs.map(normalizeJobForResponse),
       total,
       page: parseInt(page),
       totalPages: Math.ceil(total / parseInt(limit))
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error', error: err.message });
+  }
+};
+
+// @desc    Ambil semua lowongan untuk admin, termasuk expired/inactive
+// @route   GET /api/jobs/admin/jobs
+const getAdminJobs = async (req, res) => {
+  try {
+    const {
+      search,
+      status,
+      createdByType,
+      page = 1,
+      limit = 10,
+    } = req.query;
+
+    await Job.expireOldJobs();
+
+    const query = {};
+
+    if (['active', 'expired', 'inactive'].includes(status)) {
+      query.status = status;
+    }
+
+    if (['scraper', 'company'].includes(createdByType)) {
+      query.createdByType = createdByType;
+    }
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { company: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    const parsedPage = Math.max(parseInt(page, 10) || 1, 1);
+    const parsedLimit = Math.max(parseInt(limit, 10) || 10, 1);
+
+    const total = await Job.countDocuments(query);
+    const jobs = await Job.find(query)
+      .sort({ createdAt: -1 })
+      .skip((parsedPage - 1) * parsedLimit)
+      .limit(parsedLimit);
+
+    res.json({
+      jobs: jobs.map(normalizeJobForResponse),
+      total,
+      page: parsedPage,
+      totalPages: Math.ceil(total / parsedLimit) || 1,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error', error: err.message });
+  }
+};
+
+// @desc    Statistik lowongan untuk dashboard admin
+// @route   GET /api/jobs/admin/jobs/stats
+const getAdminJobStats = async (req, res) => {
+  try {
+    await Job.expireOldJobs();
+
+    const [
+      totalJobs,
+      totalActive,
+      totalExpired,
+      totalScraperJobs,
+      totalCompanyJobs,
+      latestScraperJob,
+    ] = await Promise.all([
+      Job.countDocuments(),
+      Job.countDocuments({ status: 'active' }),
+      Job.countDocuments({ status: 'expired' }),
+      Job.countDocuments({ createdByType: 'scraper' }),
+      Job.countDocuments({ createdByType: 'company' }),
+      Job.findOne({ createdByType: 'scraper' }).sort({ updatedAt: -1 }).select('updatedAt').lean(),
+    ]);
+    const lastScraperUpdate = latestScraperJob ? latestScraperJob.updatedAt : null;
+
+    res.json({
+      totalJobs,
+      totalActive,
+      totalExpired,
+      totalScraperJobs,
+      totalCompanyJobs,
+      lastScraperUpdate,
     });
   } catch (err) {
     console.error(err);
@@ -108,7 +224,7 @@ const createJob = async (req, res) => {
       company: req.body.company,
       location: req.body.location,
       type: req.body.type,
-      category: req.body.category,
+      category: normalizeCategory(req.body.category),
       skills: req.body.skills,
       qualifications: req.body.qualifications,
       description: req.body.description,
@@ -123,6 +239,46 @@ const createJob = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: 'Failed to create job', error: err.message });
+  }
+};
+
+// @desc    Aktifkan/nonaktifkan lowongan oleh admin
+// @route   PATCH /api/jobs/admin/jobs/:id/status
+const updateAdminJobStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!['active', 'inactive'].includes(status)) {
+      return res.status(400).json({ message: 'Status hanya boleh active atau inactive' });
+    }
+
+    await Job.expireOldJobs();
+
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+
+    if (job.status === 'expired') {
+      return res.status(400).json({ message: 'Lowongan expired tidak bisa diaktifkan/nonaktifkan manual' });
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (status === 'active' && job.expiredAt && job.expiredAt < today) {
+      job.status = 'expired';
+      await job.save();
+      return res.status(400).json({ message: 'Lowongan sudah expired dan tidak bisa diaktifkan kembali' });
+    }
+
+    job.status = status;
+    job.updatedAt = new Date();
+    await job.save();
+
+    res.json(normalizeJobForResponse(job));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error', error: err.message });
   }
 };
 
@@ -351,8 +507,8 @@ const recommendJobs = async (req, res) => {
 
     // 6b. [BARU] Domain Filtering: Hanya simpan job yang kategorinya cocok
     let jobs = allJobs;
-    if (categoryInfo.category !== 'Lainnya' && categoryInfo.hits > 0) {
-      const matchJobs = allJobs.filter(j => j.category === categoryInfo.category);
+    if (categoryInfo.category !== 'Other' && categoryInfo.hits > 0) {
+      const matchJobs = allJobs.filter(j => normalizeCategory(j.category) === categoryInfo.category);
       // Jika ternyata ada pekerjaan di kategori tersebut, gunakan sebagai filter
       if (matchJobs.length > 0) {
         jobs = matchJobs;
@@ -361,7 +517,7 @@ const recommendJobs = async (req, res) => {
          console.log(`[FILTER] No jobs found for category ${categoryInfo.category}. Using all ${allJobs.length} jobs as fallback.`);
       }
     } else {
-       console.log(`[FILTER] CV Category is unknown/Lainnya. Comparing against all ${allJobs.length} jobs.`);
+       console.log(`[FILTER] CV Category is unknown/Other. Comparing against all ${allJobs.length} jobs.`);
     }
 
     // 7. Hitung Cosine Similarity hanya untuk jobs yang sudah difilter
@@ -369,7 +525,7 @@ const recommendJobs = async (req, res) => {
       jobId: job._id,
       title: job.title,
       company: job.company,
-      category: job.category,
+      category: displayCategory(job.category),
       location: job.location,
       type: job.type,
       description: job.description,
@@ -448,7 +604,24 @@ const getJobById = async (req, res) => {
 // ─────────────────────────────────────────────────────────
 const getAdminStats = async (req, res) => {
   try {
-    const totalJobs = await Job.countDocuments();
+    await Job.expireOldJobs();
+
+    const [
+      totalJobs,
+      totalActive,
+      totalExpired,
+      totalScraperJobs,
+      totalCompanyJobs,
+      latestScraperJob,
+    ] = await Promise.all([
+      Job.countDocuments(),
+      Job.countDocuments({ status: 'active' }),
+      Job.countDocuments({ status: 'expired' }),
+      Job.countDocuments({ createdByType: 'scraper' }),
+      Job.countDocuments({ createdByType: 'company' }),
+      Job.findOne({ createdByType: 'scraper' }).sort({ updatedAt: -1 }).select('updatedAt').lean(),
+    ]);
+    const lastScraperUpdate = latestScraperJob ? latestScraperJob.updatedAt : null;
     
     // Get stats by category
     const categories = await Job.aggregate([
@@ -456,15 +629,8 @@ const getAdminStats = async (req, res) => {
       { $sort: { count: -1 } }
     ]);
 
-    // Format category data for Recharts
-    const categoryData = categories.map((cat, index) => ({
-      name: cat._id,
-      value: cat.count,
-      color: [
-        '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', 
-        '#06b6d4', '#ec4899', '#f97316', '#6366f1', '#14b8a6'
-      ][index % 10]
-    }));
+    // Format category data for Recharts after normalization
+    const categoryData = buildNormalizedCategoryData(categories);
 
     // Get recent jobs (last 10)
     const recentJobs = await Job.find()
@@ -477,10 +643,15 @@ const getAdminStats = async (req, res) => {
 
     res.json({
       totalJobs,
+      totalActive,
+      totalExpired,
+      totalScraperJobs,
+      totalCompanyJobs,
+      lastScraperUpdate,
       categoryData,
-      recentJobs,
+      recentJobs: recentJobs.map(normalizeJobForResponse),
       lastScrape,
-      totalCategories: categories.length
+      totalCategories: categoryData.length
     });
   } catch (err) {
     console.error(err);
@@ -508,7 +679,10 @@ const deleteJob = async (req, res) => {
 
 module.exports = {
   getAllJobs,
+  getAdminJobs,
+  getAdminJobStats,
   createJob,
+  updateAdminJobStatus,
   ingestScrapedJobs,
   recommendJobs,
   getJobById,
