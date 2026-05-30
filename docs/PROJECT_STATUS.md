@@ -98,3 +98,22 @@ Phase 3:
 * Accept/Reject
 
 Mohon lanjutkan dari kondisi ini tanpa mengulang pembahasan sebelumnya.
+
+## Update Terbaru (Mei 2026)
+
+### Arsitektur
+- Scraper Python dipisahkan dari website (Decoupled Architecture)
+- Website tidak menjalankan scraping otomatis
+- Scraper berjalan sebagai service terpisah
+
+### Job Expiration
+- Semua lowongan memiliki masa aktif
+- Default masa aktif 30 hari
+- Lowongan expired tidak ditampilkan pada rekomendasi
+- Data expired tidak dihapus dari database
+
+### Admin Dashboard
+- Dashboard monitoring lowongan
+- Dashboard monitoring kategori
+- Monitoring status sistem
+- Monitoring data scraping
