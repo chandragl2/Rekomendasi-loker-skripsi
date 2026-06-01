@@ -62,7 +62,7 @@ const UploadCard = ({ onAnalyze }) => {
         },
       });
 
-      onAnalyze(response.data);
+      onAnalyze(response.data, { cvFileName: file.name });
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Error analysing CV. Please try again.');

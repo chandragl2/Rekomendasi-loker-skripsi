@@ -1,12 +1,13 @@
 import React from "react";
 import { Link, NavLink, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { BriefcaseBusiness, LayoutDashboard, LogOut, PlusCircle, ListChecks } from "lucide-react";
+import { BriefcaseBusiness, LayoutDashboard, LogOut, PlusCircle, ListChecks, UsersRound } from "lucide-react";
 import { getCompanyToken, removeCompanySession } from "../../utils/companyAuth";
 
 const companyLinks = [
   { name: "Dashboard", path: "/company/dashboard", icon: LayoutDashboard },
   { name: "Tambah Lowongan", path: "/company/jobs/create", icon: PlusCircle },
   { name: "Lowongan Saya", path: "/company/jobs", icon: ListChecks },
+  { name: "Pelamar", path: "/company/applications", icon: UsersRound },
 ];
 
 const CompanyLayout = ({ children, requireAuth = true }) => {

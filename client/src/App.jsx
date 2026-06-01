@@ -12,6 +12,7 @@ import CompanyLogin from "./pages/company/Login";
 import CompanyDashboard from "./pages/company/Dashboard";
 import CompanyCreateJob from "./pages/company/CreateJob";
 import CompanyJobs from "./pages/company/MyJobs";
+import CompanyApplications from "./pages/company/Applications";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/company/dashboard" element={<CompanyDashboard />} />
         <Route path="/company/jobs/create" element={<CompanyCreateJob />} />
         <Route path="/company/jobs" element={<CompanyJobs />} />
+        <Route path="/company/applications" element={<CompanyApplications />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </Router>

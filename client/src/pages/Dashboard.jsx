@@ -62,8 +62,8 @@ const Dashboard = () => {
     }
   };
 
-  const handleAnalysisComplete = (results) => {
-    setJobs(results);
+  const handleAnalysisComplete = (results, cvMeta = {}) => {
+    setJobs(results.map((job) => ({ ...job, ...cvMeta })));
     setShowResults(true);
     setTimeout(() => window.scrollTo({ top: 500, behavior: 'smooth' }), 100);
   };

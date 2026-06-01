@@ -532,6 +532,7 @@ const recommendJobs = async (req, res) => {
       qualifications: job.qualifications,
       skills: job.skills,
       source: job.source,
+      url: job.url,
       postedAt: job.postedAt,
       expiredAt: job.expiredAt,
       durationDays: job.durationDays,
