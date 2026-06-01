@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion"; // eslint-disable-line no-unused-vars
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 // Import modular components
 import AdminLayout from "./admin/Layout";
@@ -14,7 +15,15 @@ import Users from "./admin/Users";
 import Settings from "./admin/Settings";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const location = useLocation();
+  const getInitialTab = () => {
+    const segment = location.pathname.split("/")[2];
+    return ["jobs", "categories", "scraper", "logs", "users", "settings"].includes(segment)
+      ? segment
+      : "dashboard";
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -25,6 +34,8 @@ const AdminDashboard = () => {
     totalExpired: 0,
     totalScraperJobs: 0,
     totalCompanyJobs: 0,
+    totalCompanies: 0,
+    totalApplications: 0,
     categoryData: [],
     recentJobs: [],
     lastScrape: null,
@@ -47,6 +58,10 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchStats();
   }, []);
+
+  useEffect(() => {
+    setActiveTab(getInitialTab());
+  }, [location.pathname]);
 
   const showNotification = (type, message) => {
     setNotification({ type, message });
@@ -83,17 +98,17 @@ const AdminDashboard = () => {
           />
         );
       case "jobs":
-        return <Jobs />;
+        return <Jobs onBack={() => setActiveTab("dashboard")} />;
       case "categories":
-        return <Categories />;
+        return <Categories onBack={() => setActiveTab("dashboard")} />;
       case "scraper":
         return <Scraper />;
       case "logs":
-        return <Logs />;
+        return <Logs onBack={() => setActiveTab("dashboard")} />;
       case "users":
-        return <Users />;
+        return <Users onBack={() => setActiveTab("dashboard")} />;
       case "settings":
-        return <Settings />;
+        return <Settings onBack={() => setActiveTab("dashboard")} />;
       default:
         return <Dashboard stats={stats} loading={loading} syncing={syncing} onSyncData={handleSyncData} />;
     }

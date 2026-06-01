@@ -5,7 +5,8 @@ import {
   CheckCircle2, 
   AlertTriangle,
   Database,
-  UserRound,
+  Building2,
+  Send,
   TrendingUp, 
   RefreshCw, 
   Loader2 
@@ -29,6 +30,20 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
       color: "from-slate-700 to-slate-500",
     },
     {
+      label: "Total Companies",
+      value: (stats.totalCompanies || 0).toLocaleString(),
+      icon: Building2,
+      change: "Akun perusahaan",
+      color: "from-blue-600 to-cyan-500",
+    },
+    {
+      label: "Total Applications",
+      value: (stats.totalApplications || 0).toLocaleString(),
+      icon: Send,
+      change: "Lamaran kandidat",
+      color: "from-violet-600 to-purple-500",
+    },
+    {
       label: "Active Jobs",
       value: (stats.totalActive || 0).toLocaleString(),
       icon: CheckCircle2,
@@ -41,20 +56,6 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
       icon: AlertTriangle,
       change: "Tidak tampil rekomendasi",
       color: "from-rose-600 to-red-500",
-    },
-    {
-      label: "Scraper Jobs",
-      value: (stats.totalScraperJobs || 0).toLocaleString(),
-      icon: Database,
-      change: "Dari service scraper",
-      color: "from-blue-600 to-cyan-500",
-    },
-    {
-      label: "Company Jobs",
-      value: (stats.totalCompanyJobs || 0).toLocaleString(),
-      icon: UserRound,
-      change: "Input perusahaan",
-      color: "from-violet-600 to-purple-500",
     },
   ];
 
@@ -195,8 +196,8 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
               
               <div className="flex items-center justify-between px-2">
                 <div>
-                  <p className="text-indigo-200 text-[10px] font-bold uppercase tracking-widest">Akurasi AI</p>
-                  <p className="text-xl font-black text-white">94.2%</p>
+                  <p className="text-indigo-200 text-[10px] font-bold uppercase tracking-widest">Engine</p>
+                  <p className="text-xl font-black text-white">TF-IDF</p>
                 </div>
                 <div className="text-right">
                   <p className="text-indigo-200 text-[10px] font-bold uppercase tracking-widest">Scraper Status</p>
@@ -208,9 +209,9 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
         </div>
       </div>
 
-      {/* SCRAPER STATUS BOX */}
+      {/* SYSTEM STATUS BOX */}
       <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200/60">
-        <h3 className="text-xl font-black text-slate-900 mb-6">Scraper Configuration</h3>
+        <h3 className="text-xl font-black text-slate-900 mb-6">System Overview</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex items-center gap-4">
             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm text-slate-500">
@@ -218,7 +219,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
             </div>
             <div>
               <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Status</p>
-              <p className="text-lg font-black text-slate-900">Service Eksternal</p>
+              <p className="text-lg font-black text-slate-900">Decoupled</p>
             </div>
           </div>
           <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex items-center gap-4">
@@ -227,7 +228,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
             </div>
             <div>
               <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Ingest</p>
-              <p className="text-lg font-black text-slate-900">MongoDB/API</p>
+              <p className="text-lg font-black text-slate-900">MongoDB</p>
             </div>
           </div>
           <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex items-center gap-4">

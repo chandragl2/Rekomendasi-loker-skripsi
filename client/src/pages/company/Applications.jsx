@@ -38,6 +38,12 @@ const statusClass = {
   rejected: "bg-red-50 text-red-700 border-red-100",
 };
 
+const statusLabel = {
+  pending: "Pending",
+  accepted: "Accepted",
+  rejected: "Rejected",
+};
+
 const Applications = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +69,12 @@ const Applications = () => {
     fetchApplications();
   }, [fetchApplications]);
 
+  useEffect(() => {
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(""), 3500);
+    return () => clearTimeout(timer);
+  }, [notice]);
+
   const handleUpdateStatus = async (applicationId, status) => {
     setUpdatingId(applicationId);
     setError("");
@@ -81,7 +93,7 @@ const Applications = () => {
           application._id === applicationId ? { ...application, ...updatedApplication } : application
         )
       );
-      setNotice(res.data?.message || "Status lamaran berhasil diperbarui.");
+      setNotice(res.data?.message || `Lamaran berhasil diubah menjadi ${statusLabel[status]}.`);
     } catch (err) {
       setError(err.response?.data?.message || "Gagal memperbarui status lamaran.");
     } finally {
@@ -146,6 +158,7 @@ const Applications = () => {
                   {applications.map((application) => {
                     const job = application.jobId || {};
                     const isUpdating = updatingId === application._id;
+                    const currentStatus = application.status || "pending";
 
                     return (
                       <tr key={application._id} className="hover:bg-indigo-50/30 transition-colors">
@@ -160,31 +173,35 @@ const Applications = () => {
                         </td>
                         <td className="px-5 py-4 text-gray-600">{formatScore(application.similarityScore)}</td>
                         <td className="px-5 py-4">
-                          <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-black capitalize ${statusClass[application.status] || statusClass.pending}`}>
-                            {application.status || "pending"}
+                          <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${statusClass[currentStatus] || statusClass.pending}`}>
+                            {statusLabel[currentStatus] || "Pending"}
                           </span>
                         </td>
                         <td className="px-5 py-4 text-gray-600">{formatDateTime(application.appliedAt)}</td>
                         <td className="px-5 py-4">
                           <div className="flex justify-end gap-2">
-                            <button
-                              type="button"
-                              onClick={() => handleUpdateStatus(application._id, "accepted")}
-                              disabled={isUpdating || application.status === "accepted"}
-                              className="inline-flex items-center gap-2 rounded-xl bg-green-50 px-3 py-2 text-xs font-black text-green-700 hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-                            >
-                              {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserCheck className="h-4 w-4" />}
-                              Accept
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleUpdateStatus(application._id, "rejected")}
-                              disabled={isUpdating || application.status === "rejected"}
-                              className="inline-flex items-center gap-2 rounded-xl bg-red-50 px-3 py-2 text-xs font-black text-red-700 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
-                            >
-                              {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserX className="h-4 w-4" />}
-                              Reject
-                            </button>
+                            {currentStatus !== "accepted" && (
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateStatus(application._id, "accepted")}
+                                disabled={isUpdating}
+                                className="inline-flex items-center gap-2 rounded-xl bg-green-50 px-3 py-2 text-xs font-black text-green-700 hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+                              >
+                                {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserCheck className="h-4 w-4" />}
+                                Accept
+                              </button>
+                            )}
+                            {currentStatus !== "rejected" && (
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateStatus(application._id, "rejected")}
+                                disabled={isUpdating}
+                                className="inline-flex items-center gap-2 rounded-xl bg-red-50 px-3 py-2 text-xs font-black text-red-700 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
+                              >
+                                {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserX className="h-4 w-4" />}
+                                Reject
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>

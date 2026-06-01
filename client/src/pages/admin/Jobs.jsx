@@ -97,7 +97,7 @@ const DetailRow = ({ label, value }) => (
   </div>
 );
 
-const Jobs = () => {
+const Jobs = ({ onBack }) => {
   const [jobs, setJobs] = useState([]);
   const [stats, setStats] = useState(emptyStats);
   const [loading, setLoading] = useState(true);
@@ -222,6 +222,14 @@ const Jobs = () => {
 
   return (
     <div className="space-y-6">
+      <button
+        type="button"
+        onClick={onBack}
+        className="inline-flex items-center text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors"
+      >
+        &larr; Back to Dashboard
+      </button>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
         {summaryCards.map((card) => (
           <StatsCard key={card.label} {...card} />
@@ -231,6 +239,7 @@ const Jobs = () => {
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/70 space-y-5">
         <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
           <div>
+            <p className="text-sm font-black text-blue-600 uppercase tracking-widest mb-1">Dashboard &gt; Jobs</p>
             <h2 className="text-2xl font-black text-slate-900 tracking-tight">Manajemen Lowongan</h2>
             <p className="text-slate-500 text-sm font-medium">
               Menampilkan {jobs.length} dari {total.toLocaleString()} lowongan.

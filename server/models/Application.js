@@ -58,9 +58,8 @@ const ApplicationSchema = new mongoose.Schema({
   },
 });
 
-ApplicationSchema.pre('save', function (next) {
+ApplicationSchema.pre('save', function () {
   this.updatedAt = new Date();
-  next();
 });
 
 ApplicationSchema.index({ jobId: 1, candidateEmail: 1 }, { unique: true });

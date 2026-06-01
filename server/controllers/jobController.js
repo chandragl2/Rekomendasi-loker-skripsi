@@ -1,4 +1,6 @@
 const Job = require('../models/Job');
+const Company = require('../models/Company');
+const Application = require('../models/Application');
 const Vocabulary = require('../models/Vocabulary');
 const preprocessText = require('../utils/preprocess');
 const { buildVocabulary, createVector } = require('../utils/tfidf');
@@ -613,6 +615,8 @@ const getAdminStats = async (req, res) => {
       totalExpired,
       totalScraperJobs,
       totalCompanyJobs,
+      totalCompanies,
+      totalApplications,
       latestScraperJob,
     ] = await Promise.all([
       Job.countDocuments(),
@@ -620,6 +624,8 @@ const getAdminStats = async (req, res) => {
       Job.countDocuments({ status: 'expired' }),
       Job.countDocuments({ createdByType: 'scraper' }),
       Job.countDocuments({ createdByType: 'company' }),
+      Company.countDocuments(),
+      Application.countDocuments(),
       Job.findOne({ createdByType: 'scraper' }).sort({ updatedAt: -1 }).select('updatedAt').lean(),
     ]);
     const lastScraperUpdate = latestScraperJob ? latestScraperJob.updatedAt : null;
@@ -648,6 +654,8 @@ const getAdminStats = async (req, res) => {
       totalExpired,
       totalScraperJobs,
       totalCompanyJobs,
+      totalCompanies,
+      totalApplications,
       lastScraperUpdate,
       categoryData,
       recentJobs: recentJobs.map(normalizeJobForResponse),

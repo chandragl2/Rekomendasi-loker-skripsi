@@ -88,7 +88,10 @@ const CreateJob = () => {
     } catch (err) {
       setNotice({
         type: "error",
-        message: err.response?.data?.message || "Gagal membuat lowongan. Lengkapi data lalu coba lagi.",
+        message:
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Gagal membuat lowongan. Lengkapi data lalu coba lagi.",
       });
     } finally {
       setLoading(false);

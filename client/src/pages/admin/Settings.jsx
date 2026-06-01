@@ -1,107 +1,83 @@
-import React, { useState } from "react";
-import { 
-  Settings as SettingsIcon, 
-  Save, 
-  Clock, 
-  Bell, 
-  Shield, 
-  ToggleLeft as Toggle,
-  Database
+import React from "react";
+import {
+  Boxes,
+  BrainCircuit,
+  BriefcaseBusiness,
+  CheckCircle2,
+  Database,
+  MonitorSmartphone,
+  Server,
+  Settings as SettingsIcon,
+  TimerReset,
+  UsersRound,
 } from "lucide-react";
-import { motion } from "framer-motion";
 
-const Settings = () => {
-  const [interval, setIntervalVal] = useState(10);
-  const [isAuto, setIsAuto] = useState(true);
+const systemInfo = [
+  { label: "Architecture", value: "Decoupled Architecture", icon: Boxes, tone: "bg-blue-50 text-blue-600" },
+  { label: "Recommendation", value: "TF-IDF + Cosine Similarity", icon: BrainCircuit, tone: "bg-violet-50 text-violet-600" },
+  { label: "Scraper", value: "External Python Service", icon: Server, tone: "bg-slate-100 text-slate-700" },
+  { label: "Scraper Interval", value: "15 minutes", icon: TimerReset, tone: "bg-blue-50 text-blue-600" },
+  { label: "Database", value: "MongoDB", icon: Database, tone: "bg-emerald-50 text-emerald-600" },
+  { label: "Backend", value: "Node.js + Express", icon: Server, tone: "bg-cyan-50 text-cyan-600" },
+  { label: "Frontend", value: "React + Vite", icon: MonitorSmartphone, tone: "bg-indigo-50 text-indigo-600" },
+  { label: "Expired Jobs", value: "30 days", icon: TimerReset, tone: "bg-amber-50 text-amber-600" },
+  { label: "Company Module", value: "Enabled", icon: BriefcaseBusiness, tone: "bg-green-50 text-green-600" },
+  { label: "Application Module", value: "Enabled", icon: UsersRound, tone: "bg-rose-50 text-rose-600" },
+];
 
+const Settings = ({ onBack }) => {
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="flex items-center gap-4 mb-2">
+    <div className="max-w-5xl mx-auto space-y-8">
+      <button
+        type="button"
+        onClick={onBack}
+        className="inline-flex items-center text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors"
+      >
+        &larr; Back to Dashboard
+      </button>
+
+      <div className="flex items-center gap-4">
         <div className="p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
           <SettingsIcon className="w-6 h-6 text-slate-900" />
         </div>
         <div>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">System Settings</h2>
-          <p className="text-slate-500 font-medium">Konfigurasi parameter sistem dan scraper.</p>
+          <p className="text-sm font-black text-blue-600 uppercase tracking-widest">System Information</p>
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Informasi Sistem</h2>
+          <p className="text-slate-500 font-medium mt-1">Ringkasan arsitektur dan modul aktif untuk kebutuhan demo.</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        {/* Scraper Settings */}
-        <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200/60 space-y-8">
-          <div className="flex items-center gap-3 border-b border-slate-50 pb-6">
-            <Clock className="w-5 h-5 text-blue-500" />
-            <h3 className="text-xl font-black text-slate-900">Scraper Configuration</h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-3">
-              <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Scraping Interval (Minutes)</label>
-              <div className="flex items-center gap-4">
-                <input 
-                  type="number" 
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 font-bold text-slate-900 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
-                  value={interval}
-                  onChange={(e) => setIntervalVal(e.target.value)}
-                />
-                <span className="text-sm font-bold text-slate-400">Min</span>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <label className="text-xs font-black text-slate-400 uppercase tracking-widest">Automation Mode</label>
-              <button 
-                onClick={() => setIsAuto(!isAuto)}
-                className={`w-full flex items-center justify-between px-6 py-4 rounded-2xl border transition-all ${
-                  isAuto ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-200" : "bg-white border-slate-200 text-slate-600"
-                }`}
-              >
-                <span className="font-bold">{isAuto ? "Auto-Scrape Enabled" : "Manual Only"}</span>
-                <Toggle className={`w-6 h-6 ${isAuto ? "rotate-180" : ""}`} />
-              </button>
-            </div>
-          </div>
-        </section>
-
-        {/* Database & Security */}
-        <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200/60 space-y-8">
-          <div className="flex items-center gap-3 border-b border-slate-50 pb-6">
-            <Shield className="w-5 h-5 text-purple-500" />
-            <h3 className="text-xl font-black text-slate-900">Security & Database</h3>
-          </div>
-
-          <div className="space-y-6">
-            <div className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-white rounded-xl shadow-sm"><Database className="w-5 h-5 text-slate-400" /></div>
-                <div>
-                  <p className="text-sm font-black text-slate-900">Database Optimization</p>
-                  <p className="text-[10px] text-slate-400 font-medium">Clean up old jobs and unused vectors.</p>
+      <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200/60">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {systemInfo.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div key={item.label} className="p-6 rounded-3xl bg-slate-50 border border-slate-100">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 ${item.tone}`}>
+                  <Icon className="w-6 h-6" />
                 </div>
+                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">{item.label}</p>
+                <p className="text-lg font-black text-slate-900">{item.value}</p>
               </div>
-              <button className="px-6 py-3 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all">Optimize Now</button>
-            </div>
-
-            <div className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-white rounded-xl shadow-sm"><Bell className="w-5 h-5 text-slate-400" /></div>
-                <div>
-                  <p className="text-sm font-black text-slate-900">System Notifications</p>
-                  <p className="text-[10px] text-slate-400 font-medium">Get alerted when scraper fails or finds 0 jobs.</p>
-                </div>
-              </div>
-              <button className="w-12 h-6 bg-emerald-500 rounded-full relative"><div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></button>
-            </div>
-          </div>
-        </section>
-
-        <div className="flex justify-end">
-          <button className="flex items-center gap-3 px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-black shadow-2xl hover:-translate-y-1 transition-all active:scale-95">
-            <Save className="w-5 h-5" />
-            Save Changes
-          </button>
+            );
+          })}
         </div>
-      </div>
+      </section>
+
+      <section className="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-2xl">
+        <div className="flex items-start gap-4">
+          <div className="p-3 bg-emerald-500/15 rounded-2xl text-emerald-300">
+            <CheckCircle2 className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-xl font-black">Demo Ready</h3>
+            <p className="text-sm text-slate-300 leading-6 mt-2 max-w-3xl">
+              Dashboard ini menampilkan kondisi sistem saat ini: scraper berjalan sebagai service Python eksternal,
+              backend website fokus pada API dan rekomendasi, sementara modul company dan application sudah aktif.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

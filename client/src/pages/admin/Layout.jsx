@@ -13,17 +13,25 @@ import {
   RefreshCw
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const AdminLayout = ({ children, sidebarOpen, setSidebarOpen, activeTab, setActiveTab, onRefresh, loading }) => {
+  const navigate = useNavigate();
   const menuItems = [
     { id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { id: "jobs", icon: Briefcase, label: "Jobs" },
     { id: "categories", icon: Tag, label: "Categories" },
-    { id: "scraper", icon: Zap, label: "Scraper" },
-    { id: "logs", icon: FileText, label: "Logs" },
-    { id: "users", icon: Users, label: "Users" },
+    { id: "scraper", icon: Zap, label: "Scraper Monitor" },
+    { id: "logs", icon: FileText, label: "Activity Log" },
+    { id: "users", icon: Users, label: "Companies" },
     { id: "settings", icon: Settings, label: "Settings" },
   ];
+  const activeMenu = menuItems.find((item) => item.id === activeTab);
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    navigate("/admin/login", { replace: true });
+  };
 
   return (
     <div className="flex h-screen bg-[#F8FAFC] text-slate-900 font-sans overflow-hidden">
@@ -68,7 +76,11 @@ const AdminLayout = ({ children, sidebarOpen, setSidebarOpen, activeTab, setActi
         </nav>
 
         <div className="p-4 mt-auto border-t border-slate-800/50">
-          <button className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-rose-500/10 hover:text-rose-500 transition-all group">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 hover:bg-rose-500/10 hover:text-rose-500 transition-all group"
+          >
             <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             {sidebarOpen && <span className="text-sm font-semibold">Logout</span>}
           </button>
@@ -87,10 +99,34 @@ const AdminLayout = ({ children, sidebarOpen, setSidebarOpen, activeTab, setActi
               {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
             <div className="h-6 w-px bg-slate-200"></div>
-            <h1 className="text-xl font-bold text-slate-800 tracking-tight capitalize">{activeTab}</h1>
+            <div>
+              <h1 className="text-xl font-bold text-slate-800 tracking-tight">{activeMenu?.label || "Dashboard"}</h1>
+              {activeTab !== "dashboard" && (
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-400 mt-1">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("dashboard")}
+                    className="hover:text-blue-600 transition-colors"
+                  >
+                    Dashboard
+                  </button>
+                  <span>/</span>
+                  <span className="text-slate-600">{activeMenu?.label}</span>
+                </div>
+              )}
+            </div>
           </div>
           
           <div className="flex items-center gap-4">
+            {activeTab !== "dashboard" && (
+              <button
+                type="button"
+                onClick={() => setActiveTab("dashboard")}
+                className="hidden sm:inline-flex px-4 py-2 rounded-xl text-sm font-bold text-slate-600 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 transition-all"
+              >
+                Back to Dashboard
+              </button>
+            )}
             <button 
               onClick={onRefresh}
               className="p-2.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"

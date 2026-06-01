@@ -99,22 +99,41 @@ const getCompanyMe = async (req, res) => {
 
 const createCompanyJob = async (req, res) => {
   try {
+    const requiredFields = ['title', 'location', 'type', 'category', 'description'];
+    const missingFields = requiredFields.filter((field) => !String(req.body[field] || '').trim());
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        message: `Field wajib belum lengkap: ${missingFields.join(', ')}`,
+      });
+    }
+
+    const skills = normalizeList(req.body.skills);
+    const qualifications = normalizeList(req.body.qualifications);
+
+    if (skills.length === 0) {
+      return res.status(400).json({ message: 'Skills wajib diisi minimal 1 item' });
+    }
+
+    if (qualifications.length === 0) {
+      return res.status(400).json({ message: 'Qualifications wajib diisi minimal 1 item' });
+    }
+
     const requestedDuration = Number(req.body.durationDays);
     const durationDays = ALLOWED_DURATIONS.includes(requestedDuration) ? requestedDuration : 30;
     const postedAt = new Date();
 
     const job = await Job.create({
-      title: req.body.title,
-      company: req.body.company || req.company.companyName,
-      location: req.body.location,
-      type: req.body.type,
+      title: String(req.body.title).trim(),
+      company: String(req.body.company || req.company.companyName).trim(),
+      location: String(req.body.location).trim(),
+      type: String(req.body.type).trim(),
       category: normalizeCategory(req.body.category),
-      description: req.body.description,
-      skills: normalizeList(req.body.skills),
-      qualifications: normalizeList(req.body.qualifications),
+      description: String(req.body.description).trim(),
+      skills,
+      qualifications,
       companyId: req.company._id,
       source: 'Company',
-      url: undefined,
       createdByType: 'company',
       status: 'active',
       postedAt,
@@ -123,7 +142,14 @@ const createCompanyJob = async (req, res) => {
 
     res.status(201).json(normalizeJobForResponse(job));
   } catch (err) {
-    res.status(400).json({ message: 'Gagal membuat lowongan perusahaan', error: err.message });
+    const validationMessage = err.name === 'ValidationError'
+      ? Object.values(err.errors).map((item) => item.message).join(', ')
+      : err.message;
+
+    res.status(400).json({
+      message: validationMessage || 'Gagal membuat lowongan perusahaan',
+      error: err.message,
+    });
   }
 };
 

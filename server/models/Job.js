@@ -117,7 +117,7 @@ const JobSchema = new mongoose.Schema({
   },
 });
 
-JobSchema.pre('validate', function (next) {
+JobSchema.pre('validate', function () {
   if (!this.postedAt) {
     this.postedAt = this.createdAt || new Date();
   }
@@ -143,7 +143,6 @@ JobSchema.pre('validate', function (next) {
   }
 
   this.updatedAt = new Date();
-  next();
 });
 
 JobSchema.statics.activeFilter = function (referenceDate = new Date()) {

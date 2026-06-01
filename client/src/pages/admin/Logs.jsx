@@ -1,95 +1,173 @@
-import React from "react";
-import { 
-  FileText, 
-  Terminal, 
-  Info, 
-  AlertCircle, 
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  AlertCircle,
+  BriefcaseBusiness,
   CheckCircle2,
+  ClipboardCheck,
   Clock,
-  Download
+  Loader2,
+  Send,
+  TimerOff,
+  UserPlus,
+  XCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-const Logs = () => {
-  const logs = [
-    { time: "10:05", type: "success", msg: "Finished: Total 35 jobs saved to DB." },
-    { time: "10:03", type: "info", msg: "Filtering duplicates and cleaning text data..." },
-    { time: "10:01", type: "info", msg: "Scraper found 40 relevant jobs on Glints.com." },
-    { time: "10:00", type: "info", msg: "Scraping process started automatically (Interval)." },
-    { time: "09:50", type: "success", msg: "System health check: All services online." },
-    { time: "09:40", type: "error", msg: "Failed to connect to Glints API (Retry 1/3)..." },
-    { time: "09:30", type: "info", msg: "TF-IDF Vocabulary rebuilt successfully." },
-    { time: "09:20", type: "info", msg: "Database connection established." },
-  ];
+const activityMeta = {
+  company_registered: {
+    icon: UserPlus,
+    tone: "bg-cyan-50 text-cyan-600 border-cyan-100",
+  },
+  job_created: {
+    icon: BriefcaseBusiness,
+    tone: "bg-violet-50 text-violet-600 border-violet-100",
+  },
+  application_submitted: {
+    icon: Send,
+    tone: "bg-blue-50 text-blue-600 border-blue-100",
+  },
+  application_accepted: {
+    icon: CheckCircle2,
+    tone: "bg-emerald-50 text-emerald-600 border-emerald-100",
+  },
+  application_rejected: {
+    icon: XCircle,
+    tone: "bg-rose-50 text-rose-600 border-rose-100",
+  },
+  job_expired: {
+    icon: TimerOff,
+    tone: "bg-amber-50 text-amber-600 border-amber-100",
+  },
+};
 
-  const getLogIcon = (type) => {
-    switch (type) {
-      case "success": return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
-      case "error": return <AlertCircle className="w-4 h-4 text-rose-500" />;
-      default: return <Info className="w-4 h-4 text-blue-500" />;
-    }
-  };
+const getActivitiesFromResponse = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.activities)) return data.activities;
+  return [];
+};
+
+const formatDateTime = (value) => {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return date.toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const Logs = ({ onBack }) => {
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchActivities = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        const response = await axios.get("/api/admin/activity");
+        setActivities(getActivitiesFromResponse(response.data));
+      } catch (err) {
+        setError(err.response?.data?.message || "Gagal memuat activity log.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchActivities();
+  }, []);
 
   return (
     <div className="space-y-6">
+      <button
+        type="button"
+        onClick={onBack}
+        className="inline-flex items-center text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors"
+      >
+        &larr; Back to Dashboard
+      </button>
+
       <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200/60 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="p-4 bg-slate-900 text-white rounded-2xl shadow-xl">
-            <Terminal className="w-6 h-6" />
+            <ClipboardCheck className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">System Logs</h2>
-            <p className="text-slate-500 font-medium">Monitoring semua aktivitas sistem secara mendalam.</p>
+            <p className="text-sm font-black text-blue-600 uppercase tracking-widest">System Activity</p>
+            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Activity Log</h2>
+            <p className="text-slate-500 font-medium">Aktivitas sistem dari data companies, jobs, dan applications.</p>
           </div>
         </div>
 
-        <button className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 rounded-xl text-slate-600 font-bold hover:bg-slate-50 transition-all">
-          <Download className="w-4 h-4" />
-          Export Logs (.txt)
-        </button>
+        <div className="px-6 py-3 bg-slate-50 text-slate-600 rounded-xl font-bold border border-slate-100 flex items-center gap-2">
+          <Clock className="w-5 h-5" />
+          Database Activity
+        </div>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-200/60 overflow-hidden">
-        <div className="max-h-[600px] overflow-y-auto custom-scrollbar">
-          <div className="divide-y divide-slate-50">
-            {logs.map((log, idx) => (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                key={idx}
-                className="flex items-start gap-6 p-6 hover:bg-slate-50 transition-colors"
-              >
-                <div className="flex items-center gap-2 w-24 flex-shrink-0">
-                  <Clock className="w-3.5 h-3.5 text-slate-400" />
-                  <span className="text-xs font-black text-slate-400 font-mono">{log.time}</span>
-                </div>
-                
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="mt-0.5">{getLogIcon(log.type)}</div>
-                  <p className={`text-sm font-semibold tracking-wide ${
-                    log.type === "error" ? "text-rose-600" : 
-                    log.type === "success" ? "text-emerald-700" : 
-                    "text-slate-700"
-                  }`}>
-                    {log.msg}
-                  </p>
-                </div>
+      {loading && (
+        <div className="flex items-center justify-center py-16 text-slate-400">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-500 mr-3" />
+          Memuat activity log...
+        </div>
+      )}
 
-                <div className="text-[10px] font-black uppercase tracking-widest text-slate-300">
-                  {log.type}
-                </div>
-              </motion.div>
-            ))}
+      {error && !loading && (
+        <div className="flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-5 text-sm font-semibold text-rose-700">
+          <AlertCircle className="h-5 w-5 flex-shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {!loading && !error && activities.length === 0 && (
+        <div className="bg-white rounded-[2.5rem] border border-slate-200/60 shadow-sm p-12 text-center">
+          <ClipboardCheck className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+          <h3 className="text-xl font-black text-slate-900">Belum ada aktivitas</h3>
+          <p className="text-sm text-slate-500 mt-2">Aktivitas akan muncul setelah ada company, job, atau application.</p>
+        </div>
+      )}
+
+      {!loading && !error && activities.length > 0 && (
+        <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-200/60 p-8">
+          <div className="relative">
+            <div className="absolute left-5 top-0 bottom-0 w-px bg-slate-200"></div>
+
+            <div className="space-y-6">
+              {activities.map((activity, index) => {
+                const meta = activityMeta[activity.type] || activityMeta.application_submitted;
+                const Icon = meta.icon;
+                return (
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                    key={activity.id || `${activity.type}-${activity.occurredAt}-${index}`}
+                    className="relative flex gap-5"
+                  >
+                    <div className={`relative z-10 w-10 h-10 rounded-2xl border flex items-center justify-center ${meta.tone}`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+
+                    <div className="flex-1 bg-slate-50 border border-slate-100 rounded-3xl p-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                        <h3 className="text-base font-black text-slate-900">{activity.title}</h3>
+                        <span className="text-xs font-black text-slate-400">{formatDateTime(activity.occurredAt)}</span>
+                      </div>
+                      <p className="text-sm font-medium text-slate-500 leading-6">{activity.description}</p>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </div>
-        
-        <div className="p-6 bg-slate-50/50 border-t border-slate-50 text-center">
-          <button className="text-blue-600 font-black text-xs uppercase tracking-widest hover:underline">
-            Load More History
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

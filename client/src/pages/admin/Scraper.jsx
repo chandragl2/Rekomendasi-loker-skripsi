@@ -138,10 +138,10 @@ const Scraper = () => {
             </div>
           </div>
           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Interval Scraping</p>
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Schedule</p>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-emerald-500" />
-              <p className="text-xl font-black text-slate-900">Setiap 15 Menit</p>
+              <p className="text-xl font-black text-slate-900">Managed Externally</p>
             </div>
           </div>
           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
@@ -208,7 +208,7 @@ const Scraper = () => {
             {[
               "Scraper berjalan pada service Python eksternal",
               "Website hanya membaca data dari MongoDB",
-              "Interval scraping: 15 menit",
+              "Jadwal scraping dikontrol oleh service Python eksternal",
               "Status lowongan otomatis mengikuti expiredAt",
               "Data hasil scraping akan diperbarui ketika scraper menemukan data baru",
             ].map((item) => (
@@ -228,12 +228,12 @@ const Scraper = () => {
             <p className="text-[10px] font-black uppercase tracking-widest text-violet-400">Step 1</p>
             <p className="text-lg font-black text-violet-900 mt-1">Scraper Python</p>
           </div>
-          <div className="hidden md:block text-slate-300 font-black">↓</div>
+          <div className="hidden md:block text-slate-300 font-black">-&gt;</div>
           <div className="p-5 bg-blue-50 border border-blue-100 rounded-2xl">
             <p className="text-[10px] font-black uppercase tracking-widest text-blue-400">Step 2</p>
             <p className="text-lg font-black text-blue-900 mt-1">MongoDB</p>
           </div>
-          <div className="hidden md:block text-slate-300 font-black">↓</div>
+          <div className="hidden md:block text-slate-300 font-black">-&gt;</div>
           <div className="p-5 bg-emerald-50 border border-emerald-100 rounded-2xl">
             <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Step 3</p>
             <p className="text-lg font-black text-emerald-900 mt-1">Website MERN</p>
