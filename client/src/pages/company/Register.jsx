@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { AlertCircle, ArrowRight, Building2, Loader2 } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, Building2, Loader2 } from "lucide-react";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import { saveCompanySession } from "../../utils/companyAuth";
 
@@ -56,6 +56,14 @@ const Register = () => {
         </section>
 
         <section className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-indigo-100/30 p-6 md:p-8 text-left">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-indigo-600 mb-6"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Kembali ke Dashboard
+          </Link>
+
           <h2 className="text-2xl font-black text-gray-900 mb-1">Register Perusahaan</h2>
           <p className="text-sm text-gray-500 mb-6">
             Sudah punya akun?{" "}

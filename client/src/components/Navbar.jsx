@@ -28,6 +28,7 @@ const Navbar = () => {
     { name: 'Cari Kandidat', path: '/find-candidates' },
     { name: 'About', path: '/about' },
     { name: 'Admin', path: '/admin' },
+    { name: 'Perusahaan', path: '/company/login' },
   ];
 
   return (

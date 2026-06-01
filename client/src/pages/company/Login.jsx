@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { AlertCircle, ArrowRight, Loader2, ShieldCheck } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, Loader2, ShieldCheck } from "lucide-react";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import { saveCompanySession } from "../../utils/companyAuth";
 
@@ -36,6 +36,14 @@ const Login = () => {
     <CompanyLayout requireAuth={false}>
       <div className="max-w-md mx-auto">
         <section className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-indigo-100/30 p-6 md:p-8 text-left">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-indigo-600 mb-6"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Kembali ke Dashboard
+          </Link>
+
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-bold mb-6">
             <ShieldCheck className="h-3.5 w-3.5" />
             Company Access
