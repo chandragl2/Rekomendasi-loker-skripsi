@@ -7,11 +7,31 @@ import JobCard from '../components/JobCard';
 import { Loader2, Database, CheckCircle, XCircle, X, RefreshCw, Globe, BarChart2 } from 'lucide-react';
 import axios from 'axios';
 
+const RECOMMENDATIONS_KEY = 'jobRecommendations';
+const CV_FILE_NAME_KEY = 'cvFileName';
+const CV_TEXT_KEY = 'cvText';
+
+const getStoredRecommendationSession = () => {
+  if (typeof window === 'undefined') return { exists: false, jobs: [] };
+
+  try {
+    const stored = window.sessionStorage.getItem(RECOMMENDATIONS_KEY);
+    if (stored === null) return { exists: false, jobs: [] };
+
+    const parsed = stored ? JSON.parse(stored) : [];
+    return { exists: true, jobs: Array.isArray(parsed) ? parsed : [] };
+  } catch (error) {
+    console.error('Failed to read stored job recommendations:', error);
+    return { exists: false, jobs: [] };
+  }
+};
+
 const Dashboard = () => {
+  const [storedRecommendationSession] = useState(() => getStoredRecommendationSession());
   const [analyzing, setAnalyzing] = useState(false);
   const [scraping, setScraping] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState(storedRecommendationSession.jobs);
+  const [showResults, setShowResults] = useState(storedRecommendationSession.exists);
   const [toast, setToast] = useState(null);
   const [scrapeStats, setScrapeStats] = useState(null); // Hasil statistik scraping realtime
 
@@ -63,9 +83,32 @@ const Dashboard = () => {
   };
 
   const handleAnalysisComplete = (results, cvMeta = {}) => {
-    setJobs(results.map((job) => ({ ...job, ...cvMeta })));
+    const recommendedJobs = Array.isArray(results) ? results : [];
+    const enrichedJobs = recommendedJobs.map((job) => ({ ...job, ...cvMeta }));
+
+    window.sessionStorage.setItem(RECOMMENDATIONS_KEY, JSON.stringify(enrichedJobs));
+    if (cvMeta.cvFileName) {
+      window.sessionStorage.setItem(CV_FILE_NAME_KEY, cvMeta.cvFileName);
+    } else {
+      window.sessionStorage.removeItem(CV_FILE_NAME_KEY);
+    }
+    if (cvMeta.cvText) {
+      window.sessionStorage.setItem(CV_TEXT_KEY, cvMeta.cvText);
+    } else {
+      window.sessionStorage.removeItem(CV_TEXT_KEY);
+    }
+
+    setJobs(enrichedJobs);
     setShowResults(true);
     setTimeout(() => window.scrollTo({ top: 500, behavior: 'smooth' }), 100);
+  };
+
+  const handleResetRecommendations = () => {
+    window.sessionStorage.removeItem(RECOMMENDATIONS_KEY);
+    window.sessionStorage.removeItem(CV_FILE_NAME_KEY);
+    window.sessionStorage.removeItem(CV_TEXT_KEY);
+    setJobs([]);
+    setShowResults(false);
   };
 
   return (
@@ -207,7 +250,7 @@ const Dashboard = () => {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">Hasil Rekomendasi ({jobs.length})</h2>
                 <button
-                  onClick={() => setShowResults(false)}
+                  onClick={handleResetRecommendations}
                   className="text-indigo-600 font-medium hover:underline"
                 >
                   Upload CV Baru

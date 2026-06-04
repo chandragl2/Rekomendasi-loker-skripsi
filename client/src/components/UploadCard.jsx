@@ -62,7 +62,16 @@ const UploadCard = ({ onAnalyze }) => {
         },
       });
 
-      onAnalyze(response.data, { cvFileName: file.name });
+      const recommendations = Array.isArray(response.data)
+        ? response.data
+        : response.data?.recommendations || response.data?.jobs || [];
+
+      onAnalyze(recommendations, {
+        cvFileName: file.name,
+        cvText: !Array.isArray(response.data)
+          ? response.data?.cvText || response.data?.cvRawText || response.data?.extractedText || ''
+          : '',
+      });
     } catch (err) {
       console.error(err);
       setError(err.response?.data?.message || 'Error analysing CV. Please try again.');
