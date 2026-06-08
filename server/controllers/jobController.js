@@ -26,6 +26,21 @@ const normalizeJobForResponse = (job) => ({
   category: displayCategory(job.category),
 });
 
+const getDuplicateJobKey = (job) =>
+  `${job.title || ''}-${job.company || ''}-${job.location || ''}`.toLowerCase().trim();
+
+const removeDuplicateJobs = (jobs) => {
+  const seen = new Set();
+
+  return jobs.filter((job) => {
+    const key = getDuplicateJobKey(job);
+    if (seen.has(key)) return false;
+
+    seen.add(key);
+    return true;
+  });
+};
+
 const buildNormalizedCategoryData = (rawCategories) => {
   const counts = rawCategories.reduce((acc, cat) => {
     const name = normalizeCategory(cat._id);
@@ -106,17 +121,23 @@ const getAllJobs = async (req, res) => {
       { skills: { $regex: search, $options: 'i' } }
     ];
 
-    const total = await Job.countDocuments(query);
+    const parsedPage = Math.max(parseInt(page, 10) || 1, 1);
+    const parsedLimit = Math.max(parseInt(limit, 10) || 20, 1);
+
     const jobs = await Job.find(query)
       .sort({ createdAt: -1 })
-      .skip((parseInt(page) - 1) * parseInt(limit))
-      .limit(parseInt(limit));
+      .lean();
+    const uniqueJobs = removeDuplicateJobs(jobs);
+    const paginatedJobs = uniqueJobs.slice(
+      (parsedPage - 1) * parsedLimit,
+      parsedPage * parsedLimit
+    );
 
     res.json({
-      jobs: jobs.map(normalizeJobForResponse),
-      total,
-      page: parseInt(page),
-      totalPages: Math.ceil(total / parseInt(limit))
+      jobs: paginatedJobs.map(normalizeJobForResponse),
+      total: uniqueJobs.length,
+      page: parsedPage,
+      totalPages: Math.ceil(uniqueJobs.length / parsedLimit) || 1
     });
   } catch (err) {
     console.error(err);
@@ -544,9 +565,9 @@ const recommendJobs = async (req, res) => {
     }));
 
     // 8. Sort & ambil Top 10 yang paling relevan
-    const sortedRecommendations = recommendations
+    const sortedRecommendations = removeDuplicateJobs(recommendations
       .sort((a, b) => b.similarityScore - a.similarityScore)
-      .slice(0, 10);
+    ).slice(0, 10);
 
     // 9. [BARU] Normalisasi Skor untuk Tampilan UI
     const topRecommendations = calculateFinalScore(sortedRecommendations);

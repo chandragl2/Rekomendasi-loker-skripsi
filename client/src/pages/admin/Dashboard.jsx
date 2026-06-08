@@ -5,8 +5,6 @@ import {
   CheckCircle2, 
   AlertTriangle,
   Database,
-  Building2,
-  Send,
   TrendingUp, 
   RefreshCw, 
   Loader2 
@@ -28,20 +26,6 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
       icon: Briefcase,
       change: "Semua status",
       color: "from-slate-700 to-slate-500",
-    },
-    {
-      label: "Total Companies",
-      value: (stats.totalCompanies || 0).toLocaleString(),
-      icon: Building2,
-      change: "Akun perusahaan",
-      color: "from-blue-600 to-cyan-500",
-    },
-    {
-      label: "Total Applications",
-      value: (stats.totalApplications || 0).toLocaleString(),
-      icon: Send,
-      change: "Lamaran kandidat",
-      color: "from-violet-600 to-purple-500",
     },
     {
       label: "Active Jobs",
@@ -83,7 +67,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
       </div>
 
       {/* STATS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {dashboardStats.map((stat, idx) => (
           <motion.div
             key={idx}
@@ -237,7 +221,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
             </div>
             <div>
               <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Sources</p>
-              <p className="text-lg font-black text-slate-900">Scraper & Company</p>
+              <p className="text-lg font-black text-slate-900">Glints Scraper</p>
             </div>
           </div>
         </div>

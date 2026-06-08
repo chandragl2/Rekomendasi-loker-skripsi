@@ -11,14 +11,13 @@ import Jobs from "./admin/Jobs";
 import Categories from "./admin/Categories";
 import Scraper from "./admin/Scraper";
 import Logs from "./admin/Logs";
-import Users from "./admin/Users";
 import Settings from "./admin/Settings";
 
 const AdminDashboard = () => {
   const location = useLocation();
   const getInitialTab = () => {
     const segment = location.pathname.split("/")[2];
-    return ["jobs", "categories", "scraper", "logs", "users", "settings"].includes(segment)
+    return ["jobs", "categories", "scraper", "logs", "settings"].includes(segment)
       ? segment
       : "dashboard";
   };
@@ -105,8 +104,6 @@ const AdminDashboard = () => {
         return <Scraper />;
       case "logs":
         return <Logs onBack={() => setActiveTab("dashboard")} />;
-      case "users":
-        return <Users onBack={() => setActiveTab("dashboard")} />;
       case "settings":
         return <Settings onBack={() => setActiveTab("dashboard")} />;
       default:

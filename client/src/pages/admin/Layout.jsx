@@ -5,7 +5,6 @@ import {
   Tag, 
   Zap, 
   FileText, 
-  Users, 
   Settings, 
   LogOut, 
   Menu, 
@@ -23,7 +22,6 @@ const AdminLayout = ({ children, sidebarOpen, setSidebarOpen, activeTab, setActi
     { id: "categories", icon: Tag, label: "Categories" },
     { id: "scraper", icon: Zap, label: "Scraper Monitor" },
     { id: "logs", icon: FileText, label: "Activity Log" },
-    { id: "users", icon: Users, label: "Companies" },
     { id: "settings", icon: Settings, label: "Settings" },
   ];
   const activeMenu = menuItems.find((item) => item.id === activeTab);

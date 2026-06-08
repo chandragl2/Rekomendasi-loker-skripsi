@@ -2,14 +2,12 @@ import React from "react";
 import {
   Boxes,
   BrainCircuit,
-  BriefcaseBusiness,
   CheckCircle2,
   Database,
   MonitorSmartphone,
   Server,
   Settings as SettingsIcon,
   TimerReset,
-  UsersRound,
 } from "lucide-react";
 
 const systemInfo = [
@@ -21,8 +19,6 @@ const systemInfo = [
   { label: "Backend", value: "Node.js + Express", icon: Server, tone: "bg-cyan-50 text-cyan-600" },
   { label: "Frontend", value: "React + Vite", icon: MonitorSmartphone, tone: "bg-indigo-50 text-indigo-600" },
   { label: "Expired Jobs", value: "30 days", icon: TimerReset, tone: "bg-amber-50 text-amber-600" },
-  { label: "Company Module", value: "Enabled", icon: BriefcaseBusiness, tone: "bg-green-50 text-green-600" },
-  { label: "Application Module", value: "Enabled", icon: UsersRound, tone: "bg-rose-50 text-rose-600" },
 ];
 
 const Settings = ({ onBack }) => {
@@ -73,7 +69,7 @@ const Settings = ({ onBack }) => {
             <h3 className="text-xl font-black">Demo Ready</h3>
             <p className="text-sm text-slate-300 leading-6 mt-2 max-w-3xl">
               Dashboard ini menampilkan kondisi sistem saat ini: scraper berjalan sebagai service Python eksternal,
-              backend website fokus pada API dan rekomendasi, sementara modul company dan application sudah aktif.
+              backend website fokus pada API lowongan, rekomendasi, dan expired job system.
             </p>
           </div>
         </div>

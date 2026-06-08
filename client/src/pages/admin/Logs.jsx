@@ -3,37 +3,17 @@ import axios from "axios";
 import {
   AlertCircle,
   BriefcaseBusiness,
-  CheckCircle2,
   ClipboardCheck,
   Clock,
   Loader2,
-  Send,
   TimerOff,
-  UserPlus,
-  XCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const activityMeta = {
-  company_registered: {
-    icon: UserPlus,
-    tone: "bg-cyan-50 text-cyan-600 border-cyan-100",
-  },
   job_created: {
     icon: BriefcaseBusiness,
     tone: "bg-violet-50 text-violet-600 border-violet-100",
-  },
-  application_submitted: {
-    icon: Send,
-    tone: "bg-blue-50 text-blue-600 border-blue-100",
-  },
-  application_accepted: {
-    icon: CheckCircle2,
-    tone: "bg-emerald-50 text-emerald-600 border-emerald-100",
-  },
-  application_rejected: {
-    icon: XCircle,
-    tone: "bg-rose-50 text-rose-600 border-rose-100",
   },
   job_expired: {
     icon: TimerOff,
@@ -41,10 +21,16 @@ const activityMeta = {
   },
 };
 
+const visibleActivityTypes = new Set(["job_created", "job_expired"]);
+
 const getActivitiesFromResponse = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.activities)) return data.activities;
-  return [];
+  const activities = Array.isArray(data)
+    ? data
+    : Array.isArray(data?.activities)
+      ? data.activities
+      : [];
+
+  return activities.filter((activity) => visibleActivityTypes.has(activity.type));
 };
 
 const formatDateTime = (value) => {
@@ -101,7 +87,7 @@ const Logs = ({ onBack }) => {
           <div>
             <p className="text-sm font-black text-blue-600 uppercase tracking-widest">System Activity</p>
             <h2 className="text-3xl font-black text-slate-900 tracking-tight">Activity Log</h2>
-            <p className="text-slate-500 font-medium">Aktivitas sistem dari data companies, jobs, dan applications.</p>
+            <p className="text-slate-500 font-medium">Aktivitas sistem dari data lowongan dan status pekerjaan.</p>
           </div>
         </div>
 
@@ -129,7 +115,7 @@ const Logs = ({ onBack }) => {
         <div className="bg-white rounded-[2.5rem] border border-slate-200/60 shadow-sm p-12 text-center">
           <ClipboardCheck className="h-12 w-12 text-slate-300 mx-auto mb-4" />
           <h3 className="text-xl font-black text-slate-900">Belum ada aktivitas</h3>
-          <p className="text-sm text-slate-500 mt-2">Aktivitas akan muncul setelah ada company, job, atau application.</p>
+          <p className="text-sm text-slate-500 mt-2">Aktivitas akan muncul setelah ada perubahan data lowongan.</p>
         </div>
       )}
 
@@ -140,7 +126,7 @@ const Logs = ({ onBack }) => {
 
             <div className="space-y-6">
               {activities.map((activity, index) => {
-                const meta = activityMeta[activity.type] || activityMeta.application_submitted;
+                const meta = activityMeta[activity.type] || activityMeta.job_created;
                 const Icon = meta.icon;
                 return (
                   <motion.div

@@ -25,10 +25,8 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Lowongan', path: '/jobs' },
-    { name: 'Cari Kandidat', path: '/find-candidates' },
     { name: 'About', path: '/about' },
     { name: 'Admin', path: '/admin' },
-    { name: 'Perusahaan', path: '/company/login' },
   ];
 
   return (

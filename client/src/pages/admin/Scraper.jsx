@@ -9,7 +9,6 @@ import {
   Loader2,
   RefreshCw,
   Server,
-  UserRound,
   CheckCircle2,
   AlertTriangle,
 } from "lucide-react";
@@ -19,7 +18,6 @@ const emptyStats = {
   totalActive: 0,
   totalExpired: 0,
   totalScraperJobs: 0,
-  totalCompanyJobs: 0,
   lastScraperUpdate: null,
 };
 
@@ -60,7 +58,6 @@ const Scraper = () => {
         totalActive: response.data.totalActive || 0,
         totalExpired: response.data.totalExpired || 0,
         totalScraperJobs: response.data.totalScraperJobs || 0,
-        totalCompanyJobs: response.data.totalCompanyJobs || 0,
         lastScraperUpdate: response.data.lastScraperUpdate || null,
       });
     } catch (err) {
@@ -80,12 +77,6 @@ const Scraper = () => {
       value: stats.totalScraperJobs,
       icon: Database,
       tone: "bg-blue-50 text-blue-600",
-    },
-    {
-      label: "Total Company Jobs",
-      value: stats.totalCompanyJobs,
-      icon: UserRound,
-      tone: "bg-violet-50 text-violet-600",
     },
     {
       label: "Active Jobs",
@@ -160,7 +151,7 @@ const Scraper = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         {cards.map((card, index) => (
           <motion.div
             key={card.label}
@@ -187,10 +178,6 @@ const Scraper = () => {
             <div className="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
               <span className="text-sm font-bold text-slate-600">Total Lowongan Scraper</span>
               <span className="text-sm font-black text-slate-800">{stats.totalScraperJobs.toLocaleString()} Lowongan</span>
-            </div>
-            <div className="flex items-center justify-between gap-4 p-4 bg-violet-50/60 rounded-2xl border border-violet-100">
-              <span className="text-sm font-bold text-slate-600">Total Lowongan Company</span>
-              <span className="text-sm font-black text-violet-700">{stats.totalCompanyJobs.toLocaleString()} Lowongan</span>
             </div>
             <div className="flex items-center justify-between gap-4 p-4 bg-emerald-50/60 rounded-2xl border border-emerald-100">
               <span className="text-sm font-bold text-slate-600">Last Scraper Update</span>

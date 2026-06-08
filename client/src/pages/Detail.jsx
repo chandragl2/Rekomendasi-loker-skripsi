@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft, Building2, MapPin, Share2, Bookmark,
-  LayoutList, CheckCircle, Briefcase, Tag, Globe, X, Loader2, AlertCircle
+  LayoutList, CheckCircle, Briefcase, Tag, Globe
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -16,14 +16,7 @@ const Detail = () => {
   const [job, setJob] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
-  const [showApplicationModal, setShowApplicationModal] = React.useState(false);
-  const [applicationForm, setApplicationForm] = React.useState({
-    candidateName: '',
-    candidateEmail: '',
-    candidatePhone: '',
-  });
   const [applicationStatus, setApplicationStatus] = React.useState({ type: '', message: '' });
-  const [submittingApplication, setSubmittingApplication] = React.useState(false);
 
   React.useEffect(() => {
     if (location.state?.job) {
@@ -71,65 +64,22 @@ const Detail = () => {
   const uniqueSkills = [...new Set((job.skills || []).map(s => s?.trim()).filter(Boolean))];
   const qualifications = job.qualifications || [];
   const hasMatchScore = job.matchScore && job.matchScore > 0;
-  const companyJob = job.createdByType === 'company' || job.source === 'Company';
 
   const handleApplyClick = () => {
     setApplicationStatus({ type: '', message: '' });
 
-    if (companyJob) {
-      setShowApplicationModal(true);
+    const originalUrl = typeof job.url === 'string' ? job.url.trim() : '';
+    if (originalUrl) {
+      window.open(originalUrl, '_blank', 'noopener,noreferrer');
       return;
     }
 
-    if (job.url) {
-      window.open(job.url, '_blank', 'noopener,noreferrer');
-      return;
-    }
-
+    const message = 'URL lowongan tidak tersedia.';
     setApplicationStatus({
       type: 'error',
-      message: 'URL asli lowongan tidak tersedia.',
+      message,
     });
-  };
-
-  const handleApplicationChange = (e) => {
-    const { name, value } = e.target;
-    setApplicationForm((current) => ({ ...current, [name]: value }));
-  };
-
-  const handleApplicationSubmit = async (e) => {
-    e.preventDefault();
-    setSubmittingApplication(true);
-    setApplicationStatus({ type: '', message: '' });
-
-    const scoreFromMatch = job.matchScore ? Number(job.matchScore) / 100 : undefined;
-    const payload = {
-      jobId: job._id || job.id || job.jobId || id,
-      ...applicationForm,
-      cvText: job.cvText || '',
-      cvFileName: job.cvFileName || '',
-      similarityScore: job.similarityScore ?? scoreFromMatch,
-    };
-
-    try {
-      const { data } = await axios.post('/api/applications/apply', payload);
-      setApplicationStatus({
-        type: 'success',
-        message: data?.message || 'Lamaran berhasil dikirim.',
-      });
-      setApplicationForm({ candidateName: '', candidateEmail: '', candidatePhone: '' });
-    } catch (err) {
-      const redirectUrl = err.response?.data?.redirectUrl;
-      if (redirectUrl) {
-        window.open(redirectUrl, '_blank', 'noopener,noreferrer');
-      }
-      setApplicationStatus({
-        type: 'error',
-        message: err.response?.data?.message || 'Gagal mengirim lamaran.',
-      });
-    } finally {
-      setSubmittingApplication(false);
-    }
+    window.alert(message);
   };
 
   return (
@@ -211,6 +161,13 @@ const Detail = () => {
                 </button>
               </div>
             </div>
+            {applicationStatus.message && (
+              <div className="px-5 md:px-8 pb-5">
+                <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                  {applicationStatus.message}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Content Grid */}
@@ -313,97 +270,6 @@ const Detail = () => {
           </div>
         </motion.div>
       </main>
-
-      {showApplicationModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 px-4 py-6">
-          <motion.div
-            initial={{ opacity: 0, y: 16, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="w-full max-w-lg rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden"
-          >
-            <div className="flex items-start justify-between gap-4 border-b border-gray-100 p-5">
-              <div>
-                <h2 className="text-xl font-black text-gray-900">Form Lamaran</h2>
-                <p className="text-sm text-gray-500 mt-1">{job.title} di {job.company}</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowApplicationModal(false)}
-                className="rounded-xl p-2 text-gray-400 hover:bg-gray-50 hover:text-gray-700 transition-colors"
-                aria-label="Tutup form lamaran"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleApplicationSubmit} className="p-5 space-y-4">
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wide text-gray-400 mb-2">Nama</label>
-                <input
-                  type="text"
-                  name="candidateName"
-                  value={applicationForm.candidateName}
-                  onChange={handleApplicationChange}
-                  required
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-                  placeholder="Nama lengkap"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wide text-gray-400 mb-2">Email</label>
-                <input
-                  type="email"
-                  name="candidateEmail"
-                  value={applicationForm.candidateEmail}
-                  onChange={handleApplicationChange}
-                  required
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-                  placeholder="nama@email.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-black uppercase tracking-wide text-gray-400 mb-2">No HP</label>
-                <input
-                  type="tel"
-                  name="candidatePhone"
-                  value={applicationForm.candidatePhone}
-                  onChange={handleApplicationChange}
-                  required
-                  className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
-                  placeholder="08xxxxxxxxxx"
-                />
-              </div>
-
-              {applicationStatus.message && (
-                <div
-                  className={`flex items-start gap-3 rounded-xl border p-4 text-sm ${
-                    applicationStatus.type === 'success'
-                      ? 'border-green-100 bg-green-50 text-green-700'
-                      : 'border-red-100 bg-red-50 text-red-700'
-                  }`}
-                >
-                  {applicationStatus.type === 'success'
-                    ? <CheckCircle className="h-5 w-5 flex-shrink-0" />
-                    : <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                  }
-                  <span>{applicationStatus.message}</span>
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={submittingApplication}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-black text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60 transition-colors"
-              >
-                {submittingApplication && <Loader2 className="h-4 w-4 animate-spin" />}
-                Kirim Lamaran
-              </button>
-            </form>
-          </motion.div>
-        </div>
-      )}
 
       <Footer />
     </div>

@@ -15,6 +15,7 @@ const {
 } = require('../controllers/jobController');
 
 // Browse semua lowongan (dengan filter & pagination)
+router.get('/', getAllJobs);
 router.get('/all', getAllJobs);
 
 // Input lowongan dari perusahaan

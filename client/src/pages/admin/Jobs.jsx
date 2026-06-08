@@ -14,7 +14,6 @@ import {
   Database,
   CheckCircle2,
   AlertTriangle,
-  UserRound,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -28,7 +27,6 @@ const STATUS_FILTERS = [
 const SOURCE_FILTERS = [
   { label: "Semua", value: "" },
   { label: "Scraper", value: "scraper" },
-  { label: "Company", value: "company" },
 ];
 
 const emptyStats = {
@@ -36,7 +34,6 @@ const emptyStats = {
   totalActive: 0,
   totalExpired: 0,
   totalScraperJobs: 0,
-  totalCompanyJobs: 0,
 };
 
 const formatDate = (value) => {
@@ -72,8 +69,12 @@ const getStatusBadgeColor = (status) => {
 
 const getSourceBadgeColor = (source) => {
   if (source === "scraper") return "bg-blue-50 text-blue-700 border-blue-200";
-  if (source === "company") return "bg-violet-50 text-violet-700 border-violet-200";
   return "bg-slate-100 text-slate-600 border-slate-200";
+};
+
+const getSourceLabel = (source) => {
+  if (source === "scraper") return "Scraper";
+  return "Internal";
 };
 
 const StatsCard = ({ label, value, icon: Icon, tone }) => (
@@ -212,12 +213,6 @@ const Jobs = ({ onBack }) => {
       icon: Database,
       tone: "bg-blue-50 text-blue-600",
     },
-    {
-      label: "Company Jobs",
-      value: stats.totalCompanyJobs,
-      icon: UserRound,
-      tone: "bg-violet-50 text-violet-600",
-    },
   ];
 
   return (
@@ -230,7 +225,7 @@ const Jobs = ({ onBack }) => {
         &larr; Back to Dashboard
       </button>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {summaryCards.map((card) => (
           <StatsCard key={card.label} {...card} />
         ))}
@@ -348,7 +343,7 @@ const Jobs = ({ onBack }) => {
                     </td>
                     <td className="py-5 px-4">
                       <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${getSourceBadgeColor(job.createdByType)}`}>
-                        {labelize(job.createdByType)}
+                        {getSourceLabel(job.createdByType)}
                       </span>
                     </td>
                     <td className="py-5 px-4">
@@ -449,7 +444,7 @@ const Jobs = ({ onBack }) => {
                       {labelize(selectedJob.status)}
                     </span>
                     <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${getSourceBadgeColor(selectedJob.createdByType)}`}>
-                      {labelize(selectedJob.createdByType)}
+                      {getSourceLabel(selectedJob.createdByType)}
                     </span>
                   </div>
                   <h3 className="text-2xl font-black text-slate-900">{selectedJob.title}</h3>
@@ -472,7 +467,7 @@ const Jobs = ({ onBack }) => {
                   <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 text-sm font-semibold text-slate-700">
                     {selectedJob.createdByType === "scraper"
                       ? "Data berasal dari scraper"
-                      : "Data berasal dari perusahaan"}
+                      : "Data internal"}
                   </div>
 
                   <div>

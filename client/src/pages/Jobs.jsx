@@ -27,6 +27,21 @@ const CATEGORIES = [
 
 const JOBS_PER_PAGE = 12;
 
+const getDuplicateJobKey = (job) =>
+  `${job?.title || ''}-${job?.company || ''}-${job?.location || ''}`.toLowerCase().trim();
+
+const removeDuplicateJobs = (jobs) => {
+  const seen = new Set();
+
+  return jobs.filter((job) => {
+    const key = getDuplicateJobKey(job);
+    if (seen.has(key)) return false;
+
+    seen.add(key);
+    return true;
+  });
+};
+
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
   const [total, setTotal] = useState(0);
@@ -47,7 +62,8 @@ const Jobs = () => {
       if (search) params.search = search;
 
       const res = await axios.get('/api/jobs/all', { params });
-      setJobs(res.data.jobs);
+      const uniqueJobs = removeDuplicateJobs(Array.isArray(res.data.jobs) ? res.data.jobs : []);
+      setJobs(uniqueJobs);
       setTotal(res.data.total);
       setTotalPages(res.data.totalPages);
     } catch (err) {

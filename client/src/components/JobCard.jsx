@@ -4,6 +4,11 @@ import { motion } from 'framer-motion';
 import { Briefcase, MapPin, Building2, ChevronRight } from 'lucide-react';
 
 const JobCard = ({ job }) => {
+  const skills = Array.isArray(job.skills) ? job.skills : [];
+  const matchScore = Number.isFinite(Number(job.matchScore))
+    ? Number(job.matchScore)
+    : 0;
+
   return (
     <motion.div
       whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)" }}
@@ -24,7 +29,7 @@ const JobCard = ({ job }) => {
             </div>
           </div>
           <div className="flex flex-col items-end">
-            <div className="text-2xl font-bold text-indigo-600">{job.matchScore}%</div>
+            <div className="text-2xl font-bold text-indigo-600">{matchScore.toFixed(1)}%</div>
             <div className="text-xs text-gray-400">Match</div>
           </div>
         </div>
@@ -33,19 +38,19 @@ const JobCard = ({ job }) => {
         <div className="w-full bg-gray-100 rounded-full h-2.5 mb-4">
           <div 
             className="bg-indigo-600 h-2.5 rounded-full transition-all duration-1000 ease-out" 
-            style={{ width: `${job.matchScore}%` }}
+            style={{ width: `${Math.min(Math.max(matchScore, 0), 100)}%` }}
           ></div>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-6">
-          {job.skills.slice(0, 3).map((skill, index) => (
+          {skills.slice(0, 3).map((skill, index) => (
             <span key={index} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
               {skill}
             </span>
           ))}
-          {job.skills.length > 3 && (
+          {skills.length > 3 && (
             <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-              +{job.skills.length - 3}
+              +{skills.length - 3}
             </span>
           )}
         </div>
