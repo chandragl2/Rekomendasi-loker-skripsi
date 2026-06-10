@@ -21,7 +21,8 @@ const emptyStats = {
   lastScraperUpdate: null,
 };
 
-const toNumber = (value) => (Number.isFinite(Number(value)) ? Number(value) : 0);
+const toNumber = (value) =>
+  Number.isFinite(Number(value)) ? Number(value) : 0;
 
 const normalizeStats = (data) => ({
   totalActive: toNumber(data?.totalActive),
@@ -45,10 +46,16 @@ const MonitorCard = ({ label, value, icon: Icon, tone }) => (
   <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/70">
     <div className="flex items-start justify-between gap-4">
       <div>
-        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{label}</p>
-        <p className="text-3xl font-black text-slate-900 mt-2">{toNumber(value).toLocaleString()}</p>
+        <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">
+          {label}
+        </p>
+        <p className="text-3xl font-black text-slate-900 mt-2">
+          {toNumber(value).toLocaleString()}
+        </p>
       </div>
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${tone}`}>
+      <div
+        className={`w-12 h-12 rounded-xl flex items-center justify-center ${tone}`}
+      >
         <Icon className="w-5 h-5" />
       </div>
     </div>
@@ -60,9 +67,12 @@ const Scraper = () => {
   const [stats, setStats] = useState(emptyStats);
 
   const fetchStats = async () => {
+    const API_URL =
+      import.meta.env.VITE_API_URL ||
+      "https://rekomendasi-loker-skripsi-production.up.railway.app";
     try {
       setLoading(true);
-      const response = await axios.get("/api/jobs/admin/stats");
+      const response = await axios.get(`${API_URL}/api/scraper/stats`);
       setStats(normalizeStats(response?.data));
     } catch (err) {
       console.error("Failed to fetch scraper monitoring stats:", err);
@@ -108,10 +118,13 @@ const Scraper = () => {
               <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
                 <Activity className="w-5 h-5" />
               </div>
-              <h2 className="text-3xl font-black text-slate-900 tracking-tight">Scraper Monitoring</h2>
+              <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+                Scraper Monitoring
+              </h2>
             </div>
             <p className="text-slate-500 font-medium max-w-2xl">
-              Memantau aktivitas scraper eksternal dan sinkronisasi data lowongan pekerjaan.
+              Memantau aktivitas scraper eksternal dan sinkronisasi data
+              lowongan pekerjaan.
             </p>
           </div>
 
@@ -120,28 +133,42 @@ const Scraper = () => {
             disabled={loading}
             className="flex items-center justify-center gap-3 px-7 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all disabled:opacity-50"
           >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5" />}
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <RefreshCw className="w-5 h-5" />
+            )}
             Refresh Data
           </button>
         </div>
 
         <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5 relative z-10">
           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Status</p>
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">
+              Status
+            </p>
             <div className="flex items-center gap-2">
               <Server className="w-5 h-5 text-blue-500" />
-              <p className="text-xl font-black text-slate-900">External Scraper</p>
+              <p className="text-xl font-black text-slate-900">
+                External Scraper
+              </p>
             </div>
           </div>
           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Schedule</p>
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">
+              Schedule
+            </p>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-emerald-500" />
-              <p className="text-xl font-black text-slate-900">Managed Externally</p>
+              <p className="text-xl font-black text-slate-900">
+                Managed Externally
+              </p>
             </div>
           </div>
           <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">Sumber Data</p>
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-1">
+              Sumber Data
+            </p>
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100 text-xs font-black">
                 <ExternalLink className="w-3 h-3" />
@@ -177,16 +204,28 @@ const Scraper = () => {
           </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-4 p-4 bg-blue-50/60 rounded-2xl border border-blue-100">
-              <span className="text-sm font-bold text-slate-600">Total Lowongan Aktif</span>
-              <span className="text-sm font-black text-blue-700">{toNumber(stats?.totalActive).toLocaleString()} Lowongan</span>
+              <span className="text-sm font-bold text-slate-600">
+                Total Lowongan Aktif
+              </span>
+              <span className="text-sm font-black text-blue-700">
+                {toNumber(stats?.totalActive).toLocaleString()} Lowongan
+              </span>
             </div>
             <div className="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-              <span className="text-sm font-bold text-slate-600">Total Lowongan Scraper</span>
-              <span className="text-sm font-black text-slate-800">{toNumber(stats?.totalScraperJobs).toLocaleString()} Lowongan</span>
+              <span className="text-sm font-bold text-slate-600">
+                Total Lowongan Scraper
+              </span>
+              <span className="text-sm font-black text-slate-800">
+                {toNumber(stats?.totalScraperJobs).toLocaleString()} Lowongan
+              </span>
             </div>
             <div className="flex items-center justify-between gap-4 p-4 bg-emerald-50/60 rounded-2xl border border-emerald-100">
-              <span className="text-sm font-bold text-slate-600">Last Scraper Update</span>
-              <span className="text-sm font-black text-emerald-700">{formatDateTime(stats?.lastScraperUpdate)}</span>
+              <span className="text-sm font-bold text-slate-600">
+                Last Scraper Update
+              </span>
+              <span className="text-sm font-black text-emerald-700">
+                {formatDateTime(stats?.lastScraperUpdate)}
+              </span>
             </div>
           </div>
         </div>
@@ -204,7 +243,10 @@ const Scraper = () => {
               "Status lowongan otomatis mengikuti expiredAt",
               "Data hasil scraping akan diperbarui ketika scraper menemukan data baru",
             ].map((item) => (
-              <div key={item} className="flex items-start gap-3 p-4 rounded-2xl bg-white/5 border border-white/10">
+              <div
+                key={item}
+                className="flex items-start gap-3 p-4 rounded-2xl bg-white/5 border border-white/10"
+              >
                 <CheckCircle2 className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
                 <p className="text-sm font-semibold leading-6">{item}</p>
               </div>
@@ -214,21 +256,33 @@ const Scraper = () => {
       </div>
 
       <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200/70">
-        <h3 className="text-xl font-black text-slate-900 mb-6">Decoupled Architecture</h3>
+        <h3 className="text-xl font-black text-slate-900 mb-6">
+          Decoupled Architecture
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr_auto_1fr] gap-4 md:items-center">
           <div className="p-5 bg-violet-50 border border-violet-100 rounded-2xl">
-            <p className="text-[10px] font-black uppercase tracking-widest text-violet-400">Step 1</p>
-            <p className="text-lg font-black text-violet-900 mt-1">Scraper Python</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-violet-400">
+              Step 1
+            </p>
+            <p className="text-lg font-black text-violet-900 mt-1">
+              Scraper Python
+            </p>
           </div>
           <div className="hidden md:block text-slate-300 font-black">-&gt;</div>
           <div className="p-5 bg-blue-50 border border-blue-100 rounded-2xl">
-            <p className="text-[10px] font-black uppercase tracking-widest text-blue-400">Step 2</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-blue-400">
+              Step 2
+            </p>
             <p className="text-lg font-black text-blue-900 mt-1">MongoDB</p>
           </div>
           <div className="hidden md:block text-slate-300 font-black">-&gt;</div>
           <div className="p-5 bg-emerald-50 border border-emerald-100 rounded-2xl">
-            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Step 3</p>
-            <p className="text-lg font-black text-emerald-900 mt-1">Website MERN</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
+              Step 3
+            </p>
+            <p className="text-lg font-black text-emerald-900 mt-1">
+              Website MERN
+            </p>
           </div>
         </div>
       </div>

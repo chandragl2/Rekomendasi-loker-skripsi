@@ -25,7 +25,11 @@ const activityMeta = {
   },
 };
 
-const visibleActivityTypes = new Set(["scraper_job_synced", "job_created", "job_expired"]);
+const visibleActivityTypes = new Set([
+  "scraper_job_synced",
+  "job_created",
+  "job_expired",
+]);
 
 const getActivitiesFromResponse = (data) => {
   const activities = Array.isArray(data)
@@ -34,7 +38,9 @@ const getActivitiesFromResponse = (data) => {
       ? data.activities
       : [];
 
-  return activities.filter((activity) => visibleActivityTypes.has(activity.type));
+  return activities.filter((activity) =>
+    visibleActivityTypes.has(activity.type),
+  );
 };
 
 const formatDateTime = (value) => {
@@ -59,9 +65,11 @@ const Logs = ({ onBack }) => {
     const fetchActivities = async () => {
       setLoading(true);
       setError("");
-
+      const API_URL =
+        import.meta.env.VITE_API_URL ||
+        "https://rekomendasi-loker-skripsi-production.up.railway.app";
       try {
-        const response = await axios.get("/api/admin/activity");
+        const response = await axios.get(`${API_URL}/api/admin/activity`);
         setActivities(getActivitiesFromResponse(response.data));
       } catch (err) {
         setError(err.response?.data?.message || "Gagal memuat activity log.");
@@ -89,9 +97,15 @@ const Logs = ({ onBack }) => {
             <ClipboardCheck className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm font-black text-blue-600 uppercase tracking-widest">System Activity</p>
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Activity Log</h2>
-            <p className="text-slate-500 font-medium">Aktivitas sistem dari sinkronisasi scraper dan status lowongan.</p>
+            <p className="text-sm font-black text-blue-600 uppercase tracking-widest">
+              System Activity
+            </p>
+            <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+              Activity Log
+            </h2>
+            <p className="text-slate-500 font-medium">
+              Aktivitas sistem dari sinkronisasi scraper dan status lowongan.
+            </p>
           </div>
         </div>
 
@@ -118,8 +132,12 @@ const Logs = ({ onBack }) => {
       {!loading && !error && activities.length === 0 && (
         <div className="bg-white rounded-[2.5rem] border border-slate-200/60 shadow-sm p-12 text-center">
           <ClipboardCheck className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-xl font-black text-slate-900">Belum ada aktivitas</h3>
-          <p className="text-sm text-slate-500 mt-2">Aktivitas akan muncul setelah ada perubahan data lowongan.</p>
+          <h3 className="text-xl font-black text-slate-900">
+            Belum ada aktivitas
+          </h3>
+          <p className="text-sm text-slate-500 mt-2">
+            Aktivitas akan muncul setelah ada perubahan data lowongan.
+          </p>
         </div>
       )}
 
@@ -130,26 +148,38 @@ const Logs = ({ onBack }) => {
 
             <div className="space-y-6">
               {activities.map((activity, index) => {
-                const meta = activityMeta[activity.type] || activityMeta.job_created;
+                const meta =
+                  activityMeta[activity.type] || activityMeta.job_created;
                 const Icon = meta.icon;
                 return (
                   <Motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03 }}
-                    key={activity.id || `${activity.type}-${activity.occurredAt}-${index}`}
+                    key={
+                      activity.id ||
+                      `${activity.type}-${activity.occurredAt}-${index}`
+                    }
                     className="relative flex gap-5"
                   >
-                    <div className={`relative z-10 w-10 h-10 rounded-2xl border flex items-center justify-center ${meta.tone}`}>
+                    <div
+                      className={`relative z-10 w-10 h-10 rounded-2xl border flex items-center justify-center ${meta.tone}`}
+                    >
                       <Icon className="w-5 h-5" />
                     </div>
 
                     <div className="flex-1 bg-slate-50 border border-slate-100 rounded-3xl p-5">
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-                        <h3 className="text-base font-black text-slate-900">{activity.title}</h3>
-                        <span className="text-xs font-black text-slate-400">{formatDateTime(activity.occurredAt)}</span>
+                        <h3 className="text-base font-black text-slate-900">
+                          {activity.title}
+                        </h3>
+                        <span className="text-xs font-black text-slate-400">
+                          {formatDateTime(activity.occurredAt)}
+                        </span>
                       </div>
-                      <p className="text-sm font-medium text-slate-500 leading-6">{activity.description}</p>
+                      <p className="text-sm font-medium text-slate-500 leading-6">
+                        {activity.description}
+                      </p>
                     </div>
                   </Motion.div>
                 );
