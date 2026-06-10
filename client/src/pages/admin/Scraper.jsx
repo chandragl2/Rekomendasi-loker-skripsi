@@ -21,6 +21,15 @@ const emptyStats = {
   lastScraperUpdate: null,
 };
 
+const toNumber = (value) => (Number.isFinite(Number(value)) ? Number(value) : 0);
+
+const normalizeStats = (data) => ({
+  totalActive: toNumber(data?.totalActive),
+  totalExpired: toNumber(data?.totalExpired),
+  totalScraperJobs: toNumber(data?.totalScraperJobs),
+  lastScraperUpdate: data?.lastScraperUpdate || null,
+});
+
 const formatDateTime = (value) => {
   if (!value) return "-";
   return new Date(value).toLocaleString("id-ID", {
@@ -37,7 +46,7 @@ const MonitorCard = ({ label, value, icon: Icon, tone }) => (
     <div className="flex items-start justify-between gap-4">
       <div>
         <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">{label}</p>
-        <p className="text-3xl font-black text-slate-900 mt-2">{value.toLocaleString()}</p>
+        <p className="text-3xl font-black text-slate-900 mt-2">{toNumber(value).toLocaleString()}</p>
       </div>
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${tone}`}>
         <Icon className="w-5 h-5" />
@@ -54,14 +63,10 @@ const Scraper = () => {
     try {
       setLoading(true);
       const response = await axios.get("/api/jobs/admin/stats");
-      setStats({
-        totalActive: response.data.totalActive || 0,
-        totalExpired: response.data.totalExpired || 0,
-        totalScraperJobs: response.data.totalScraperJobs || 0,
-        lastScraperUpdate: response.data.lastScraperUpdate || null,
-      });
+      setStats(normalizeStats(response?.data));
     } catch (err) {
       console.error("Failed to fetch scraper monitoring stats:", err);
+      setStats(emptyStats);
     } finally {
       setLoading(false);
     }
@@ -74,19 +79,19 @@ const Scraper = () => {
   const cards = [
     {
       label: "Total Scraper Jobs",
-      value: stats.totalScraperJobs,
+      value: stats?.totalScraperJobs,
       icon: Database,
       tone: "bg-blue-50 text-blue-600",
     },
     {
       label: "Active Jobs",
-      value: stats.totalActive,
+      value: stats?.totalActive,
       icon: CheckCircle2,
       tone: "bg-emerald-50 text-emerald-600",
     },
     {
       label: "Expired Jobs",
-      value: stats.totalExpired,
+      value: stats?.totalExpired,
       icon: AlertTriangle,
       tone: "bg-rose-50 text-rose-600",
     },
@@ -173,15 +178,15 @@ const Scraper = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-4 p-4 bg-blue-50/60 rounded-2xl border border-blue-100">
               <span className="text-sm font-bold text-slate-600">Total Lowongan Aktif</span>
-              <span className="text-sm font-black text-blue-700">{stats.totalActive.toLocaleString()} Lowongan</span>
+              <span className="text-sm font-black text-blue-700">{toNumber(stats?.totalActive).toLocaleString()} Lowongan</span>
             </div>
             <div className="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
               <span className="text-sm font-bold text-slate-600">Total Lowongan Scraper</span>
-              <span className="text-sm font-black text-slate-800">{stats.totalScraperJobs.toLocaleString()} Lowongan</span>
+              <span className="text-sm font-black text-slate-800">{toNumber(stats?.totalScraperJobs).toLocaleString()} Lowongan</span>
             </div>
             <div className="flex items-center justify-between gap-4 p-4 bg-emerald-50/60 rounded-2xl border border-emerald-100">
               <span className="text-sm font-bold text-slate-600">Last Scraper Update</span>
-              <span className="text-sm font-black text-emerald-700">{formatDateTime(stats.lastScraperUpdate)}</span>
+              <span className="text-sm font-black text-emerald-700">{formatDateTime(stats?.lastScraperUpdate)}</span>
             </div>
           </div>
         </div>

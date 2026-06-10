@@ -20,6 +20,40 @@ const getTabFromPath = (pathname) => {
     : "dashboard";
 };
 
+const emptyStats = {
+  totalJobs: 0,
+  totalActive: 0,
+  totalExpired: 0,
+  totalDisplayedJobs: 0,
+  totalScraperJobs: 0,
+  totalCompanyJobs: 0,
+  totalCompanies: 0,
+  totalApplications: 0,
+  categoryData: [],
+  recentJobs: [],
+  lastScrape: null,
+  totalCategories: 0,
+};
+
+const toNumber = (value) => (Number.isFinite(Number(value)) ? Number(value) : 0);
+
+const normalizeStats = (data) => ({
+  ...emptyStats,
+  ...(data && typeof data === "object" && !Array.isArray(data) ? data : {}),
+  totalJobs: toNumber(data?.totalJobs),
+  totalActive: toNumber(data?.totalActive),
+  totalExpired: toNumber(data?.totalExpired),
+  totalDisplayedJobs: toNumber(data?.totalDisplayedJobs),
+  totalScraperJobs: toNumber(data?.totalScraperJobs),
+  totalCompanyJobs: toNumber(data?.totalCompanyJobs),
+  totalCompanies: toNumber(data?.totalCompanies),
+  totalApplications: toNumber(data?.totalApplications),
+  totalCategories: toNumber(data?.totalCategories),
+  categoryData: Array.isArray(data?.categoryData) ? data.categoryData : [],
+  recentJobs: Array.isArray(data?.recentJobs) ? data.recentJobs : [],
+  lastScrape: data?.lastScrape || null,
+});
+
 const AdminDashboard = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(() =>
@@ -29,20 +63,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [notification, setNotification] = useState(null);
-  const [stats, setStats] = useState({
-    totalJobs: 0,
-    totalActive: 0,
-    totalExpired: 0,
-    totalDisplayedJobs: 0,
-    totalScraperJobs: 0,
-    totalCompanyJobs: 0,
-    totalCompanies: 0,
-    totalApplications: 0,
-    categoryData: [],
-    recentJobs: [],
-    lastScrape: null,
-    totalCategories: 0,
-  });
+  const [stats, setStats] = useState(emptyStats);
 
   const showNotification = useCallback((type, message) => {
     setNotification({ type, message });
@@ -53,7 +74,7 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
       const response = await axios.get("/api/jobs/admin/stats");
-      setStats(response.data);
+      setStats(normalizeStats(response?.data));
     } catch (err) {
       console.error("Failed to fetch stats:", err);
       showNotification("error", "Gagal mengambil data statistik.");

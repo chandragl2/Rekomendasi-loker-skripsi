@@ -7,6 +7,13 @@ import {
 } from "lucide-react";
 import { motion as Motion } from "framer-motion";
 
+const getCategoryData = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.categoryData)) return data.categoryData;
+  if (Array.isArray(data?.categories)) return data.categories;
+  return [];
+};
+
 const Categories = ({ onBack }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,9 +23,10 @@ const Categories = ({ onBack }) => {
       setLoading(true);
       const response = await axios.get("/api/jobs/admin/stats");
       // Mapping from the chart data structure
-      setCategories(response.data.categoryData || []);
+      setCategories(getCategoryData(response?.data));
     } catch (err) {
       console.error("Error fetching categories:", err);
+      setCategories([]);
     } finally {
       setLoading(false);
     }
@@ -27,6 +35,9 @@ const Categories = ({ onBack }) => {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  const safeCategories = Array.isArray(categories) ? categories : [];
+  const totalCategoryValue = safeCategories.reduce((total, item) => total + (Number(item?.value) || 0), 0);
 
   return (
     <div className="space-y-6">
@@ -51,8 +62,8 @@ const Categories = ({ onBack }) => {
           Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="h-40 bg-white rounded-3xl animate-pulse border border-slate-100"></div>
           ))
-        ) : categories.length > 0 ? (
-          categories.map((cat, idx) => (
+        ) : safeCategories.length > 0 ? (
+          safeCategories.map((cat, idx) => (
             <Motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -61,29 +72,29 @@ const Categories = ({ onBack }) => {
               className="bg-white p-6 rounded-[2rem] border border-slate-200/60 shadow-sm hover:shadow-xl transition-all group"
             >
               <div className="flex items-start justify-between mb-4">
-                <div className="p-3 rounded-2xl" style={{ backgroundColor: `${cat.color}15` }}>
-                  <Tag className="w-6 h-6" style={{ color: cat.color }} />
+                <div className="p-3 rounded-2xl" style={{ backgroundColor: `${cat?.color}15` }}>
+                  <Tag className="w-6 h-6" style={{ color: cat?.color }} />
                 </div>
               </div>
 
-              <h3 className="text-lg font-black text-slate-900 group-hover:text-blue-600 transition-colors">{cat.name}</h3>
+              <h3 className="text-lg font-black text-slate-900 group-hover:text-blue-600 transition-colors">{cat?.name}</h3>
               <div className="mt-4 flex items-center justify-between">
                 <div>
                   <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Lowongan Ditampilkan</p>
-                  <p className="text-2xl font-black text-slate-900">{cat.value}</p>
+                  <p className="text-2xl font-black text-slate-900">{cat?.value}</p>
                 </div>
                 <div className="flex items-center gap-1 text-emerald-500 text-xs font-bold">
                   <TrendingUp className="w-4 h-4" />
-                  {((cat.value / categories.reduce((a, b) => a + b.value, 0)) * 100).toFixed(1)}%
+                  {totalCategoryValue > 0 ? (((Number(cat?.value) || 0) / totalCategoryValue) * 100).toFixed(1) : "0.0"}%
                 </div>
               </div>
 
               <div className="mt-6 w-full bg-slate-50 h-2 rounded-full overflow-hidden">
                 <Motion.div 
                   initial={{ width: 0 }}
-                  animate={{ width: `${(cat.value / categories.reduce((a, b) => a + (b.value || 0), 0)) * 100}%` }}
+                  animate={{ width: `${totalCategoryValue > 0 ? ((Number(cat?.value) || 0) / totalCategoryValue) * 100 : 0}%` }}
                   className="h-full rounded-full"
-                  style={{ backgroundColor: cat.color }}
+                  style={{ backgroundColor: cat?.color }}
                 ></Motion.div>
               </div>
             </Motion.div>

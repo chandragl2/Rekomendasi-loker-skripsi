@@ -18,31 +18,33 @@ import {
 import { motion as Motion } from "framer-motion";
 
 const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
+  const categoryData = Array.isArray(stats?.categoryData) ? stats.categoryData : [];
+
   const dashboardStats = [
     {
       label: "Total Data Lowongan",
-      value: (stats.totalJobs || 0).toLocaleString(),
+      value: (stats?.totalJobs || 0).toLocaleString(),
       icon: Database,
       change: "Semua dokumen jobs",
       color: "from-slate-700 to-slate-500",
     },
     {
       label: "Active Jobs",
-      value: (stats.totalActive || 0).toLocaleString(),
+      value: (stats?.totalActive || 0).toLocaleString(),
       icon: CheckCircle2,
       change: "Status active dan belum expired",
       color: "from-emerald-600 to-teal-500",
     },
     {
       label: "Lowongan Ditampilkan",
-      value: (stats.totalDisplayedJobs || 0).toLocaleString(),
+      value: (stats?.totalDisplayedJobs || 0).toLocaleString(),
       icon: Briefcase,
       change: "Active jobs unik untuk user",
       color: "from-blue-600 to-indigo-500",
     },
     {
       label: "Expired Jobs",
-      value: (stats.totalExpired || 0).toLocaleString(),
+      value: (stats?.totalExpired || 0).toLocaleString(),
       icon: AlertTriangle,
       change: "Status expired atau lewat expiredAt",
       color: "from-rose-600 to-red-500",
@@ -126,7 +128,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={stats.categoryData}
+                      data={categoryData}
                       cx="50%"
                       cy="50%"
                       innerRadius={70}
@@ -135,8 +137,8 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
                       dataKey="value"
                       stroke="none"
                     >
-                      {stats.categoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      {categoryData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry?.color} />
                       ))}
                     </Pie>
                     <Tooltip 
@@ -149,17 +151,17 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
             </div>
             
             <div className="w-full md:w-64 space-y-3">
-              {stats.categoryData.slice(0, 5).map((cat, i) => (
+              {categoryData.slice(0, 5).map((cat, i) => (
                 <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
                   <div className="flex items-center gap-3">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cat.color }}></div>
-                    <span className="text-xs font-bold text-slate-700 truncate max-w-[120px]">{cat.name}</span>
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cat?.color }}></div>
+                    <span className="text-xs font-bold text-slate-700 truncate max-w-[120px]">{cat?.name}</span>
                   </div>
-                  <span className="text-xs font-black text-slate-900">{cat.value}</span>
+                  <span className="text-xs font-black text-slate-900">{cat?.value}</span>
                 </div>
               ))}
-              {stats.categoryData.length > 5 && (
-                <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest pt-2">+{stats.categoryData.length - 5} Kategori Lainnya</p>
+              {categoryData.length > 5 && (
+                <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest pt-2">+{categoryData.length - 5} Kategori Lainnya</p>
               )}
             </div>
           </div>
@@ -180,8 +182,8 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
             <div className="mt-auto space-y-6">
               <div className="p-5 bg-white/10 backdrop-blur-md rounded-3xl border border-white/20">
                 <p className="text-indigo-200 text-[10px] font-bold uppercase tracking-widest mb-1">Dominant Field</p>
-                <h4 className="text-xl font-black">{stats.categoryData[0]?.name || "N/A"}</h4>
-                <p className="text-sm font-medium text-white/80 mt-1">{stats.categoryData[0]?.value || 0} Lowongan Ditampilkan</p>
+                <h4 className="text-xl font-black">{categoryData[0]?.name || "N/A"}</h4>
+                <p className="text-sm font-medium text-white/80 mt-1">{categoryData[0]?.value || 0} Lowongan Ditampilkan</p>
               </div>
               
               <div className="flex items-center justify-between px-2">
