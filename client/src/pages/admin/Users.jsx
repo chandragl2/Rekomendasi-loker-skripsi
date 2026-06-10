@@ -12,6 +12,7 @@ import {
   Search,
   UsersRound,
 } from "lucide-react";
+import API_URL from "../../utils/api";
 
 const getCompaniesFromResponse = (data) => {
   if (Array.isArray(data)) return data;
@@ -66,15 +67,13 @@ const Companies = ({ onBack }) => {
       setLoading(true);
       setError("");
 
-      const API_URL =
-        import.meta.env.VITE_API_URL ||
-        "https://rekomendasi-loker-skripsi-production.up.railway.app";
       try {
         const response = await axios.get(`${API_URL}/api/admin/companies`);
-        const companyData = getCompaniesFromResponse(response.data);
+        const data = response?.data || {};
+        const companyData = getCompaniesFromResponse(data);
         setCompanies(companyData);
         setSummary(
-          response.data?.summary || {
+          data?.summary || {
             totalCompanies: companyData.length,
             totalCompanyJobs: companyData.reduce(
               (total, company) => total + (company.totalJobs || 0),

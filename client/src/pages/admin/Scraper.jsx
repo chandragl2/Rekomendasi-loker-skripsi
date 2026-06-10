@@ -13,10 +13,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { motion as Motion } from "framer-motion";
-
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://rekomendasi-loker-skripsi-production.up.railway.app";
+import API_URL from "../../utils/api";
 
 const emptyStats = {
   totalActive: 0,
@@ -71,9 +68,6 @@ const Scraper = () => {
   const [stats, setStats] = useState(emptyStats);
 
   const fetchStats = async () => {
-    const API_URL =
-      import.meta.env.VITE_API_URL ||
-      "https://rekomendasi-loker-skripsi-production.up.railway.app";
     try {
       setLoading(true);
 

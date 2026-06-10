@@ -4,6 +4,7 @@ import axios from "axios";
 import { AlertCircle, BriefcaseBusiness, CalendarClock, CheckCircle2, Loader2, PlusCircle, TimerOff } from "lucide-react";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import { companyAuthHeaders } from "../../utils/companyAuth";
+import API_URL from "../../utils/api";
 
 const getCompanyName = (company) =>
   company?.companyName || company?.name || company?.email || "Perusahaan";
@@ -27,13 +28,14 @@ const Dashboard = () => {
 
     try {
       const [meRes, jobsRes] = await Promise.all([
-        axios.get("/api/companies/me", { headers: companyAuthHeaders() }),
-        axios.get("/api/companies/jobs", { headers: companyAuthHeaders() }),
+        axios.get(`${API_URL}/api/companies/me`, { headers: companyAuthHeaders() }),
+        axios.get(`${API_URL}/api/companies/jobs`, { headers: companyAuthHeaders() }),
       ]);
 
-      const profile = meRes.data?.company || meRes.data?.data?.company || meRes.data;
+      const data = meRes?.data || {};
+      const profile = data?.company || data?.data?.company || data;
       setCompany(profile);
-      setJobs(getJobsFromResponse(jobsRes.data));
+      setJobs(getJobsFromResponse(jobsRes?.data));
       localStorage.setItem("companyProfile", JSON.stringify(profile));
     } catch (err) {
       setError(err.response?.data?.message || "Gagal memuat dashboard perusahaan.");

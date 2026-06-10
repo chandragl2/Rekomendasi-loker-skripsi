@@ -4,6 +4,7 @@ import axios from "axios";
 import { AlertCircle, ArrowLeft, ArrowRight, Loader2, ShieldCheck } from "lucide-react";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import { saveCompanySession } from "../../utils/companyAuth";
+import API_URL from "../../utils/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,8 +23,8 @@ const Login = () => {
     setError("");
 
     try {
-      const res = await axios.post("/api/companies/login", form);
-      saveCompanySession(res.data);
+      const res = await axios.post(`${API_URL}/api/companies/login`, form);
+      saveCompanySession(res?.data || {});
       navigate(location.state?.from || "/company/dashboard", { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || "Login perusahaan gagal. Periksa email dan password.");

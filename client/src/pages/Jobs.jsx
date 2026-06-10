@@ -16,6 +16,7 @@ import {
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import axios from "axios";
+import API_URL from "../utils/api";
 
 const CATEGORIES = [
   "Semua",
@@ -54,15 +55,12 @@ const Jobs = () => {
       if (category !== "Semua") params.category = category;
       if (search) params.search = search;
 
-      const API_URL =
-        import.meta.env.VITE_API_URL ||
-        "https://rekomendasi-loker-skripsi-production.up.railway.app";
       const res = await axios.get(`${API_URL}/api/jobs`, { params });
-      // const res = await axios.get('/api/jobs', { params }); // For Vercel deployment with relative path
-      const displayedJobs = Array.isArray(res.data.jobs) ? res.data.jobs : [];
+      const data = res?.data;
+      const displayedJobs = Array.isArray(data?.jobs) ? data.jobs : [];
       setJobs(displayedJobs);
-      setTotal(res.data.total || 0);
-      setTotalPages(res.data.totalPages || 1);
+      setTotal(Number.isFinite(Number(data?.total)) ? Number(data.total) : 0);
+      setTotalPages(Number.isFinite(Number(data?.totalPages)) ? Number(data.totalPages) : 1);
     } catch {
       setError(
         "Gagal memuat data lowongan. Pastikan server berjalan dan database sudah di-seed.",

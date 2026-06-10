@@ -15,6 +15,7 @@ import {
   BarChart2,
 } from "lucide-react";
 import axios from "axios";
+import API_URL from "../utils/api";
 
 const RECOMMENDATIONS_KEY = "jobRecommendations";
 const CV_FILE_NAME_KEY = "cvFileName";
@@ -99,27 +100,27 @@ const Dashboard = () => {
     try {
       showToast("success", "Menarik data terbaru dari MongoDB Atlas...");
 
-      const res = await axios.get("/api/jobs/admin/stats");
-      const stats = res.data;
+      const res = await axios.get(`${API_URL}/api/jobs/admin/stats`);
+      const stats = res?.data || {};
 
       const categoryCounts = {};
-      if (stats.categoryData) {
+      if (Array.isArray(stats?.categoryData)) {
         stats.categoryData.forEach((c) => {
-          categoryCounts[c.name] = c.value;
+          categoryCounts[c?.name] = Number(c?.value) || 0;
         });
       }
 
       setScrapeStats({
-        scrapedFromGlints: stats.totalJobs,
+        scrapedFromGlints: Number(stats?.totalJobs) || 0,
         seedJobs: 0,
-        totalJobs: stats.totalJobs,
+        totalJobs: Number(stats?.totalJobs) || 0,
         categories: categoryCounts,
-        scrapedAt: stats.lastScrape || new Date().toISOString(),
+        scrapedAt: stats?.lastScrape || new Date().toISOString(),
       });
 
       showToast(
         "success",
-        `Sync berhasil! Menemukan ${stats.totalJobs} lowongan di database.`,
+        `Sync berhasil! Menemukan ${Number(stats?.totalJobs) || 0} lowongan di database.`,
       );
     } catch (err) {
       const msg = err.response?.data?.message || err.message;
@@ -306,7 +307,7 @@ const Dashboard = () => {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {Object.entries(scrapeStats.categories).map(
+                    {Object.entries(scrapeStats.categories || {}).map(
                       ([cat, count]) => (
                         <span
                           key={cat}

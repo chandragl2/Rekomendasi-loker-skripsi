@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Tag, TrendingUp, Loader2 } from "lucide-react";
 import { motion as Motion } from "framer-motion";
-
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://rekomendasi-loker-skripsi-production.up.railway.app";
+import API_URL from "../../utils/api";
 
 const getCategoryData = (data) => {
   if (Array.isArray(data)) return data;

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { motion as Motion } from "framer-motion";
 import axios from "axios";
+import API_URL from "../utils/api";
 
 const UploadCard = ({ onAnalyze }) => {
   const [file, setFile] = useState(null);
@@ -59,10 +60,6 @@ const UploadCard = ({ onAnalyze }) => {
     const formData = new FormData();
     formData.append("cv", file);
 
-    const API_URL =
-      import.meta.env.VITE_API_URL ||
-      "https://rekomendasi-loker-skripsi-production.up.railway.app";
-
     try {
       const response = await axios.post(
         `${API_URL}/api/jobs/recommend`,
@@ -74,16 +71,21 @@ const UploadCard = ({ onAnalyze }) => {
         },
       );
 
-      const recommendations = Array.isArray(response.data)
-        ? response.data
-        : response.data?.recommendations || response.data?.jobs || [];
+      const data = response?.data;
+      const recommendations = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.recommendations)
+          ? data.recommendations
+          : Array.isArray(data?.jobs)
+            ? data.jobs
+            : [];
 
       onAnalyze(recommendations, {
         cvFileName: file.name,
-        cvText: !Array.isArray(response.data)
-          ? response.data?.cvText ||
-            response.data?.cvRawText ||
-            response.data?.extractedText ||
+        cvText: !Array.isArray(data)
+          ? data?.cvText ||
+            data?.cvRawText ||
+            data?.extractedText ||
             ""
           : "",
       });

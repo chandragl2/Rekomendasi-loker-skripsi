@@ -16,10 +16,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { motion as Motion, AnimatePresence } from "framer-motion";
-
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://rekomendasi-loker-skripsi-production.up.railway.app";
+import API_URL from "../../utils/api";
 
 const STATUS_FILTERS = [
   { label: "Semua", value: "" },

@@ -9,6 +9,7 @@ import {
   TimerOff,
 } from "lucide-react";
 import { motion as Motion } from "framer-motion";
+import API_URL from "../../utils/api";
 
 const activityMeta = {
   job_created: {
@@ -65,12 +66,9 @@ const Logs = ({ onBack }) => {
     const fetchActivities = async () => {
       setLoading(true);
       setError("");
-      const API_URL =
-        import.meta.env.VITE_API_URL ||
-        "https://rekomendasi-loker-skripsi-production.up.railway.app";
       try {
         const response = await axios.get(`${API_URL}/api/admin/activity`);
-        setActivities(getActivitiesFromResponse(response.data));
+        setActivities(getActivitiesFromResponse(response?.data));
       } catch (err) {
         setError(err.response?.data?.message || "Gagal memuat activity log.");
       } finally {

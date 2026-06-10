@@ -4,6 +4,7 @@ import axios from "axios";
 import { AlertCircle, ArrowLeft, CheckCircle2, Loader2, PlusCircle } from "lucide-react";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import { companyAuthHeaders } from "../../utils/companyAuth";
+import API_URL from "../../utils/api";
 
 const CATEGORIES = [
   "Engineering & IT",
@@ -82,7 +83,7 @@ const CreateJob = () => {
     };
 
     try {
-      await axios.post("/api/companies/jobs", payload, { headers: companyAuthHeaders() });
+      await axios.post(`${API_URL}/api/companies/jobs`, payload, { headers: companyAuthHeaders() });
       setNotice({ type: "success", message: "Lowongan berhasil dibuat." });
       setTimeout(() => navigate("/company/jobs"), 700);
     } catch (err) {

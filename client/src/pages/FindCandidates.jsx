@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import CandidateCard from '../components/CandidateCard';
 import { Search, Loader2, Users, Target, CheckCircle, XCircle, X } from 'lucide-react';
 import axios from 'axios';
+import API_URL from '../utils/api';
 
 const FindCandidates = () => {
   const [jobDescription, setJobDescription] = useState('');
@@ -32,11 +33,13 @@ const FindCandidates = () => {
     setLoading(true);
     setSearched(true);
     try {
-      const res = await axios.post('/api/candidates/recommend', {
+      const res = await axios.post(`${API_URL}/api/candidates/recommend`, {
         jobDescription
       });
-      setCandidates(res.data.data);
-      showToast('success', `Ditemukan ${res.data.count} kandidat yang relevan.`);
+      const data = res?.data || {};
+      const candidateData = Array.isArray(data?.data) ? data.data : [];
+      setCandidates(candidateData);
+      showToast('success', `Ditemukan ${Number(data?.count) || candidateData.length} kandidat yang relevan.`);
       
       // Scroll to results
       setTimeout(() => {

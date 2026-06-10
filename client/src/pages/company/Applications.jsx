@@ -3,6 +3,7 @@ import axios from "axios";
 import { AlertCircle, CheckCircle2, Loader2, UserCheck, UserX, UsersRound } from "lucide-react";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import { companyAuthHeaders } from "../../utils/companyAuth";
+import API_URL from "../../utils/api";
 
 const getApplicationsFromResponse = (data) => {
   if (Array.isArray(data)) return data;
@@ -56,8 +57,8 @@ const Applications = () => {
     setError("");
 
     try {
-      const res = await axios.get("/api/applications/company", { headers: companyAuthHeaders() });
-      setApplications(getApplicationsFromResponse(res.data));
+      const res = await axios.get(`${API_URL}/api/applications/company`, { headers: companyAuthHeaders() });
+      setApplications(getApplicationsFromResponse(res?.data));
     } catch (err) {
       setError(err.response?.data?.message || "Gagal memuat daftar pelamar.");
     } finally {
@@ -82,18 +83,18 @@ const Applications = () => {
 
     try {
       const res = await axios.patch(
-        `/api/applications/${applicationId}/status`,
+        `${API_URL}/api/applications/${applicationId}/status`,
         { status },
         { headers: companyAuthHeaders() }
       );
-      const updatedApplication = res.data?.application;
+      const updatedApplication = res?.data?.application || {};
 
       setApplications((current) =>
         current.map((application) =>
           application._id === applicationId ? { ...application, ...updatedApplication } : application
         )
       );
-      setNotice(res.data?.message || `Lamaran berhasil diubah menjadi ${statusLabel[status]}.`);
+      setNotice(res?.data?.message || `Lamaran berhasil diubah menjadi ${statusLabel[status]}.`);
     } catch (err) {
       setError(err.response?.data?.message || "Gagal memperbarui status lamaran.");
     } finally {

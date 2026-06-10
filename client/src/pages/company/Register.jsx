@@ -4,6 +4,7 @@ import axios from "axios";
 import { AlertCircle, ArrowLeft, ArrowRight, Building2, Loader2 } from "lucide-react";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import { saveCompanySession } from "../../utils/companyAuth";
+import API_URL from "../../utils/api";
 
 const initialForm = {
   companyName: "",
@@ -29,8 +30,8 @@ const Register = () => {
     setError("");
 
     try {
-      const res = await axios.post("/api/companies/register", form);
-      saveCompanySession(res.data);
+      const res = await axios.post(`${API_URL}/api/companies/register`, form);
+      saveCompanySession(res?.data || {});
       navigate("/company/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Register perusahaan gagal. Cek data lalu coba lagi.");

@@ -12,10 +12,7 @@ import Categories from "./admin/Categories";
 import Scraper from "./admin/Scraper";
 import Logs from "./admin/Logs";
 import Settings from "./admin/Settings";
-
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://rekomendasi-loker-skripsi-production.up.railway.app";
+import API_URL from "../utils/api";
 
 const getTabFromPath = (pathname) => {
   const segment = pathname.split("/")[2];

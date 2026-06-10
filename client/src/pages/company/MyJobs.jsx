@@ -4,6 +4,7 @@ import { AlertCircle, BriefcaseBusiness, Eye, Loader2, PlusCircle } from "lucide
 import { Link } from "react-router-dom";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import { companyAuthHeaders } from "../../utils/companyAuth";
+import API_URL from "../../utils/api";
 
 const getJobsFromResponse = (data) => {
   if (Array.isArray(data)) return data;
@@ -39,8 +40,8 @@ const MyJobs = () => {
     setError("");
 
     try {
-      const res = await axios.get("/api/companies/jobs", { headers: companyAuthHeaders() });
-      setJobs(getJobsFromResponse(res.data));
+      const res = await axios.get(`${API_URL}/api/companies/jobs`, { headers: companyAuthHeaders() });
+      setJobs(getJobsFromResponse(res?.data));
     } catch (err) {
       setError(err.response?.data?.message || "Gagal memuat lowongan perusahaan.");
     } finally {

@@ -8,6 +8,7 @@ import {
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import axios from 'axios';
+import API_URL from '../utils/api';
 
 const Detail = () => {
   const { id } = useParams();
@@ -26,8 +27,9 @@ const Detail = () => {
     }
     const fetchJob = async () => {
       try {
-        const { data } = await axios.get(`/api/jobs/${id}`);
-        setJob({ ...data, matchScore: data.matchScore || 0 });
+        const response = await axios.get(`${API_URL}/api/jobs/${id}`);
+        const data = response?.data || {};
+        setJob({ ...data, matchScore: data?.matchScore || 0 });
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -61,8 +63,8 @@ const Detail = () => {
   }
 
   // Pastikan skills unik untuk tampilan
-  const uniqueSkills = [...new Set((job.skills || []).map(s => s?.trim()).filter(Boolean))];
-  const qualifications = job.qualifications || [];
+  const uniqueSkills = [...new Set((Array.isArray(job?.skills) ? job.skills : []).map(s => s?.trim()).filter(Boolean))];
+  const qualifications = Array.isArray(job?.qualifications) ? job.qualifications : [];
   const hasMatchScore = job.matchScore && job.matchScore > 0;
 
   const handleApplyClick = () => {
