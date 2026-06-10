@@ -71,8 +71,12 @@ const Scraper = () => {
   const [stats, setStats] = useState(emptyStats);
 
   const fetchStats = async () => {
+    const API_URL =
+      import.meta.env.VITE_API_URL ||
+      "https://rekomendasi-loker-skripsi-production.up.railway.app";
     try {
       setLoading(true);
+
       const response = await axios.get(`${API_URL}/api/scraper/stats`);
       setStats(normalizeStats(response?.data));
     } catch (err) {
