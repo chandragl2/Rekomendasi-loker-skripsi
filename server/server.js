@@ -1,15 +1,15 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const path = require('path');
-const dotenv = require('dotenv');
-const connectDB = require('./config/db');
-const jobRoutes = require('./routes/jobRoutes');
-const candidateRoutes = require('./routes/candidateRoutes');
-const companyRoutes = require('./routes/companyRoutes');
-const applicationRoutes = require('./routes/applicationRoutes');
-const adminRoutes = require('./routes/adminRoutes');
-const errorHandler = require('./middleware/errorHandler');
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const path = require("path");
+const dotenv = require("dotenv");
+const connectDB = require("./config/db");
+const jobRoutes = require("./routes/jobRoutes");
+const candidateRoutes = require("./routes/candidateRoutes");
+const companyRoutes = require("./routes/companyRoutes");
+const applicationRoutes = require("./routes/applicationRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const errorHandler = require("./middleware/errorHandler");
 
 dotenv.config();
 
@@ -25,22 +25,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api/jobs', jobRoutes);
-app.use('/api/candidates', candidateRoutes);
-app.use('/api/companies', companyRoutes);
-app.use('/api/applications', applicationRoutes);
-app.use('/api/admin', adminRoutes);
+app.use("/api/jobs", jobRoutes);
+app.use("/api/candidates", candidateRoutes);
+app.use("/api/companies", companyRoutes);
+app.use("/api/applications", applicationRoutes);
+app.use("/api/admin", adminRoutes);
 
 // ─── Scraper Automation Agent ──────────────────────────────────────────────────
 // Runs in the background every 10 minutes. First execution is delayed 30s after
 // server boot to avoid competing with startup I/O.
-const { runScraper } = require('./scraper/scraperRunner');
+const { runScraper } = require("./scraper/scraperRunner");
 
 const SCRAPER_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
-const isBackendScraperEnabled = process.env.ENABLE_BACKEND_SCRAPER === 'true';
+const isBackendScraperEnabled = process.env.ENABLE_BACKEND_SCRAPER === "true";
 
 const startScraperScheduler = () => {
-  console.log('Scraper scheduler backend aktif.');
+  console.log("Scraper scheduler backend aktif.");
 
   // First run — delayed to let the server finish booting
   const firstRun = setTimeout(async () => {
@@ -61,15 +61,17 @@ const maybeStartScraperScheduler = () => {
     return;
   }
 
-  console.log('Scraper scheduler backend dimatikan. Scraper berjalan sebagai service eksternal.');
+  console.log(
+    "Scraper scheduler backend dimatikan. Scraper berjalan sebagai service eksternal.",
+  );
 };
 
 // Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/dist')));
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../client/dist")));
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../client', 'dist', 'index.html'));
+  app.get(/.*/, (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../client", "dist", "index.html"));
   });
 }
 
