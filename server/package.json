@@ -7,6 +7,8 @@
     "dev": "nodemon server.js",
     "scraper": "node scripts/runScraper.js",
     "assign:dummy-jobs": "node scripts/assignDummyJobsToCompanies.js",
+    "move:dummy-to-scraper": "node scripts/moveDummyJobsToScraper.js",
+    "remove:chandra-company": "node scripts/removeChandraGroupCompany.js",
     "sync:company-names": "node scripts/syncJobCompanyNames.js",
     "backfill:jobs": "node scripts/backfillJobExpiration.js",
     "backfill:categories": "node scripts/backfillJobCategories.js",

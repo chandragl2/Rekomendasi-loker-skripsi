@@ -54,11 +54,11 @@ const getAdminCompanies = async (req, res) => {
 
 const getAdminActivity = async (req, res) => {
   try {
-    const [companies, jobs, applications] = await Promise.all([
-      Company.find().sort({ createdAt: -1 }).limit(25).lean(),
+    const [jobs, applications] = await Promise.all([
       Job.find({
         $or: [
           { createdByType: 'company' },
+          { createdByType: 'scraper' },
           { status: 'expired' },
         ],
       })
@@ -74,17 +74,17 @@ const getAdminActivity = async (req, res) => {
 
     const activities = [];
 
-    companies.forEach((company) => {
-      activities.push({
-        id: `company-${company._id}`,
-        type: 'company_registered',
-        title: 'Company registered',
-        description: `${company.companyName} berhasil terdaftar sebagai employer.`,
-        occurredAt: company.createdAt,
-      });
-    });
-
     jobs.forEach((job) => {
+      if (job.createdByType === 'scraper') {
+        activities.push({
+          id: `scraper-job-${job._id}`,
+          type: 'scraper_job_synced',
+          title: 'Scraper job synced',
+          description: `Lowongan ${job.title} di ${job.company} tersimpan sebagai data scraper.`,
+          occurredAt: job.updatedAt || job.createdAt,
+        });
+      }
+
       if (job.createdByType === 'company') {
         activities.push({
           id: `job-created-${job._id}`,

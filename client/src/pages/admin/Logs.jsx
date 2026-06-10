@@ -15,13 +15,17 @@ const activityMeta = {
     icon: BriefcaseBusiness,
     tone: "bg-violet-50 text-violet-600 border-violet-100",
   },
+  scraper_job_synced: {
+    icon: BriefcaseBusiness,
+    tone: "bg-blue-50 text-blue-600 border-blue-100",
+  },
   job_expired: {
     icon: TimerOff,
     tone: "bg-amber-50 text-amber-600 border-amber-100",
   },
 };
 
-const visibleActivityTypes = new Set(["job_created", "job_expired"]);
+const visibleActivityTypes = new Set(["scraper_job_synced", "job_created", "job_expired"]);
 
 const getActivitiesFromResponse = (data) => {
   const activities = Array.isArray(data)
@@ -87,7 +91,7 @@ const Logs = ({ onBack }) => {
           <div>
             <p className="text-sm font-black text-blue-600 uppercase tracking-widest">System Activity</p>
             <h2 className="text-3xl font-black text-slate-900 tracking-tight">Activity Log</h2>
-            <p className="text-slate-500 font-medium">Aktivitas sistem dari data lowongan dan status pekerjaan.</p>
+            <p className="text-slate-500 font-medium">Aktivitas sistem dari sinkronisasi scraper dan status lowongan.</p>
           </div>
         </div>
 
