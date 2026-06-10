@@ -31,6 +31,7 @@ const AdminDashboard = () => {
     totalJobs: 0,
     totalActive: 0,
     totalExpired: 0,
+    totalDisplayedJobs: 0,
     totalScraperJobs: 0,
     totalCompanyJobs: 0,
     totalCompanies: 0,

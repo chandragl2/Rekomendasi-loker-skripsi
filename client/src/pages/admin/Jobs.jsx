@@ -33,6 +33,7 @@ const emptyStats = {
   totalJobs: 0,
   totalActive: 0,
   totalExpired: 0,
+  totalDisplayedJobs: 0,
   totalScraperJobs: 0,
 };
 
@@ -190,9 +191,9 @@ const Jobs = ({ onBack }) => {
 
   const summaryCards = [
     {
-      label: "Total Lowongan",
+      label: "Total Data Lowongan",
       value: stats.totalJobs,
-      icon: Briefcase,
+      icon: Database,
       tone: "bg-slate-100 text-slate-700",
     },
     {
@@ -200,6 +201,12 @@ const Jobs = ({ onBack }) => {
       value: stats.totalActive,
       icon: CheckCircle2,
       tone: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "Lowongan Ditampilkan",
+      value: stats.totalDisplayedJobs,
+      icon: Briefcase,
+      tone: "bg-indigo-50 text-indigo-600",
     },
     {
       label: "Expired Jobs",
@@ -225,7 +232,7 @@ const Jobs = ({ onBack }) => {
         &larr; Back to Dashboard
       </button>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
         {summaryCards.map((card) => (
           <StatsCard key={card.label} {...card} />
         ))}

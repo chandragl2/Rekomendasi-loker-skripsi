@@ -27,21 +27,6 @@ const CATEGORIES = [
 
 const JOBS_PER_PAGE = 12;
 
-const getDuplicateJobKey = (job) =>
-  `${job?.title || ''}-${job?.company || ''}-${job?.location || ''}`.toLowerCase().trim();
-
-const removeDuplicateJobs = (jobs) => {
-  const seen = new Set();
-
-  return jobs.filter((job) => {
-    const key = getDuplicateJobKey(job);
-    if (seen.has(key)) return false;
-
-    seen.add(key);
-    return true;
-  });
-};
-
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
   const [total, setTotal] = useState(0);
@@ -62,10 +47,10 @@ const Jobs = () => {
       if (search) params.search = search;
 
       const res = await axios.get('/api/jobs/all', { params });
-      const uniqueJobs = removeDuplicateJobs(Array.isArray(res.data.jobs) ? res.data.jobs : []);
-      setJobs(uniqueJobs);
-      setTotal(res.data.total);
-      setTotalPages(res.data.totalPages);
+      const displayedJobs = Array.isArray(res.data.jobs) ? res.data.jobs : [];
+      setJobs(displayedJobs);
+      setTotal(res.data.total || 0);
+      setTotalPages(res.data.totalPages || 1);
     } catch (err) {
       setError('Gagal memuat data lowongan. Pastikan server berjalan dan database sudah di-seed.');
     } finally {
@@ -111,7 +96,7 @@ const Jobs = () => {
             Daftar Lowongan Pekerjaan
           </motion.h1>
           <p className="text-indigo-100 mb-8 text-sm md:text-base opacity-80">
-            {total > 0 ? `${total} lowongan tersedia untuk dikelompokkan sesuai keahlianmu` : 'Memuat data lowongan kerja...'}
+            {total > 0 ? `${total.toLocaleString()} lowongan aktif unik tersedia untuk dikelompokkan sesuai keahlianmu` : 'Memuat data lowongan kerja...'}
           </p>
 
           {/* Search Bar */}
@@ -177,7 +162,7 @@ const Jobs = () => {
         {!loading && !error && (
           <p className="text-sm text-gray-500 mb-5">
             Menampilkan <span className="font-semibold text-gray-800">{jobs.length}</span> dari{' '}
-            <span className="font-semibold text-gray-800">{total}</span> lowongan
+            <span className="font-semibold text-gray-800">{total.toLocaleString()}</span> lowongan
             {search && <> untuk "<span className="font-semibold text-indigo-600">{search}</span>"</>}
             {category !== 'Semua' && <> di kategori <span className="font-semibold text-indigo-600">{category}</span></>}
           </p>

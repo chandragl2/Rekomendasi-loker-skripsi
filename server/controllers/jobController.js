@@ -26,8 +26,37 @@ const normalizeJobForResponse = (job) => ({
   category: displayCategory(job.category),
 });
 
+const startOfToday = (date = new Date()) => {
+  const result = new Date(date);
+  result.setHours(0, 0, 0, 0);
+  return result;
+};
+
+const getActiveJobsQuery = (referenceDate = new Date()) => ({
+  status: 'active',
+  $or: [
+    { expiredAt: { $exists: false } },
+    { expiredAt: null },
+    { expiredAt: { $gte: startOfToday(referenceDate) } },
+  ],
+});
+
+const getExpiredJobsQuery = (referenceDate = new Date()) => ({
+  $or: [
+    { status: 'expired' },
+    { expiredAt: { $lt: startOfToday(referenceDate) } },
+  ],
+});
+
+const normalizeDedupeValue = (value) =>
+  `${value || ''}`.toLowerCase().replace(/\s+/g, ' ').trim();
+
 const getDuplicateJobKey = (job) =>
-  `${job.title || ''}-${job.company || ''}-${job.location || ''}`.toLowerCase().trim();
+  normalizeDedupeValue(job.dedupeKey) || [
+    normalizeDedupeValue(job.title),
+    normalizeDedupeValue(job.company),
+    normalizeDedupeValue(job.location),
+  ].join('|');
 
 const removeDuplicateJobs = (jobs) => {
   const seen = new Set();
@@ -55,6 +84,21 @@ const buildNormalizedCategoryData = (rawCategories) => {
       value,
       color: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
     }));
+};
+
+const buildCategoryDataFromJobs = (jobs) => {
+  const rawCategories = jobs.reduce((acc, job) => {
+    const category = job.category || 'Miscellaneous';
+    acc[category] = (acc[category] || 0) + 1;
+    return acc;
+  }, {});
+
+  return buildNormalizedCategoryData(
+    Object.entries(rawCategories).map(([category, count]) => ({
+      _id: category,
+      count,
+    }))
+  );
 };
 
 // ─────────────────────────────────────────────────────────
@@ -112,14 +156,23 @@ const getAllJobs = async (req, res) => {
     const { category, search, page = 1, limit = 20 } = req.query;
     await Job.expireOldJobs();
 
-    const query = Job.activeFilter();
+    const queryClauses = [getActiveJobsQuery()];
 
-    if (category && category !== 'Semua') query.category = { $in: getCategoryAliases(category) };
-    if (search) query.$or = [
-      { title: { $regex: search, $options: 'i' } },
-      { company: { $regex: search, $options: 'i' } },
-      { skills: { $regex: search, $options: 'i' } }
-    ];
+    if (category && category !== 'Semua') {
+      queryClauses.push({ category: { $in: getCategoryAliases(category) } });
+    }
+
+    if (search) {
+      queryClauses.push({
+        $or: [
+          { title: { $regex: search, $options: 'i' } },
+          { company: { $regex: search, $options: 'i' } },
+          { skills: { $regex: search, $options: 'i' } }
+        ],
+      });
+    }
+
+    const query = { $and: queryClauses };
 
     const parsedPage = Math.max(parseInt(page, 10) || 1, 1);
     const parsedLimit = Math.max(parseInt(limit, 10) || 20, 1);
@@ -159,22 +212,32 @@ const getAdminJobs = async (req, res) => {
 
     await Job.expireOldJobs();
 
-    const query = {};
+    const queryClauses = [];
 
     if (['active', 'expired', 'inactive'].includes(status)) {
-      query.status = status;
+      if (status === 'active') {
+        queryClauses.push(getActiveJobsQuery());
+      } else if (status === 'expired') {
+        queryClauses.push(getExpiredJobsQuery());
+      } else {
+        queryClauses.push({ status });
+      }
     }
 
     if (['scraper', 'company'].includes(createdByType)) {
-      query.createdByType = createdByType;
+      queryClauses.push({ createdByType });
     }
 
     if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { company: { $regex: search, $options: 'i' } },
-      ];
+      queryClauses.push({
+        $or: [
+          { title: { $regex: search, $options: 'i' } },
+          { company: { $regex: search, $options: 'i' } },
+        ],
+      });
     }
+
+    const query = queryClauses.length > 0 ? { $and: queryClauses } : {};
 
     const parsedPage = Math.max(parseInt(page, 10) || 1, 1);
     const parsedLimit = Math.max(parseInt(limit, 10) || 10, 1);
@@ -207,13 +270,15 @@ const getAdminJobStats = async (req, res) => {
       totalJobs,
       totalActive,
       totalExpired,
+      totalDisplayedJobs,
       totalScraperJobs,
       totalCompanyJobs,
       latestScraperJob,
     ] = await Promise.all([
       Job.countDocuments(),
-      Job.countDocuments({ status: 'active' }),
-      Job.countDocuments({ status: 'expired' }),
+      Job.countDocuments(getActiveJobsQuery()),
+      Job.countDocuments(getExpiredJobsQuery()),
+      Job.find(getActiveJobsQuery()).lean().then((jobs) => removeDuplicateJobs(jobs).length),
       Job.countDocuments({ createdByType: 'scraper' }),
       Job.countDocuments({ createdByType: 'company' }),
       Job.findOne({ createdByType: 'scraper' }).sort({ updatedAt: -1 }).select('updatedAt').lean(),
@@ -224,6 +289,7 @@ const getAdminJobStats = async (req, res) => {
       totalJobs,
       totalActive,
       totalExpired,
+      totalDisplayedJobs,
       totalScraperJobs,
       totalCompanyJobs,
       lastScraperUpdate,
@@ -634,6 +700,7 @@ const getAdminStats = async (req, res) => {
       totalJobs,
       totalActive,
       totalExpired,
+      totalDisplayedJobList,
       totalScraperJobs,
       totalCompanyJobs,
       totalCompanies,
@@ -641,8 +708,9 @@ const getAdminStats = async (req, res) => {
       latestScraperJob,
     ] = await Promise.all([
       Job.countDocuments(),
-      Job.countDocuments({ status: 'active' }),
-      Job.countDocuments({ status: 'expired' }),
+      Job.countDocuments(getActiveJobsQuery()),
+      Job.countDocuments(getExpiredJobsQuery()),
+      Job.find(getActiveJobsQuery()).sort({ createdAt: -1 }).lean().then((jobs) => removeDuplicateJobs(jobs)),
       Job.countDocuments({ createdByType: 'scraper' }),
       Job.countDocuments({ createdByType: 'company' }),
       Company.countDocuments(),
@@ -651,14 +719,8 @@ const getAdminStats = async (req, res) => {
     ]);
     const lastScraperUpdate = latestScraperJob ? latestScraperJob.updatedAt : null;
     
-    // Get stats by category
-    const categories = await Job.aggregate([
-      { $group: { _id: '$category', count: { $sum: 1 } } },
-      { $sort: { count: -1 } }
-    ]);
-
     // Format category data for Recharts after normalization
-    const categoryData = buildNormalizedCategoryData(categories);
+    const categoryData = buildCategoryDataFromJobs(totalDisplayedJobList);
 
     // Get recent jobs (last 10)
     const recentJobs = await Job.find()
@@ -673,6 +735,7 @@ const getAdminStats = async (req, res) => {
       totalJobs,
       totalActive,
       totalExpired,
+      totalDisplayedJobs: totalDisplayedJobList.length,
       totalScraperJobs,
       totalCompanyJobs,
       totalCompanies,

@@ -42,7 +42,7 @@ const Categories = ({ onBack }) => {
         <div>
           <p className="text-sm font-black text-blue-600 uppercase tracking-widest">Dashboard &gt; Categories</p>
           <h2 className="text-3xl font-black text-slate-900 tracking-tight">Kategori Pekerjaan</h2>
-          <p className="text-slate-500 font-medium mt-1">Distribusi kategori pekerjaan berdasarkan data tersimpan.</p>
+          <p className="text-slate-500 font-medium mt-1">Distribusi kategori berdasarkan lowongan aktif unik yang ditampilkan ke user.</p>
         </div>
       </div>
 
@@ -69,7 +69,7 @@ const Categories = ({ onBack }) => {
               <h3 className="text-lg font-black text-slate-900 group-hover:text-blue-600 transition-colors">{cat.name}</h3>
               <div className="mt-4 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Total Lowongan</p>
+                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Lowongan Ditampilkan</p>
                   <p className="text-2xl font-black text-slate-900">{cat.value}</p>
                 </div>
                 <div className="flex items-center gap-1 text-emerald-500 text-xs font-bold">

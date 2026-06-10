@@ -21,24 +21,31 @@ import { motion } from "framer-motion";
 const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
   const dashboardStats = [
     {
-      label: "Total Lowongan",
-      value: stats.totalJobs.toLocaleString(),
-      icon: Briefcase,
-      change: "Semua status",
+      label: "Total Data Lowongan",
+      value: (stats.totalJobs || 0).toLocaleString(),
+      icon: Database,
+      change: "Semua dokumen jobs",
       color: "from-slate-700 to-slate-500",
     },
     {
       label: "Active Jobs",
       value: (stats.totalActive || 0).toLocaleString(),
       icon: CheckCircle2,
-      change: "Tampil di rekomendasi",
+      change: "Status active dan belum expired",
       color: "from-emerald-600 to-teal-500",
+    },
+    {
+      label: "Lowongan Ditampilkan",
+      value: (stats.totalDisplayedJobs || 0).toLocaleString(),
+      icon: Briefcase,
+      change: "Active jobs unik untuk user",
+      color: "from-blue-600 to-indigo-500",
     },
     {
       label: "Expired Jobs",
       value: (stats.totalExpired || 0).toLocaleString(),
       icon: AlertTriangle,
-      change: "Tidak tampil rekomendasi",
+      change: "Status expired atau lewat expiredAt",
       color: "from-rose-600 to-red-500",
     },
   ];
@@ -67,7 +74,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
       </div>
 
       {/* STATS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {dashboardStats.map((stat, idx) => (
           <motion.div
             key={idx}
@@ -103,7 +110,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
           <div className="flex items-center justify-between mb-8">
             <div>
               <h3 className="text-xl font-black text-slate-900 tracking-tight">Distribusi Kategori</h3>
-              <p className="text-slate-400 text-sm font-medium">Berdasarkan data tersimpan</p>
+              <p className="text-slate-400 text-sm font-medium">Berdasarkan lowongan aktif unik yang ditampilkan</p>
             </div>
             <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center">
               <TrendingUp className="w-5 h-5 text-slate-400" />
@@ -175,7 +182,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
               <div className="p-5 bg-white/10 backdrop-blur-md rounded-3xl border border-white/20">
                 <p className="text-indigo-200 text-[10px] font-bold uppercase tracking-widest mb-1">Dominant Field</p>
                 <h4 className="text-xl font-black">{stats.categoryData[0]?.name || "N/A"}</h4>
-                <p className="text-sm font-medium text-white/80 mt-1">{stats.categoryData[0]?.value || 0} Lowongan Aktif</p>
+                <p className="text-sm font-medium text-white/80 mt-1">{stats.categoryData[0]?.value || 0} Lowongan Ditampilkan</p>
               </div>
               
               <div className="flex items-center justify-between px-2">
