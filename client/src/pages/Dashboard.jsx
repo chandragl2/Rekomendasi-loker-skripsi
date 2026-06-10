@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion as Motion } from "framer-motion";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import UploadCard from "../components/UploadCard";
@@ -170,7 +170,7 @@ const Dashboard = () => {
       {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: -60 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -60 }}
@@ -196,20 +196,20 @@ const Dashboard = () => {
             >
               <X className="h-4 w-4" />
             </button>
-          </motion.div>
+          </Motion.div>
         )}
       </AnimatePresence>
 
       <main className="flex-grow py-8 md:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <motion.h1
+            <Motion.h1
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-3xl md:text-4xl font-black text-gray-900 mb-4"
             >
               Dashboard Pencari Kerja
-            </motion.h1>
+            </Motion.h1>
             <p className="mt-2 text-gray-600 max-w-2xl mx-auto">
               Upload CV Anda untuk melihat lowongan yang cocok menggunakan
               algoritma{" "}
@@ -240,7 +240,7 @@ const Dashboard = () => {
 
             {/* Progress indicator saat syncing */}
             {scraping && (
-              <motion.div
+              <Motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="mt-6 mx-auto max-w-md bg-indigo-50 border border-indigo-100 rounded-2xl p-5 text-sm text-indigo-700 shadow-sm"
@@ -256,13 +256,13 @@ const Dashboard = () => {
                   telah disinkronisasikan oleh Python service dari MongoDB
                   Atlas.
                 </p>
-              </motion.div>
+              </Motion.div>
             )}
 
             {/* Statistik hasil scraping */}
             <AnimatePresence>
               {scrapeStats && (
-                <motion.div
+                <Motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
@@ -318,7 +318,7 @@ const Dashboard = () => {
                       ),
                     )}
                   </div>
-                </motion.div>
+                </Motion.div>
               )}
             </AnimatePresence>
           </div>
@@ -330,7 +330,7 @@ const Dashboard = () => {
           )}
 
           {showResults && (
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
@@ -350,7 +350,7 @@ const Dashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {jobs.length > 0 ? (
                   jobs.map((job, index) => (
-                    <motion.div
+                    <Motion.div
                       key={job.jobId || job.id || job._id || index}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -365,7 +365,7 @@ const Dashboard = () => {
                             : (Number(job.similarityScore || 0) * 100).toFixed(1),
                         }}
                       />
-                    </motion.div>
+                    </Motion.div>
                   ))
                 ) : (
                   <div className="col-span-full text-center py-10">
@@ -375,7 +375,7 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
-            </motion.div>
+            </Motion.div>
           )}
         </div>
       </main>
