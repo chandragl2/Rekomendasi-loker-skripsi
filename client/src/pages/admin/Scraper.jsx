@@ -77,7 +77,7 @@ const Scraper = () => {
     try {
       setLoading(true);
 
-      const response = await axios.get(`${API_URL}/api/scraper/stats`);
+      const response = await axios.get(`${API_URL}/api/jobs/admin/stats`);
       setStats(normalizeStats(response?.data));
     } catch (err) {
       console.error("Failed to fetch scraper monitoring stats:", err);
