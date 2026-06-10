@@ -34,10 +34,16 @@ const SummaryCard = ({ label, value, icon: Icon, tone }) => (
   <div className="bg-white rounded-2xl border border-slate-200/70 p-5 shadow-sm">
     <div className="flex items-start justify-between gap-4">
       <div>
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</p>
-        <p className="text-3xl font-black text-slate-900 mt-2">{value.toLocaleString()}</p>
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          {label}
+        </p>
+        <p className="text-3xl font-black text-slate-900 mt-2">
+          {value.toLocaleString()}
+        </p>
       </div>
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${tone}`}>
+      <div
+        className={`w-11 h-11 rounded-xl flex items-center justify-center ${tone}`}
+      >
         <Icon className="w-5 h-5" />
       </div>
     </div>
@@ -60,15 +66,26 @@ const Companies = ({ onBack }) => {
       setLoading(true);
       setError("");
 
+      const API_URL =
+        import.meta.env.VITE_API_URL ||
+        "https://rekomendasi-loker-skripsi-production.up.railway.app";
       try {
-        const response = await axios.get("/api/admin/companies");
+        const response = await axios.get(`${API_URL}/api/admin/companies`);
         const companyData = getCompaniesFromResponse(response.data);
         setCompanies(companyData);
-        setSummary(response.data?.summary || {
-          totalCompanies: companyData.length,
-          totalCompanyJobs: companyData.reduce((total, company) => total + (company.totalJobs || 0), 0),
-          totalApplications: companyData.reduce((total, company) => total + (company.totalApplications || 0), 0),
-        });
+        setSummary(
+          response.data?.summary || {
+            totalCompanies: companyData.length,
+            totalCompanyJobs: companyData.reduce(
+              (total, company) => total + (company.totalJobs || 0),
+              0,
+            ),
+            totalApplications: companyData.reduce(
+              (total, company) => total + (company.totalApplications || 0),
+              0,
+            ),
+          },
+        );
       } catch (err) {
         setError(err.response?.data?.message || "Gagal memuat daftar company.");
       } finally {
@@ -102,9 +119,15 @@ const Companies = ({ onBack }) => {
 
       <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200/60 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
         <div>
-          <p className="text-sm font-black text-blue-600 uppercase tracking-widest">Dashboard &gt; Companies</p>
-          <h2 className="text-3xl font-black text-slate-900 tracking-tight">Company Management</h2>
-          <p className="text-slate-500 font-medium">Daftar perusahaan, jumlah lowongan, dan jumlah pelamar.</p>
+          <p className="text-sm font-black text-blue-600 uppercase tracking-widest">
+            Dashboard &gt; Companies
+          </p>
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+            Company Management
+          </h2>
+          <p className="text-slate-500 font-medium">
+            Daftar perusahaan, jumlah lowongan, dan jumlah pelamar.
+          </p>
         </div>
 
         <div className="relative w-full xl:w-96">
@@ -157,8 +180,12 @@ const Companies = ({ onBack }) => {
       {!loading && !error && filteredCompanies.length === 0 && (
         <div className="bg-white rounded-[2.5rem] border border-slate-200/60 shadow-sm p-12 text-center">
           <Building2 className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-xl font-black text-slate-900">Company tidak ditemukan</h3>
-          <p className="text-sm text-slate-500 mt-2">Coba gunakan kata kunci lain.</p>
+          <h3 className="text-xl font-black text-slate-900">
+            Company tidak ditemukan
+          </h3>
+          <p className="text-sm text-slate-500 mt-2">
+            Coba gunakan kata kunci lain.
+          </p>
         </div>
       )}
 
@@ -168,17 +195,32 @@ const Companies = ({ onBack }) => {
             <table className="w-full min-w-[1080px] text-left">
               <thead className="bg-slate-50/80">
                 <tr>
-                  <th className="py-4 px-6 font-black text-slate-400 text-[10px] uppercase tracking-widest">Company</th>
-                  <th className="py-4 px-4 font-black text-slate-400 text-[10px] uppercase tracking-widest">Telepon</th>
-                  <th className="py-4 px-4 font-black text-slate-400 text-[10px] uppercase tracking-widest">Alamat</th>
-                  <th className="py-4 px-4 font-black text-slate-400 text-[10px] uppercase tracking-widest">Lowongan</th>
-                  <th className="py-4 px-4 font-black text-slate-400 text-[10px] uppercase tracking-widest">Pelamar</th>
-                  <th className="py-4 px-6 font-black text-slate-400 text-[10px] uppercase tracking-widest">Tanggal Daftar</th>
+                  <th className="py-4 px-6 font-black text-slate-400 text-[10px] uppercase tracking-widest">
+                    Company
+                  </th>
+                  <th className="py-4 px-4 font-black text-slate-400 text-[10px] uppercase tracking-widest">
+                    Telepon
+                  </th>
+                  <th className="py-4 px-4 font-black text-slate-400 text-[10px] uppercase tracking-widest">
+                    Alamat
+                  </th>
+                  <th className="py-4 px-4 font-black text-slate-400 text-[10px] uppercase tracking-widest">
+                    Lowongan
+                  </th>
+                  <th className="py-4 px-4 font-black text-slate-400 text-[10px] uppercase tracking-widest">
+                    Pelamar
+                  </th>
+                  <th className="py-4 px-6 font-black text-slate-400 text-[10px] uppercase tracking-widest">
+                    Tanggal Daftar
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredCompanies.map((company) => (
-                  <tr key={company.id || company._id || company.email} className="hover:bg-slate-50/80 transition-colors">
+                  <tr
+                    key={company.id || company._id || company.email}
+                    className="hover:bg-slate-50/80 transition-colors"
+                  >
                     <td className="py-5 px-6">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
@@ -190,7 +232,9 @@ const Companies = ({ onBack }) => {
                           </p>
                           <div className="flex items-center gap-1.5 text-slate-400 text-xs mt-1">
                             <Mail className="w-3 h-3" />
-                            <span className="truncate max-w-[240px]">{company.email || "-"}</span>
+                            <span className="truncate max-w-[240px]">
+                              {company.email || "-"}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -204,7 +248,9 @@ const Companies = ({ onBack }) => {
                     <td className="py-5 px-4">
                       <div className="flex items-start gap-2 text-sm font-semibold text-slate-600 max-w-[300px]">
                         <MapPin className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-                        <span className="line-clamp-2">{company.address || "-"}</span>
+                        <span className="line-clamp-2">
+                          {company.address || "-"}
+                        </span>
                       </div>
                     </td>
                     <td className="py-5 px-4">
@@ -219,7 +265,9 @@ const Companies = ({ onBack }) => {
                         {company.totalApplications || 0}
                       </span>
                     </td>
-                    <td className="py-5 px-6 text-sm font-semibold text-slate-600">{formatDate(company.createdAt)}</td>
+                    <td className="py-5 px-6 text-sm font-semibold text-slate-600">
+                      {formatDate(company.createdAt)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
