@@ -12,7 +12,7 @@ import {
   CheckCircle2,
   AlertTriangle,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 const emptyStats = {
   totalActive: 0,
@@ -153,14 +153,14 @@ const Scraper = () => {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         {cards.map((card, index) => (
-          <motion.div
+          <Motion.div
             key={card.label}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
           >
             <MonitorCard {...card} />
-          </motion.div>
+          </Motion.div>
         ))}
       </div>
 

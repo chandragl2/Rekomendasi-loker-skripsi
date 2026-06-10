@@ -1,16 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Briefcase } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsOpen(false);
-  }, [location]);
 
   // Prevent scroll when mobile menu is open
   useEffect(() => {
@@ -87,14 +82,14 @@ const Navbar = () => {
       <AnimatePresence>
         {isOpen && (
           <>
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
               className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm md:hidden z-40"
             />
-            <motion.div
+            <Motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
@@ -116,6 +111,7 @@ const Navbar = () => {
                   <Link
                     key={link.path}
                     to={link.path}
+                    onClick={() => setIsOpen(false)}
                     className={`block px-4 py-3 rounded-xl text-base font-bold transition-all ${
                       location.pathname === link.path
                         ? 'text-indigo-600 bg-indigo-50'
@@ -130,12 +126,13 @@ const Navbar = () => {
               <div className="mt-auto pt-6 border-t border-gray-100">
                 <Link
                   to="/dashboard"
+                  onClick={() => setIsOpen(false)}
                   className="w-full bg-indigo-600 text-white flex items-center justify-center px-4 py-4 rounded-xl text-base font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 active:scale-[0.98] transition-all"
                 >
                   Upload CV Sekarang
                 </Link>
               </div>
-            </motion.div>
+            </Motion.div>
           </>
         )}
       </AnimatePresence>

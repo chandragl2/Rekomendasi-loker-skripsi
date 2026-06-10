@@ -15,7 +15,7 @@ import {
   CheckCircle2,
   AlertTriangle,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 
 const STATUS_FILTERS = [
   { label: "Semua", value: "" },
@@ -167,7 +167,7 @@ const Jobs = ({ onBack }) => {
       await axios.delete(`/api/jobs/${id}`);
       if (selectedJob?._id === id) setSelectedJob(null);
       await refreshData();
-    } catch (err) {
+    } catch {
       alert("Gagal menghapus lowongan.");
     } finally {
       setActionLoading("");
@@ -432,13 +432,13 @@ const Jobs = ({ onBack }) => {
 
       <AnimatePresence>
         {selectedJob && (
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4"
           >
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, y: 20, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.98 }}
@@ -549,8 +549,8 @@ const Jobs = ({ onBack }) => {
                   </div>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </Motion.div>
+          </Motion.div>
         )}
       </AnimatePresence>
     </div>

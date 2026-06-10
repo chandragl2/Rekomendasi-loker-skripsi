@@ -6,7 +6,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import axios from "axios";
 
 const UploadCard = ({ onAnalyze }) => {
@@ -96,7 +96,7 @@ const UploadCard = ({ onAnalyze }) => {
   };
 
   return (
-    <motion.div
+    <Motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto border border-gray-100"
@@ -186,7 +186,7 @@ const UploadCard = ({ onAnalyze }) => {
           "Bandingkan Kecocokan"
         )}
       </button>
-    </motion.div>
+    </Motion.div>
   );
 };
 

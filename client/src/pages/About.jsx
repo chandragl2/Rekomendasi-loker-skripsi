@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Brain, FileText, BarChart2, Layers, ArrowRight, CheckCircle, BookOpen, Code2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -51,7 +51,7 @@ const About = () => {
       {/* Hero */}
       <section className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-blue-700 text-white py-20 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
@@ -67,14 +67,14 @@ const About = () => {
               algoritma <strong>TF-IDF</strong> dan <strong>Cosine Similarity</strong> yang diimplementasikan
               dari nol tanpa library otomatis.
             </p>
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
 
       {/* Latar Belakang */}
       <section className="py-16 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -98,14 +98,14 @@ const About = () => {
                 persyaratan akademik penelitian ini.
               </p>
             </div>
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
 
       {/* Cara Kerja */}
       <section className="py-20 px-4">
         <div className="max-w-5xl mx-auto">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -113,11 +113,11 @@ const About = () => {
           >
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">Cara Kerja Algoritma</h2>
             <p className="text-gray-500 max-w-xl mx-auto">Empat tahapan cerdas dari pengolahan data CV hingga menghasilkan rekomendasi yang personal.</p>
-          </motion.div>
+          </Motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {steps.map((step, i) => (
-              <motion.div
+              <Motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -132,7 +132,7 @@ const About = () => {
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{step.title}</h3>
                   <p className="text-gray-500 text-sm leading-relaxed">{step.desc}</p>
                 </div>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         </div>
@@ -142,7 +142,7 @@ const About = () => {
       <section className="py-20 px-4 bg-gray-900 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 blur-[100px] rounded-full -mr-48 -mt-48"></div>
         <div className="max-w-5xl mx-auto relative z-10">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -150,7 +150,7 @@ const About = () => {
           >
             <h2 className="text-3xl md:text-4xl font-black mb-4 text-white">Formula Matematika</h2>
             <p className="text-indigo-200 opacity-70">Dasar perhitungan yang digunakan dalam sistem rekomendasi ini.</p>
-          </motion.div>
+          </Motion.div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {[
@@ -176,7 +176,7 @@ const About = () => {
                 textColor: 'text-emerald-400',
               },
             ].map((item, i) => (
-              <motion.div
+              <Motion.div
                 key={i}
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -189,7 +189,7 @@ const About = () => {
                   {item.formula}
                 </div>
                 <p className="text-indigo-100/60 text-sm leading-relaxed">{item.desc}</p>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         </div>
@@ -198,7 +198,7 @@ const About = () => {
       {/* Tech Stack */}
       <section className="py-24 px-4 bg-white">
         <div className="max-w-5xl mx-auto">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -209,11 +209,11 @@ const About = () => {
               <span>Technology Stack</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-black text-gray-900">Teknologi Terkini</h2>
-          </motion.div>
+          </Motion.div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {techStack.map((tech, i) => (
-              <motion.div
+              <Motion.div
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -223,7 +223,7 @@ const About = () => {
               >
                 <div className="font-black text-base mb-1">{tech.name}</div>
                 <div className="text-xs font-medium opacity-70 leading-relaxed">{tech.desc}</div>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         </div>
@@ -232,7 +232,7 @@ const About = () => {
       {/* CTA */}
       <section className="py-16 px-4 bg-indigo-600 text-white">
         <div className="max-w-2xl mx-auto text-center">
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -245,7 +245,7 @@ const About = () => {
             >
               Mulai Cari Lowongan <ArrowRight className="h-5 w-5" />
             </Link>
-          </motion.div>
+          </Motion.div>
         </div>
       </section>
 

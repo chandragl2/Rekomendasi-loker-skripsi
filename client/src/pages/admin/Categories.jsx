@@ -5,7 +5,7 @@ import {
   TrendingUp,
   Loader2
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 const Categories = ({ onBack }) => {
   const [categories, setCategories] = useState([]);
@@ -53,7 +53,7 @@ const Categories = ({ onBack }) => {
           ))
         ) : categories.length > 0 ? (
           categories.map((cat, idx) => (
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: idx * 0.05 }}
@@ -79,14 +79,14 @@ const Categories = ({ onBack }) => {
               </div>
 
               <div className="mt-6 w-full bg-slate-50 h-2 rounded-full overflow-hidden">
-                <motion.div 
+                <Motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${(cat.value / categories.reduce((a, b) => a + (b.value || 0), 0)) * 100}%` }}
                   className="h-full rounded-full"
                   style={{ backgroundColor: cat.color }}
-                ></motion.div>
+                ></Motion.div>
               </div>
-            </motion.div>
+            </Motion.div>
           ))
         ) : (
           <div className="col-span-full py-20 text-center text-slate-400 font-medium">

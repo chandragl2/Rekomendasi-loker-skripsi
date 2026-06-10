@@ -8,7 +8,7 @@ import {
   Loader2,
   TimerOff,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 const activityMeta = {
   job_created: {
@@ -133,7 +133,7 @@ const Logs = ({ onBack }) => {
                 const meta = activityMeta[activity.type] || activityMeta.job_created;
                 const Icon = meta.icon;
                 return (
-                  <motion.div
+                  <Motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.03 }}
@@ -151,7 +151,7 @@ const Logs = ({ onBack }) => {
                       </div>
                       <p className="text-sm font-medium text-slate-500 leading-6">{activity.description}</p>
                     </div>
-                  </motion.div>
+                  </Motion.div>
                 );
               })}
             </div>

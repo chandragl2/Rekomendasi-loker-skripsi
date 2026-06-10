@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion"; // eslint-disable-line no-unused-vars
+import { motion as Motion } from "framer-motion";
 import { Upload, Cpu, Briefcase, ArrowRight, Sparkles } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -14,7 +14,7 @@ const Home = () => {
       <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-32 lg:pt-32 lg:pb-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
-            <motion.div
+            {/* <Motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
@@ -22,9 +22,9 @@ const Home = () => {
             >
               <Sparkles className="h-3 w-3" />
               <span>AI-Powered Job Recommendations</span>
-            </motion.div>
+            </Motion.div> */}
 
-            <motion.h1
+            <Motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
@@ -34,9 +34,9 @@ const Home = () => {
               <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-blue-500">
                 Sesuai Keterampilanmu
               </span>
-            </motion.h1>
+            </Motion.h1>
 
-            <motion.p
+            <Motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -45,9 +45,9 @@ const Home = () => {
               Upload CV Anda, biarkan AI kami menganalisis keahlian Anda, dan
               dapatkan rekomendasi pekerjaan yang paling cocok dengan persentase
               kecocokan akurat.
-            </motion.p>
+            </Motion.p>
 
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
@@ -66,7 +66,7 @@ const Home = () => {
               >
                 Lihat Lowongan
               </Link>
-            </motion.div>
+            </Motion.div>
           </div>
         </div>
 
@@ -154,7 +154,7 @@ const Home = () => {
                 gradient: "from-violet-600 to-violet-400",
               },
             ].map((step, index) => (
-              <motion.div
+              <Motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -171,7 +171,7 @@ const Home = () => {
                   {step.title}
                 </h3>
                 <p className="text-gray-500 leading-relaxed">{step.desc}</p>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         </div>

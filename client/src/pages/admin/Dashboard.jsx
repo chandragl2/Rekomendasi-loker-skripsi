@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import { 
   Briefcase, 
   CheckCircle2, 
@@ -16,7 +15,7 @@ import {
   ResponsiveContainer, 
   Tooltip 
 } from "recharts";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
   const dashboardStats = [
@@ -76,7 +75,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
       {/* STATS GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {dashboardStats.map((stat, idx) => (
-          <motion.div
+          <Motion.div
             key={idx}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -99,7 +98,7 @@ const Dashboard = ({ onSyncData, stats, loading, syncing }) => {
               <span className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full font-bold uppercase tracking-tighter">Status</span>
               <span className="text-xs text-slate-400 font-medium">{stat.change}</span>
             </div>
-          </motion.div>
+          </Motion.div>
         ))}
       </div>
 

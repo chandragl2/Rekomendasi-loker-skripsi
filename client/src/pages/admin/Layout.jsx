@@ -11,7 +11,7 @@ import {
   X,
   RefreshCw
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const AdminLayout = ({ children, sidebarOpen, setSidebarOpen, activeTab, setActiveTab, onRefresh, loading }) => {
@@ -34,7 +34,7 @@ const AdminLayout = ({ children, sidebarOpen, setSidebarOpen, activeTab, setActi
   return (
     <div className="flex h-screen bg-[#F8FAFC] text-slate-900 font-sans overflow-hidden">
       {/* SIDEBAR */}
-      <motion.aside
+      <Motion.aside
         initial={false}
         animate={{ width: sidebarOpen ? 280 : 88 }}
         className="bg-slate-900 text-white flex flex-col relative z-20 shadow-[4px_0_24px_rgba(0,0,0,0.1)]"
@@ -44,13 +44,13 @@ const AdminLayout = ({ children, sidebarOpen, setSidebarOpen, activeTab, setActi
             <Briefcase className="w-5 h-5 text-white" />
           </div>
           {sidebarOpen && (
-            <motion.span 
+            <Motion.span 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }}
               className="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400"
             >
               JobMatch
-            </motion.span>
+            </Motion.span>
           )}
         </div>
 
@@ -83,7 +83,7 @@ const AdminLayout = ({ children, sidebarOpen, setSidebarOpen, activeTab, setActi
             {sidebarOpen && <span className="text-sm font-semibold">Logout</span>}
           </button>
         </div>
-      </motion.aside>
+      </Motion.aside>
 
       {/* MAIN CONTENT WRAPPER */}
       <div className="flex-1 flex flex-col overflow-hidden relative">

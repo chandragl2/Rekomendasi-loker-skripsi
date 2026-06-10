@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion"; // eslint-disable-line no-unused-vars
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
@@ -13,16 +13,18 @@ import Scraper from "./admin/Scraper";
 import Logs from "./admin/Logs";
 import Settings from "./admin/Settings";
 
+const getTabFromPath = (pathname) => {
+  const segment = pathname.split("/")[2];
+  return ["jobs", "categories", "scraper", "logs", "settings"].includes(segment)
+    ? segment
+    : "dashboard";
+};
+
 const AdminDashboard = () => {
   const location = useLocation();
-  const getInitialTab = () => {
-    const segment = location.pathname.split("/")[2];
-    return ["jobs", "categories", "scraper", "logs", "settings"].includes(segment)
-      ? segment
-      : "dashboard";
-  };
-
-  const [activeTab, setActiveTab] = useState(getInitialTab);
+  const [activeTab, setActiveTab] = useState(() =>
+    getTabFromPath(location.pathname),
+  );
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -42,7 +44,12 @@ const AdminDashboard = () => {
     totalCategories: 0,
   });
 
-  const fetchStats = async () => {
+  const showNotification = useCallback((type, message) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000);
+  }, []);
+
+  const fetchStats = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get("/api/jobs/admin/stats");
@@ -53,30 +60,31 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showNotification]);
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [fetchStats]);
 
   useEffect(() => {
-    setActiveTab(getInitialTab());
+    setActiveTab(getTabFromPath(location.pathname));
   }, [location.pathname]);
-
-  const showNotification = (type, message) => {
-    setNotification({ type, message });
-    setTimeout(() => setNotification(null), 5000);
-  };
 
   const handleSyncData = async () => {
     try {
       setSyncing(true);
-      showNotification("info", "Mensinkronkan data dengan database MongoDB Atlas...");
-      
+      showNotification(
+        "info",
+        "Mensinkronkan data dengan database MongoDB Atlas...",
+      );
+
       // Instead of triggering backend scraping, we simply refresh the data
       await fetchStats();
-      
-      showNotification("success", "Sinkronisasi berhasil! Data terbaru telah dimuat.");
+
+      showNotification(
+        "success",
+        "Sinkronisasi berhasil! Data terbaru telah dimuat.",
+      );
     } catch (err) {
       console.error("Sync failed:", err);
       showNotification("error", "Proses sinkronisasi gagal dijalankan.");
@@ -90,11 +98,11 @@ const AdminDashboard = () => {
     switch (activeTab) {
       case "dashboard":
         return (
-          <Dashboard 
-            stats={stats} 
-            loading={loading} 
-            syncing={syncing} 
-            onSyncData={handleSyncData} 
+          <Dashboard
+            stats={stats}
+            loading={loading}
+            syncing={syncing}
+            onSyncData={handleSyncData}
           />
         );
       case "jobs":
@@ -108,7 +116,14 @@ const AdminDashboard = () => {
       case "settings":
         return <Settings onBack={() => setActiveTab("dashboard")} />;
       default:
-        return <Dashboard stats={stats} loading={loading} syncing={syncing} onSyncData={handleSyncData} />;
+        return (
+          <Dashboard
+            stats={stats}
+            loading={loading}
+            syncing={syncing}
+            onSyncData={handleSyncData}
+          />
+        );
     }
   };
 
@@ -124,30 +139,34 @@ const AdminDashboard = () => {
       {/* NOTIFICATION TOAST */}
       <AnimatePresence>
         {notification && (
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: -20, x: "-50%" }}
             animate={{ opacity: 1, y: 20 }}
             exit={{ opacity: 0, y: -20 }}
             className={`fixed top-0 left-1/2 z-[100] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border ${
-              notification.type === "success" 
-                ? "bg-white border-emerald-100 text-emerald-800" 
+              notification.type === "success"
+                ? "bg-white border-emerald-100 text-emerald-800"
                 : notification.type === "error"
-                ? "bg-white border-rose-100 text-rose-800"
-                : "bg-white border-blue-100 text-blue-800"
+                  ? "bg-white border-rose-100 text-rose-800"
+                  : "bg-white border-blue-100 text-blue-800"
             }`}
           >
-            {notification.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-500" />}
-            {notification.type === "error" && <AlertCircle className="w-5 h-5 text-rose-500" />}
-            {notification.type === "info" && <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />}
+            {notification.type === "success" && (
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+            )}
+            {notification.type === "error" && (
+              <AlertCircle className="w-5 h-5 text-rose-500" />
+            )}
+            {notification.type === "info" && (
+              <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+            )}
             <span className="font-medium">{notification.message}</span>
-          </motion.div>
+          </Motion.div>
         )}
       </AnimatePresence>
 
       {/* Render sub-page content */}
-      <div className="animate-in fade-in duration-500">
-        {renderContent()}
-      </div>
+      <div className="animate-in fade-in duration-500">{renderContent()}</div>
     </AdminLayout>
   );
 };

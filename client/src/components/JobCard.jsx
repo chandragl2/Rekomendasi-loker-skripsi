@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { Briefcase, MapPin, Building2, ChevronRight } from 'lucide-react';
 
 const JobCard = ({ job }) => {
@@ -10,7 +10,7 @@ const JobCard = ({ job }) => {
     : 0;
 
   return (
-    <motion.div
+    <Motion.div
       whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)" }}
       className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden transition-all duration-300"
     >
@@ -64,7 +64,7 @@ const JobCard = ({ job }) => {
           <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
-    </motion.div>
+    </Motion.div>
   );
 };
 

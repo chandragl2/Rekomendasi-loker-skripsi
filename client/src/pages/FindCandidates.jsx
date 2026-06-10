@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import CandidateCard from '../components/CandidateCard';
@@ -56,7 +56,7 @@ const FindCandidates = () => {
       {/* Toast Notification */}
       <AnimatePresence>
         {toast && (
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0, y: -60 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -60 }}
@@ -76,7 +76,7 @@ const FindCandidates = () => {
             <button onClick={() => setToast(null)} className="flex-shrink-0 text-gray-400 hover:text-gray-600">
               <X className="h-4 w-4" />
             </button>
-          </motion.div>
+          </Motion.div>
         )}
       </AnimatePresence>
 
@@ -84,20 +84,20 @@ const FindCandidates = () => {
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-12">
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-2xl text-xs font-black uppercase tracking-widest mb-6"
             >
               <Users className="h-4 w-4" /> Employer Panel
-            </motion.div>
-            <motion.h1 
+            </Motion.div>
+            <Motion.h1 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl md:text-5xl font-black text-gray-900 mb-6 leading-tight"
             >
               Temukan Kandidat <span className="text-indigo-600">Terbaik</span>
-            </motion.h1>
+            </Motion.h1>
             <p className="mt-2 text-gray-600 max-w-2xl mx-auto text-lg">
               Masukkan kebutuhan lowongan pekerjaan Anda, dan algoritma kami akan memberikan ranking kandidat yang paling sesuai berdasarkan keahlian dan pengalaman.
             </p>
@@ -105,7 +105,7 @@ const FindCandidates = () => {
 
           {/* Search Form */}
           <div className="max-w-3xl mx-auto mb-16">
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-2xl shadow-indigo-100 border border-gray-100"
@@ -135,14 +135,14 @@ const FindCandidates = () => {
                   )}
                 </button>
               </form>
-            </motion.div>
+            </Motion.div>
           </div>
 
           {/* Results Section */}
           <div id="results-section" className="scroll-mt-24">
             <AnimatePresence>
               {searched && (
-                <motion.div
+                <Motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -190,7 +190,7 @@ const FindCandidates = () => {
                       )}
                     </div>
                   )}
-                </motion.div>
+                </Motion.div>
               )}
             </AnimatePresence>
           </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import {
   Search, MapPin, Building2, Briefcase, ChevronRight,
   ChevronLeft, Filter, Loader2, RefreshCw, AlertCircle
@@ -51,7 +51,7 @@ const Jobs = () => {
       setJobs(displayedJobs);
       setTotal(res.data.total || 0);
       setTotalPages(res.data.totalPages || 1);
-    } catch (err) {
+    } catch {
       setError('Gagal memuat data lowongan. Pastikan server berjalan dan database sudah di-seed.');
     } finally {
       setLoading(false);
@@ -88,13 +88,13 @@ const Jobs = () => {
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 blur-2xl rounded-full -ml-24 -mb-24"></div>
         
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <motion.h1
+          <Motion.h1
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-3xl md:text-5xl font-black text-white mb-3"
           >
             Daftar Lowongan Pekerjaan
-          </motion.h1>
+          </Motion.h1>
           <p className="text-indigo-100 mb-8 text-sm md:text-base opacity-80">
             {total > 0 ? `${total.toLocaleString()} lowongan aktif unik tersedia untuk dikelompokkan sesuai keahlianmu` : 'Memuat data lowongan kerja...'}
           </p>
@@ -207,7 +207,7 @@ const Jobs = () => {
         {/* Job Grid */}
         {!loading && !error && jobs.length > 0 && (
           <AnimatePresence mode="wait">
-            <motion.div
+            <Motion.div
               key={`${page}-${category}-${search}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -216,7 +216,7 @@ const Jobs = () => {
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10"
             >
               {jobs.map((job, index) => (
-                <motion.div
+                <Motion.div
                   key={job._id}
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -274,9 +274,9 @@ const Jobs = () => {
                       <ChevronRight className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
                   </div>
-                </motion.div>
+                </Motion.div>
               ))}
-            </motion.div>
+            </Motion.div>
           </AnimatePresence>
         )}
 

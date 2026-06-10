@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import {
   ArrowLeft, Building2, MapPin, Share2, Bookmark,
   LayoutList, CheckCircle, Briefcase, Tag, Globe
@@ -87,7 +87,7 @@ const Detail = () => {
       <Navbar />
 
       <main className="flex-grow py-10 px-4 sm:px-6 lg:px-8">
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-4xl mx-auto"
@@ -268,7 +268,7 @@ const Detail = () => {
               </button>
             </div>
           </div>
-        </motion.div>
+        </Motion.div>
       </main>
 
       <Footer />
