@@ -13,6 +13,10 @@ import Scraper from "./admin/Scraper";
 import Logs from "./admin/Logs";
 import Settings from "./admin/Settings";
 
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://rekomendasi-loker-skripsi-production.up.railway.app";
+
 const getTabFromPath = (pathname) => {
   const segment = pathname.split("/")[2];
   return ["jobs", "categories", "scraper", "logs", "settings"].includes(segment)
@@ -73,7 +77,7 @@ const AdminDashboard = () => {
   const fetchStats = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get("/api/jobs/admin/stats");
+      const response = await axios.get(`${API_URL}/api/jobs/admin/stats`);
       setStats(normalizeStats(response?.data));
     } catch (err) {
       console.error("Failed to fetch stats:", err);

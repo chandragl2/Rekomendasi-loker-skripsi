@@ -3,6 +3,10 @@ import axios from "axios";
 import { Tag, TrendingUp, Loader2 } from "lucide-react";
 import { motion as Motion } from "framer-motion";
 
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://rekomendasi-loker-skripsi-production.up.railway.app";
+
 const getCategoryData = (data) => {
   if (Array.isArray(data)) return data;
   if (Array.isArray(data?.categoryData)) return data.categoryData;
@@ -15,9 +19,6 @@ const Categories = ({ onBack }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchCategories = async () => {
-    const API_URL =
-      import.meta.env.VITE_API_URL ||
-      "https://rekomendasi-loker-skripsi-production.up.railway.app";
     try {
       setLoading(true);
       const response = await axios.get(`${API_URL}/api/jobs/admin/stats`);

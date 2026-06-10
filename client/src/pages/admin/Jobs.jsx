@@ -17,6 +17,10 @@ import {
 } from "lucide-react";
 import { motion as Motion, AnimatePresence } from "framer-motion";
 
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://rekomendasi-loker-skripsi-production.up.railway.app";
+
 const STATUS_FILTERS = [
   { label: "Semua", value: "" },
   { label: "Active", value: "active" },
@@ -135,7 +139,7 @@ const Jobs = ({ onBack }) => {
 
   const fetchStats = useCallback(async () => {
     try {
-      const response = await axios.get("/api/jobs/admin/jobs/stats");
+      const response = await axios.get(`${API_URL}/api/jobs/admin/jobs/stats`);
       setStats(normalizeStats(response?.data));
     } catch (err) {
       console.error("Error fetching admin jobs stats:", err);
@@ -151,7 +155,7 @@ const Jobs = ({ onBack }) => {
       if (status) params.status = status;
       if (createdByType) params.createdByType = createdByType;
 
-      const response = await axios.get("/api/jobs/admin/jobs", { params });
+      const response = await axios.get(`${API_URL}/api/jobs/admin/jobs`, { params });
       const payload = getJobsPayload(response?.data);
       setJobs(payload.jobs);
       setTotal(payload.total);
@@ -195,7 +199,7 @@ const Jobs = ({ onBack }) => {
 
     try {
       setActionLoading(id);
-      await axios.delete(`/api/jobs/${id}`);
+      await axios.delete(`${API_URL}/api/jobs/${id}`);
       if (selectedJob?._id === id) setSelectedJob(null);
       await refreshData();
     } catch {
@@ -210,7 +214,7 @@ const Jobs = ({ onBack }) => {
 
     try {
       setActionLoading(job._id);
-      const response = await axios.patch(`/api/jobs/admin/jobs/${job._id}/status`, {
+      const response = await axios.patch(`${API_URL}/api/jobs/admin/jobs/${job._id}/status`, {
         status: nextStatus,
       });
       if (selectedJob?._id === job._id) {
