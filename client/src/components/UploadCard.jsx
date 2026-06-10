@@ -59,11 +59,13 @@ const UploadCard = ({ onAnalyze }) => {
     const formData = new FormData();
     formData.append("cv", file);
 
+    const API_URL =
+      import.meta.env.VITE_API_URL ||
+      "https://rekomendasi-loker-skripsi-production.up.railway.app";
+
     try {
-      // Direct call to running backend
-      // On Vercel, we use relative path
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/jobs/recommend`,
+        `${API_URL}/api/jobs/recommend`,
         formData,
         {
           headers: {
