@@ -1,12 +1,18 @@
-import React, { useState, useRef } from 'react';
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import axios from 'axios';
+import React, { useState, useRef } from "react";
+import {
+  Upload,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import axios from "axios";
 
 const UploadCard = ({ onAnalyze }) => {
   const [file, setFile] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -33,34 +39,38 @@ const UploadCard = ({ onAnalyze }) => {
   };
 
   const validateAndSetFile = (file) => {
-    setError('');
-    if (file && file.type === 'application/pdf') {
+    setError("");
+    if (file && file.type === "application/pdf") {
       setFile(file);
     } else {
-      setError('Please upload a valid PDF file.');
+      setError("Please upload a valid PDF file.");
     }
   };
 
   const handleSubmit = async () => {
     if (!file) {
-      setError('Please select a file first.');
+      setError("Please select a file first.");
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError("");
 
     const formData = new FormData();
-    formData.append('cv', file);
+    formData.append("cv", file);
 
     try {
       // Direct call to running backend
       // On Vercel, we use relative path
-      const response = await axios.post('/api/jobs/recommend', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/jobs/recommend`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      });
+      );
 
       const recommendations = Array.isArray(response.data)
         ? response.data
@@ -69,29 +79,40 @@ const UploadCard = ({ onAnalyze }) => {
       onAnalyze(recommendations, {
         cvFileName: file.name,
         cvText: !Array.isArray(response.data)
-          ? response.data?.cvText || response.data?.cvRawText || response.data?.extractedText || ''
-          : '',
+          ? response.data?.cvText ||
+            response.data?.cvRawText ||
+            response.data?.extractedText ||
+            ""
+          : "",
       });
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || 'Error analysing CV. Please try again.');
+      setError(
+        err.response?.data?.message || "Error analysing CV. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-xl shadow-lg p-8 max-w-2xl mx-auto border border-gray-100"
     >
-      <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">Upload Your CV</h2>
-      <p className="text-gray-500 text-center mb-8">Format supported: PDF only (Max 2MB)</p>
+      <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
+        Upload Your CV
+      </h2>
+      <p className="text-gray-500 text-center mb-8">
+        Format supported: PDF only (Max 2MB)
+      </p>
 
       <div
         className={`border-2 border-dashed rounded-xl p-10 text-center transition-colors cursor-pointer ${
-          isDragOver ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+          isDragOver
+            ? "border-indigo-500 bg-indigo-50"
+            : "border-gray-300 hover:border-indigo-400 hover:bg-gray-50"
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -106,15 +127,20 @@ const UploadCard = ({ onAnalyze }) => {
           onChange={handleFileChange}
           disabled={loading}
         />
-        
+
         {file ? (
           <div className="flex flex-col items-center">
             <FileText className="h-16 w-16 text-indigo-600 mb-4" />
             <p className="text-lg font-medium text-gray-700">{file.name}</p>
-            <p className="text-sm text-gray-400 mt-1">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+            <p className="text-sm text-gray-400 mt-1">
+              {(file.size / 1024 / 1024).toFixed(2)} MB
+            </p>
             {!loading && (
-              <button 
-                onClick={(e) => { e.stopPropagation(); setFile(null); }}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setFile(null);
+                }}
                 className="mt-4 text-red-500 text-sm hover:text-red-700 font-medium"
               >
                 Remove
@@ -124,8 +150,13 @@ const UploadCard = ({ onAnalyze }) => {
         ) : (
           <div className="flex flex-col items-center">
             <Upload className="h-16 w-16 text-gray-400 mb-4" />
-            <p className="text-lg font-medium text-gray-700">Drag & Drop your CV here</p>
-            <p className="text-sm text-gray-500 mt-2">or <span className="text-indigo-600 font-medium">browse files</span></p>
+            <p className="text-lg font-medium text-gray-700">
+              Drag & Drop your CV here
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              or{" "}
+              <span className="text-indigo-600 font-medium">browse files</span>
+            </p>
           </div>
         )}
       </div>
@@ -142,8 +173,8 @@ const UploadCard = ({ onAnalyze }) => {
         disabled={!file || loading}
         className={`w-full mt-8 py-3 rounded-xl font-bold text-white transition-all transform shadow-md flex justify-center items-center ${
           file && !loading
-            ? 'bg-indigo-600 hover:bg-indigo-700 hover:scale-[1.02] hover:shadow-lg' 
-            : 'bg-gray-300 cursor-not-allowed'
+            ? "bg-indigo-600 hover:bg-indigo-700 hover:scale-[1.02] hover:shadow-lg"
+            : "bg-gray-300 cursor-not-allowed"
         }`}
       >
         {loading ? (
@@ -152,7 +183,7 @@ const UploadCard = ({ onAnalyze }) => {
             Analysing...
           </>
         ) : (
-          'Bandingkan Kecocokan'
+          "Bandingkan Kecocokan"
         )}
       </button>
     </motion.div>
