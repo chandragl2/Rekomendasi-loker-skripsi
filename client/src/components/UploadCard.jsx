@@ -83,10 +83,7 @@ const UploadCard = ({ onAnalyze }) => {
       onAnalyze(recommendations, {
         cvFileName: file.name,
         cvText: !Array.isArray(data)
-          ? data?.cvText ||
-            data?.cvRawText ||
-            data?.extractedText ||
-            ""
+          ? data?.cvText || data?.cvRawText || data?.extractedText || ""
           : "",
       });
     } catch (err) {
@@ -137,7 +134,11 @@ const UploadCard = ({ onAnalyze }) => {
             <FileText className="h-16 w-16 text-indigo-600 mb-4" />
             <p className="text-lg font-medium text-gray-700">{file.name}</p>
             <p className="text-sm text-gray-400 mt-1">
-              {(file.size / 1024 / 1024).toFixed(2)} MB
+              {(file.size > 5 * 1024 * 1024
+                ? file.size / (1024 * 1024)
+                : 0
+              ).toFixed(2)}{" "}
+              MB
             </p>
             {!loading && (
               <button
