@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { AlertCircle, ArrowLeft, CheckCircle2, Loader2, PlusCircle } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  CheckCircle2,
+  Loader2,
+  PlusCircle,
+} from "lucide-react";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import { companyAuthHeaders } from "../../utils/companyAuth";
 import API_URL from "../../utils/api";
@@ -21,7 +27,14 @@ const CATEGORIES = [
   "Miscellaneous",
 ];
 
-const JOB_TYPES = ["Full-time", "Part-time", "Contract", "Internship", "Remote", "Hybrid"];
+const JOB_TYPES = [
+  "Full-time",
+  "Part-time",
+  "Contract",
+  "Internship",
+  "Remote",
+  "Hybrid",
+];
 
 const initialForm = {
   title: "",
@@ -52,7 +65,9 @@ const CreateJob = () => {
 
   useEffect(() => {
     try {
-      const cachedProfile = JSON.parse(localStorage.getItem("companyProfile") || "null");
+      const cachedProfile = JSON.parse(
+        localStorage.getItem("companyProfile") || "null",
+      );
       const companyName = cachedProfile?.companyName || cachedProfile?.name;
       if (companyName) {
         setForm((current) => ({ ...current, company: companyName }));
@@ -63,7 +78,10 @@ const CreateJob = () => {
   }, []);
 
   const handleChange = (e) => {
-    const value = e.target.name === "durationDays" ? Number(e.target.value) : e.target.value;
+    const value =
+      e.target.name === "durationDays"
+        ? Number(e.target.value)
+        : e.target.value;
     setForm((current) => ({ ...current, [e.target.name]: value }));
   };
 
@@ -83,7 +101,9 @@ const CreateJob = () => {
     };
 
     try {
-      await axios.post(`${API_URL}/api/companies/jobs`, payload, { headers: companyAuthHeaders() });
+      await axios.post(`${API_URL}/api/companies/jobs`, payload, {
+        headers: companyAuthHeaders(),
+      });
       setNotice({ type: "success", message: "Lowongan berhasil dibuat." });
       setTimeout(() => navigate("/company/jobs"), 700);
     } catch (err) {
@@ -113,10 +133,15 @@ const CreateJob = () => {
         <section className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-indigo-100/20 p-6 md:p-8">
           <div className="flex items-start justify-between gap-4 mb-6">
             <div>
-              <p className="text-sm font-bold text-indigo-600 mb-2">Company Jobs</p>
-              <h1 className="text-3xl md:text-4xl font-black text-gray-900">Tambah Lowongan</h1>
+              <p className="text-sm font-bold text-indigo-600 mb-2">
+                Company Jobs
+              </p>
+              <h1 className="text-3xl md:text-4xl font-black text-gray-900">
+                Tambah Lowongan
+              </h1>
               <p className="text-sm text-gray-500 mt-2">
-                Lowongan akan dibuat sebagai source Company dengan status active.
+                Lowongan akan dibuat sebagai source Company dengan status
+                active.
               </p>
             </div>
             <div className="hidden sm:flex bg-indigo-50 text-indigo-600 w-12 h-12 rounded-2xl items-center justify-center">
@@ -144,43 +169,109 @@ const CreateJob = () => {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field label="Judul Lowongan">
-                <input name="title" value={form.title} onChange={handleChange} required className={inputClass} placeholder="Frontend Developer" />
+                <input
+                  name="title"
+                  value={form.title}
+                  onChange={handleChange}
+                  required
+                  className={inputClass}
+                  placeholder="Frontend Developer"
+                />
               </Field>
               <Field label="Perusahaan">
-                <input name="company" value={form.company} onChange={handleChange} required className={inputClass} placeholder="Nama perusahaan" />
+                <input
+                  name="company"
+                  value={form.company}
+                  onChange={handleChange}
+                  required
+                  className={inputClass}
+                  placeholder="Nama perusahaan"
+                />
               </Field>
               <Field label="Lokasi">
-                <input name="location" value={form.location} onChange={handleChange} required className={inputClass} placeholder="Jakarta / Remote" />
+                <input
+                  name="location"
+                  value={form.location}
+                  onChange={handleChange}
+                  required
+                  className={inputClass}
+                  placeholder="Jakarta / Remote"
+                />
               </Field>
               <Field label="Tipe">
-                <select name="type" value={form.type} onChange={handleChange} className={inputClass}>
-                  {JOB_TYPES.map((type) => <option key={type}>{type}</option>)}
+                <select
+                  name="type"
+                  value={form.type}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  {JOB_TYPES.map((type) => (
+                    <option key={type}>{type}</option>
+                  ))}
                 </select>
               </Field>
               <Field label="Kategori">
-                <select name="category" value={form.category} onChange={handleChange} className={inputClass}>
-                  {CATEGORIES.map((category) => <option key={category}>{category}</option>)}
+                <select
+                  name="category"
+                  value={form.category}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
+                  {CATEGORIES.map((category) => (
+                    <option key={category}>{category}</option>
+                  ))}
                 </select>
               </Field>
               <Field label="Durasi Lowongan">
-                <select name="durationDays" value={form.durationDays} onChange={handleChange} className={inputClass}>
+                <select
+                  name="durationDays"
+                  value={form.durationDays}
+                  onChange={handleChange}
+                  className={inputClass}
+                >
                   {[7, 14, 30, 60].map((days) => (
-                    <option key={days} value={days}>{days} hari</option>
+                    <option key={days} value={days}>
+                      {days} hari
+                    </option>
                   ))}
                 </select>
               </Field>
             </div>
 
             <Field label="Deskripsi">
-              <textarea name="description" value={form.description} onChange={handleChange} required rows={5} className={inputClass} placeholder="Ceritakan tanggung jawab utama posisi ini." />
+              <textarea
+                name="description"
+                value={form.description}
+                onChange={handleChange}
+                required
+                rows={5}
+                className={inputClass}
+                placeholder="Ceritakan tanggung jawab utama posisi ini."
+              />
             </Field>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field label="Skills">
-                <textarea name="skills" value={form.skills} onChange={handleChange} required rows={4} className={inputClass} placeholder="React, JavaScript, Tailwind CSS" />
+                <textarea
+                  name="skills"
+                  value={form.skills}
+                  onChange={handleChange}
+                  required
+                  rows={4}
+                  className={inputClass}
+                  placeholder="React, JavaScript, Tailwind CSS"
+                />
               </Field>
               <Field label="Qualifications">
-                <textarea name="qualifications" value={form.qualifications} onChange={handleChange} required rows={4} className={inputClass} placeholder="Minimal 1 tahun pengalaman, komunikasi baik" />
+                <textarea
+                  name="qualifications"
+                  value={form.qualifications}
+                  onChange={handleChange}
+                  required
+                  rows={4}
+                  className={inputClass}
+                  placeholder="Minimal 1 tahun pengalaman, komunikasi baik"
+                />
               </Field>
             </div>
 
@@ -189,7 +280,11 @@ const CreateJob = () => {
               disabled={loading}
               className="inline-flex w-full md:w-auto items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-7 py-4 text-sm font-black text-white shadow-xl shadow-indigo-100 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all active:scale-[0.99]"
             >
-              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <PlusCircle className="h-5 w-5" />}
+              {loading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <PlusCircle className="h-5 w-5" />
+              )}
               Simpan Lowongan
             </button>
           </form>
