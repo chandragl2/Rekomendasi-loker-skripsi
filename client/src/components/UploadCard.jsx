@@ -135,7 +135,12 @@ const UploadCard = ({ onAnalyze }) => {
             <p className="text-lg font-medium text-gray-700">{file.name}</p>
             {/* batas ukuran file */}
             <p className="text-sm text-gray-400 mt-1">
-              {(file.size / (1024 * 1024)).toFixed(2)} MB / 2 MB
+              {(file.size / (1024 * 1024)).toFixed(2)} MB / 2 MB if{" "}
+              {(file.size > 2 * 1024 * 1024).toFixed(2)} MB
+              <span className="text-red-500 font-medium">
+                {" "}
+                (File terlalu besar, maksimal 2MB)
+              </span>
             </p>
             {/* <p className="text-sm text-gray-400 mt-1">
               {(file.size > 5 * 1024 * 1024
