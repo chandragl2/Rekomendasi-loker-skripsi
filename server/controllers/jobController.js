@@ -21,6 +21,26 @@ const CATEGORY_COLORS = [
   '#64748b', '#0f172a'
 ];
 
+const CV_INDICATOR_PATTERNS = [
+  /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i,
+  /(?:\+?\d[\s.-]?){9,15}/,
+  /\b(pendidikan|education)\b/i,
+  /\b(pengalaman|experience)\b/i,
+  /\b(skills?|keterampilan|keahlian)\b/i,
+  /\b(project|portfolio|linkedin)\b/i,
+  /\b(summary|profile|profil|ringkasan)\b/i,
+];
+
+const isLikelyCV = (text) => {
+  const normalizedText = `${text || ''}`.toLowerCase();
+  const indicatorCount = CV_INDICATOR_PATTERNS.reduce(
+    (count, pattern) => count + (pattern.test(normalizedText) ? 1 : 0),
+    0
+  );
+
+  return indicatorCount >= 3;
+};
+
 const normalizeJobForResponse = (job) => ({
   ...(typeof job.toObject === 'function' ? job.toObject() : job),
   category: displayCategory(job.category),
@@ -482,6 +502,10 @@ const recommendJobs = async (req, res) => {
     const cvRawText = pdfData.text;
     if (!cvRawText || cvRawText.trim().length === 0) {
       return res.status(400).json({ message: 'Could not extract text from PDF.' });
+    }
+
+    if (!isLikelyCV(cvRawText)) {
+      return res.status(400).json({ message: 'Dokumen yang diunggah tidak terdeteksi sebagai CV.' });
     }
 
     // 2. Perkuat CV Input: ekstrak section skills/experience/summary

@@ -3,6 +3,7 @@ const path = require('path');
 
 // Set storage engine (Memory storage because we process immediately)
 const storage = multer.memoryStorage();
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
 // Check file type
 const checkFileType = (file, cb) => {
@@ -20,7 +21,7 @@ const checkFileType = (file, cb) => {
 // Init upload
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 2000000 }, // 2MB limit
+  limits: { fileSize: MAX_FILE_SIZE },
   fileFilter: (req, file, cb) => {
     checkFileType(file, cb);
   },
