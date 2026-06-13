@@ -10,6 +10,8 @@ import { motion as Motion } from "framer-motion";
 import axios from "axios";
 import API_URL from "../utils/api";
 
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
+
 const UploadCard = ({ onAnalyze }) => {
   const [file, setFile] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -39,13 +41,31 @@ const UploadCard = ({ onAnalyze }) => {
     validateAndSetFile(selectedFile);
   };
 
+  const resetSelectedFile = () => {
+    setFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const validateAndSetFile = (file) => {
     setError("");
-    if (file && file.type === "application/pdf") {
-      setFile(file);
-    } else {
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      alert("Format tidak valid. File harus PDF");
       setError("Please upload a valid PDF file.");
+      resetSelectedFile();
+      return;
     }
+
+    if (file.size > MAX_FILE_SIZE) {
+      alert("File tidak boleh melebihi 2 MB");
+      resetSelectedFile();
+      return;
+    }
+
+    setFile(file);
   };
 
   const handleSubmit = async () => {
@@ -133,27 +153,14 @@ const UploadCard = ({ onAnalyze }) => {
           <div className="flex flex-col items-center">
             <FileText className="h-16 w-16 text-indigo-600 mb-4" />
             <p className="text-lg font-medium text-gray-700">{file.name}</p>
-            {/* batas ukuran file */}
             <p className="text-sm text-gray-400 mt-1">
-              {(file.size / (1024 * 1024)).toFixed(2)} MB / 2 MB if{" "}
-              {(file.size > 2 * 1024 * 1024).toFixed(2)} MB
-              <span className="text-red-500 font-medium">
-                {" "}
-                (File terlalu besar, maksimal 2MB)
-              </span>
+              {(file.size / (1024 * 1024)).toFixed(2)} MB
             </p>
-            {/* <p className="text-sm text-gray-400 mt-1">
-              {(file.size > 5 * 1024 * 1024
-                ? file.size / (1024 * 1024)
-                : 0
-              ).toFixed(2)}{" "}
-              MB
-            </p> */}
             {!loading && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setFile(null);
+                  resetSelectedFile();
                 }}
                 className="mt-4 text-red-500 text-sm hover:text-red-700 font-medium"
               >
