@@ -1,8 +1,23 @@
 const ADMIN_TOKEN_KEY = "adminToken";
 
-export const getAdminToken = () => (
-  localStorage.getItem(ADMIN_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY)
+const isLikelyJwt = (token) => (
+  typeof token === "string" && token.split(".").length === 3
 );
+
+export const getAdminToken = () => {
+  const token = localStorage.getItem(ADMIN_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY);
+
+  if (!token) {
+    return null;
+  }
+
+  if (!isLikelyJwt(token)) {
+    removeAdminSession();
+    return null;
+  }
+
+  return token;
+};
 
 export const adminAuthHeaders = () => ({
   Authorization: `Bearer ${getAdminToken()}`,
@@ -11,11 +26,13 @@ export const adminAuthHeaders = () => ({
 export const saveAdminSession = (data) => {
   const token = data?.token || data?.adminToken || data?.accessToken;
 
-  if (token) {
+  if (isLikelyJwt(token)) {
     localStorage.setItem(ADMIN_TOKEN_KEY, token);
+    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+    return token;
   }
 
-  return token;
+  return null;
 };
 
 export const removeAdminSession = () => {

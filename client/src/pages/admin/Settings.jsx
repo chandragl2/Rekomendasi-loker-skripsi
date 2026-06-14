@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import {
   AlertCircle,
   Boxes,
@@ -14,7 +15,7 @@ import {
   TimerReset,
 } from "lucide-react";
 import API_URL from "../../utils/api";
-import { adminAuthHeaders } from "../../utils/adminAuth";
+import { adminAuthHeaders, removeAdminSession } from "../../utils/adminAuth";
 
 const systemInfo = [
   { label: "Architecture", value: "Decoupled Architecture", icon: Boxes, tone: "bg-blue-50 text-blue-600" },
@@ -28,6 +29,7 @@ const systemInfo = [
 ];
 
 const Settings = ({ onBack }) => {
+  const navigate = useNavigate();
   const [passwordForm, setPasswordForm] = useState({
     oldPassword: "",
     newPassword: "",
@@ -62,6 +64,13 @@ const Settings = ({ onBack }) => {
         confirmPassword: "",
       });
     } catch (err) {
+      if (err.response?.status === 401) {
+        removeAdminSession();
+        setError("Sesi admin berakhir. Silakan login ulang.");
+        navigate("/admin/login", { replace: true });
+        return;
+      }
+
       setError(err.response?.data?.message || "Gagal memperbarui password admin");
     } finally {
       setLoading(false);
