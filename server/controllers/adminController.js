@@ -1,6 +1,101 @@
+const jwt = require('jsonwebtoken');
+const Admin = require('../models/Admin');
 const Application = require('../models/Application');
 const Company = require('../models/Company');
 const Job = require('../models/Job');
+const { getAdminJwtSecret } = require('../middleware/adminAuth');
+
+const getDefaultAdminCredentials = () => ({
+  username: (process.env.ADMIN_USERNAME || 'admin').toLowerCase().trim(),
+  password: process.env.ADMIN_PASSWORD || 'admin123',
+});
+
+const generateAdminToken = (adminId) => jwt.sign({ id: adminId, type: 'admin' }, getAdminJwtSecret(), {
+  expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+});
+
+const formatAdmin = (admin) => ({
+  id: admin._id,
+  username: admin.username,
+});
+
+const ensureDefaultAdmin = async () => {
+  const defaultAdmin = getDefaultAdminCredentials();
+  let admin = await Admin.findOne({ username: defaultAdmin.username }).select('+password');
+
+  if (!admin) {
+    try {
+      admin = await Admin.create(defaultAdmin);
+    } catch (err) {
+      if (err.code === 11000) {
+        admin = await Admin.findOne({ username: defaultAdmin.username }).select('+password');
+      } else {
+        throw err;
+      }
+    }
+  }
+
+  return admin;
+};
+
+const loginAdmin = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username dan password wajib diisi' });
+    }
+
+    const normalizedUsername = String(username).toLowerCase().trim();
+    const defaultAdmin = getDefaultAdminCredentials();
+    let admin = await Admin.findOne({ username: normalizedUsername }).select('+password');
+
+    if (!admin && normalizedUsername === defaultAdmin.username) {
+      admin = await ensureDefaultAdmin();
+    }
+
+    if (!admin || !(await admin.matchPassword(password))) {
+      return res.status(401).json({ message: 'Username atau password admin salah' });
+    }
+
+    res.json({
+      token: generateAdminToken(admin._id),
+      admin: formatAdmin(admin),
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Login admin gagal', error: err.message });
+  }
+};
+
+const changeAdminPassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: 'Semua field password wajib diisi' });
+    }
+
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ message: 'Password baru minimal 6 karakter' });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: 'Password baru dan konfirmasi password tidak sama' });
+    }
+
+    const admin = await Admin.findById(req.admin._id).select('+password');
+    if (!admin || !(await admin.matchPassword(oldPassword))) {
+      return res.status(401).json({ message: 'Password lama salah' });
+    }
+
+    admin.password = newPassword;
+    await admin.save();
+
+    res.json({ message: 'Password admin berhasil diperbarui' });
+  } catch (err) {
+    res.status(500).json({ message: 'Gagal memperbarui password admin', error: err.message });
+  }
+};
 
 const getAdminCompanies = async (req, res) => {
   try {
@@ -139,6 +234,8 @@ const getAdminActivity = async (req, res) => {
 };
 
 module.exports = {
+  loginAdmin,
+  changeAdminPassword,
   getAdminCompanies,
   getAdminActivity,
 };

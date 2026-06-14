@@ -1,14 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import {
+  AlertCircle,
   Boxes,
   BrainCircuit,
   CheckCircle2,
   Database,
+  KeyRound,
   MonitorSmartphone,
+  Save,
   Server,
   Settings as SettingsIcon,
   TimerReset,
 } from "lucide-react";
+import API_URL from "../../utils/api";
+import { adminAuthHeaders } from "../../utils/adminAuth";
 
 const systemInfo = [
   { label: "Architecture", value: "Decoupled Architecture", icon: Boxes, tone: "bg-blue-50 text-blue-600" },
@@ -22,6 +28,46 @@ const systemInfo = [
 ];
 
 const Settings = ({ onBack }) => {
+  const [passwordForm, setPasswordForm] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await axios.put(
+        `${API_URL}/api/admin/change-password`,
+        passwordForm,
+        { headers: adminAuthHeaders() }
+      );
+
+      setMessage(response.data?.message || "Password admin berhasil diperbarui");
+      setPasswordForm({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (err) {
+      setError(err.response?.data?.message || "Gagal memperbarui password admin");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <button
@@ -58,6 +104,92 @@ const Settings = ({ onBack }) => {
             );
           })}
         </div>
+      </section>
+
+      <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200/60">
+        <div className="flex items-start gap-4 mb-7">
+          <div className="p-3 bg-blue-50 rounded-2xl text-blue-600">
+            <KeyRound className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-black text-blue-600 uppercase tracking-widest">Admin Security</p>
+            <h3 className="text-2xl font-black text-slate-900">Ubah Password Admin</h3>
+          </div>
+        </div>
+
+        <form onSubmit={handlePasswordSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div>
+            <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+              Password Lama
+            </label>
+            <input
+              type="password"
+              name="oldPassword"
+              value={passwordForm.oldPassword}
+              onChange={handlePasswordChange}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+              autoComplete="current-password"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+              Password Baru
+            </label>
+            <input
+              type="password"
+              name="newPassword"
+              value={passwordForm.newPassword}
+              onChange={handlePasswordChange}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+              autoComplete="new-password"
+              minLength={6}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+              Konfirmasi Password Baru
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={passwordForm.confirmPassword}
+              onChange={handlePasswordChange}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+              autoComplete="new-password"
+              minLength={6}
+              required
+            />
+          </div>
+
+          <div className="md:col-span-3 space-y-4">
+            {error && (
+              <div className="flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-semibold text-rose-700">
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            {message && (
+              <div className="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">
+                <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                <span>{message}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="inline-flex items-center justify-center gap-3 rounded-2xl bg-blue-600 px-6 py-4 text-sm font-black text-white shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              <Save className="w-5 h-5" />
+              {loading ? "Menyimpan..." : "Simpan"}
+            </button>
+          </div>
+        </form>
       </section>
 
       <section className="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-2xl">

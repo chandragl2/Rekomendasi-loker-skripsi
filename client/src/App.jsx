@@ -7,9 +7,10 @@ import Detail from "./pages/Detail";
 import About from "./pages/About";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminLogin from "./pages/admin/Login";
+import { getAdminToken } from "./utils/adminAuth";
 
 const ProtectedAdminRoute = ({ children }) => {
-  if (!localStorage.getItem("adminToken")) {
+  if (!getAdminToken()) {
     return <Navigate to="/admin/login" replace />;
   }
 

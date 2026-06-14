@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { removeAdminSession } from "../../utils/adminAuth";
 
 const AdminLayout = ({ children, sidebarOpen, setSidebarOpen, activeTab, setActiveTab, onRefresh, loading }) => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const AdminLayout = ({ children, sidebarOpen, setSidebarOpen, activeTab, setActi
   const activeMenu = menuItems.find((item) => item.id === activeTab);
 
   const handleLogout = () => {
-    localStorage.removeItem("adminToken");
+    removeAdminSession();
     navigate("/admin/login", { replace: true });
   };
 

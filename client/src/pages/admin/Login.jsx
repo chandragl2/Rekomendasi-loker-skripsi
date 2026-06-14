@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { AlertCircle, LockKeyhole, LogIn } from "lucide-react";
-
-const ADMIN_TOKEN_KEY = "adminToken";
+import axios from "axios";
+import API_URL from "../../utils/api";
+import { getAdminToken, saveAdminSession } from "../../utils/adminAuth";
 
 const Login = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  if (localStorage.getItem(ADMIN_TOKEN_KEY)) {
+  if (getAdminToken()) {
     return <Navigate to="/admin" replace />;
   }
 
@@ -18,17 +20,26 @@ const Login = () => {
     setForm((current) => ({ ...current, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    if (form.username === "admin" && form.password === "admin123") {
-      localStorage.setItem(ADMIN_TOKEN_KEY, "demo-admin-token");
+    try {
+      const response = await axios.post(`${API_URL}/api/admin/login`, form);
+      const token = saveAdminSession(response.data);
+
+      if (!token) {
+        setError("Token admin tidak ditemukan dari server.");
+        return;
+      }
+
       navigate("/admin", { replace: true });
-      return;
+    } catch (err) {
+      setError(err.response?.data?.message || "Login admin gagal.");
+    } finally {
+      setLoading(false);
     }
-
-    setError("Username atau password admin salah.");
   };
 
   return (
@@ -84,10 +95,11 @@ const Login = () => {
 
           <button
             type="submit"
+            disabled={loading}
             className="w-full inline-flex items-center justify-center gap-3 rounded-2xl bg-blue-600 px-5 py-4 text-sm font-black text-white shadow-xl shadow-blue-100 hover:bg-blue-700 transition-all active:scale-[0.98]"
           >
             <LogIn className="w-5 h-5" />
-            Login
+            {loading ? "Memproses..." : "Login"}
           </button>
         </form>
       </div>
